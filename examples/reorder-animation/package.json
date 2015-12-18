@@ -1,0 +1,25 @@
+{
+  "name": "reaxtor-reorder-animation-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prebuild": "mkdir -p dist",
+    "build": "./node_modules/.bin/browserify src/index.js -o dist/index.js -t [ babelify --presets [ es2015 react ] --plugins [ transform-object-rest-spread ] ] -t cssify",
+    "dev": "./node_modules/.bin/beefy src/index.js:dist/index.js 3333 -- -t [ babelify --presets [ es2015 react ] --plugins [ transform-object-rest-spread ] ] -t cssify"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "falcor-json-graph": "^1.1.7",
+    "falcor-router": "git+ssh://git@github.com/netflix/falcor-router.git",
+    "insert-css": "^0.2.0"
+  },
+  "devDependencies": {
+    "babelify": "^7.2.0",
+    "beefy": "^2.1.5",
+    "browserify": "^12.0.1",
+    "cssify": "^1.0.1"
+  }
+}

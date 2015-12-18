@@ -1,92 +1,78 @@
-import { Changes } from './Changes';
-import { tryCatch } from 'rxjs/util/tryCatch';
+import { Changes } from '../src/Changes';
 import { isPromise } from 'rxjs/util/isPromise';
-import { SymbolShim } from 'rxjs/util/SymbolShim';
-import { Subscriber } from 'rxjs/Subscriber';
 import { Observable } from 'rxjs/Observable';
-import { errorObject } from 'rxjs/util/errorObject';
-import { ReplaySubject } from 'rxjs/subject/ReplaySubject';
-
-import diff from 'virtual-dom/diff';
-import patch from 'virtual-dom/patch';
-
-const staticEmptyObs = Observable.empty();
+import { SymbolShim } from 'rxjs/util/SymbolShim';
 
 export class Component extends Observable {
-    constructor(subscribeOrUpdates) {
-        if(isObservableIsh(subscribeOrUpdates)) {
-            super();
-            this.init(subscribeOrUpdates);
+    constructor(opts) {
+        if (typeof opts === 'function') {
+            super(opts);
         } else {
-            super(subscribeOrUpdates);
+            super();
+            if (typeof opts === 'object') {
+                for (const key in opts) {
+                    if (opts.hasOwnProperty(key)) {
+                        this[key] = opts[key];
+                    }
+                }
+            }
         }
     }
-    init(updates) {
-        const distinctUpdates = updates
+    operator() { return this; }
+    lift(operator) {
+        const component = new Component();
+        component.source = this;
+        component.operator = operator;
+        return component;
+    }
+    get models() {
+        return this.updates;
+    }
+    set models(updates) {
+        this.updates = updates;
+        this.changes = Changes.from(updates
             .distinctUntilChanged(
-                (... args) => this.shouldComponentUpdate(... args),
-                (... args) => this.componentKeySelector(... args)
+                (... args) => !this.shouldComponentUpdate(... args),
+                (... args) => this.key = this.keySelector(... args)
             )
             .switchMap(
                 (... args) => this.load(... args),
                 (... args) => this.mapDataToState(... args)
-            )
-            .multicast(new ReplaySubject(1))
-            .refCount();
-
-        const vDOMs = this
-            .createChildren(Changes.from(distinctUpdates))
-            .map((...args) => this.render(...args))
-            .switchMap(toObservable);
-
-        this.source = vDOMs;
+            ));
+        this.source  = this
+            .initialize(this.changes)
+            .map((... args) => this.render(... args))
+            .switchMap(toObservable)
     }
-    operator() { return this; }
-    lift(operator) {
-        const observable = new Component();
-        observable.source = this;
-        observable.operator = operator;
-        return observable;
+    _subscribe(subscriber) {
+        return this.source._subscribe(this.operator.call(subscriber));
     }
-    createChildren(changes) {
+    initialize(changes) {
         return changes;
     }
-    getPaths({ model }) {
-        return [];
-    }
-    load(update) {
-        const paths = this.getPaths(update);
+    load(change) {
+        const paths = this.paths(change);
         if (paths.length === 0) {
-            return staticEmptyObs;
+            return Observable.empty;
         }
-        const { model } = update;
+        const { model } = change;
         return model.get(... paths);
     }
-    render({ index, model, json }) {
-        return staticEmptyObs;
+    render(change) {
+        return Observable.empty;
+    }
+    paths(update) {
+        return [];
     }
     mapDataToState({ model, index }, { json }) {
         return { model, index, json };
     }
-    componentKeySelector({ model }) {
-        return model.getVersion();
+    keySelector({ model }) {
+        return model.getVersion() + ": " + JSON.stringify(model.getPath());
     }
-    shouldComponentUpdate(curr, next) {
-        return curr === next;
+    shouldComponentUpdate(currKey, nextKey) {
+        return currKey !== nextKey;
     }
-    patchDOM(node, vdom) {
-        return Observable.from(this.scan(scanAndPatchDOM, { node, vdom }));
-    }
-}
-
-function isObservableIsh(ish) {
-    if (ish && typeof ish === 'object') {
-        return (
-            ish instanceof Observable || (
-            isPromise(ish)) || (
-            typeof result[SymbolShim.observable] === 'function'));
-    }
-    return false;
 }
 
 function toObservable(result) {
@@ -100,11 +86,4 @@ function toObservable(result) {
         }
     }
     return Observable.of(result);
-}
-
-function scanAndPatchDOM({ node, vdom }, tree) {
-    return {
-        vdom: tree,
-        node: patch(node, diff(vdom || tree, tree))
-    };
 }
