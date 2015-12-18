@@ -13,7 +13,7 @@ import 'rxjs/add/operator/throttleTime';
 
 import { App } from './App';
 import { MovieRoutes } from './movies/MovieRoutes';
-import { reaxtor, hJSX, Model, Delegator } from './../../../';
+import { reaxtor, hJSX, Model } from './../../../';
 
 const Router = FalcorRouter.createClass([]
     .concat(MovieRoutes())

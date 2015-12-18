@@ -1,4 +1,4 @@
-import { Changes } from '../src/Changes';
+import { Changes } from './Changes';
 import { isPromise } from 'rxjs/util/isPromise';
 import { Observable } from 'rxjs/Observable';
 import { SymbolShim } from 'rxjs/util/SymbolShim';

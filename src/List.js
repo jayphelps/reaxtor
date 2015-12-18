@@ -1,7 +1,7 @@
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 import { Component } from './Component';
-import { SparseArray } from '../src/SparseArray';
+import { SparseArray } from './SparseArray';
 import { ReplaySubject } from 'rxjs/subject/ReplaySubject';
 import { BehaviorSubject } from 'rxjs/subject/BehaviorSubject';
 
