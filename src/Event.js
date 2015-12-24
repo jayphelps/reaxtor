@@ -1,10 +1,18 @@
 import { Subject } from 'rxjs/Subject';
 
 export class Event extends Subject {
-    constructor() {
-        super();
-        this.onNext = (... args) => super.onNext(... args);
-        this.onError = (... args) => super.onError(... args);
-        this.onCompleted = (... args) => super.onCompleted(... args);
+    lift(operator) {
+        const event = new Event(this, this.destination || this);
+        event.operator = operator;
+        return event;
+    }
+    stop() {
+        return this.do((x) => x.stopPropagation());
+    }
+    clobber() {
+        return this.do((x) => {
+            x.preventDefault();
+            x.stopPropagation();
+        });
     }
 }

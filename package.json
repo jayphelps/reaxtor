@@ -7,7 +7,8 @@
   "scripts": {
     "test": "node test/index.js",
     "preinstall": "mkdir -p dist",
-    "install": "babel src -d dist --source-maps --loose"
+    "build": "babel src -d dist --source-maps --loose",
+    "install": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -28,11 +29,11 @@
   },
   "homepage": "https://github.com/trxcllnt/reaxtor#readme",
   "dependencies": {
+    "babel-cli": "^6.3.17",
     "falcor": "git+ssh://git@github.com/netflix/falcor.git",
-    "rxjs": "^5.0.0-beta.0",
+    "falcor-path-syntax": "^0.2.4",
     "snabbdom": "^0.2.8",
-    "snabbdom-jsx": "^0.3.0",
-    "babel-cli": "^6.3.17"
+    "snabbdom-jsx": "^0.3.0"
   },
   "devDependencies": {
     "babel-plugin-transform-object-rest-spread": "^6.3.13",
