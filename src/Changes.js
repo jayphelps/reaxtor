@@ -15,8 +15,13 @@ Observable.prototype.distinctUntilChanged = distinctUntilChanged;
 export class Changes extends Observable {
     constructor(subscribe) {
         super(subscribe);
+        this.nextVal = null;
+        this.errorVal = null;
+        this.hasValue = false;
+        this.hasError = false;
         this.subscribers = [];
         this.subscription = null;
+        this.hasCompleted = false;
     }
     static from(source) {
         const observable = new Changes();
@@ -24,6 +29,8 @@ export class Changes extends Observable {
         return observable;
     }
     next(x) {
+        this.nextVal = x;
+        this.hasValue = true;
         const subscribers = this.subscribers.slice(0);
         const len = subscribers.length;
         let index = -1;
@@ -32,6 +39,8 @@ export class Changes extends Observable {
         }
     }
     error(e) {
+        this.errorVal = e;
+        this.hasError = true;
         const subscribers = this.subscribers.slice(0);
         this.subscribers = [];
         const len = subscribers.length;
@@ -41,6 +50,7 @@ export class Changes extends Observable {
         }
     }
     complete() {
+        this.hasCompleted = true;
         const subscribers = this.subscribers.slice(0);
         this.subscribers = [];
         const len = subscribers.length;
@@ -57,6 +67,12 @@ export class Changes extends Observable {
 
         if (subscribers.length === 1) {
             this.subscription = this.source.subscribe(this);
+        } else if (this.hasError) {
+            subscriber.error(this.errorVal);
+        } else if (this.hasCompleted) {
+            subscriber.complete();
+        } else if (this.hasValue) {
+            subscriber.next(this.nextVal);
         }
 
         return new Subscription(() => {
@@ -69,7 +85,7 @@ export class Changes extends Observable {
             }
         });
     }
-    deref(... keys) {
+    deref(...keys) {
         return this.lift(new DerefOperator(isArray(keys[0]) ? keys[0] : keys));
     }
 }
@@ -93,7 +109,7 @@ class DerefSubscriber extends Subscriber {
         const keys = this.keys;
         const count = keys.length;
         let keysIdx = -1;
-        let { model, state } = update;
+        let [ model, state ] = update;
 
         while (++keysIdx < count) {
             const key = keys[keysIdx];
@@ -106,7 +122,11 @@ class DerefSubscriber extends Subscriber {
             }
         }
 
-        super._next({ ... update, model, state });
+        update = update.slice(0);
+        update[0] = model;
+        update[1] = state;
+
+        super._next(update);
     }
 }
 

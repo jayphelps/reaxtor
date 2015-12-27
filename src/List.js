@@ -6,32 +6,25 @@ export class List extends Base {
     create(models) {
         var subjects = [];
         var children = [];
-        return models.switchMap((props) => {
-            const kids = this.deref(subjects, children, props);
+        return models.switchMap((tuple) => {
+            const kids = this.deref(subjects, children, tuple);
             if (kids.length === 0) {
-                return Observable.of([props]);
+                return Observable.of([tuple]);
             }
             return Observable.combineLatest(
-                children = kids,
-                (... args) => [props, ... args]
+                children = kids, (...args) => [tuple, ...args]
             );
         });
     }
-    deref(subjects, children, props) {
+    deref(subjects, children, [ _model, _state ]) {
 
-        const _model = props.model;
-        const _state = props.state;
         let index = -1;
         let count = _state.length;
-
-        if (count <= 0) {
-            return [];
-        }
 
         while (++index < count) {
             if (!subjects[index]) {
                 subjects[index] = new Subject();
-                children[index] = this.children(subjects[index]);
+                children[index] = this.createChild(subjects[index], index);
             }
         }
 
@@ -47,7 +40,7 @@ export class List extends Base {
         while (++index < count) {
             const state = _state[index];
             const model = _model.deref(state);
-            subjects[index].next({ index, model, state });
+            subjects[index].next([model, state, index]);
         }
 
         return children;

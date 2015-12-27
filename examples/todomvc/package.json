@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "falcor-json-graph": "^1.1.7",
-    "falcor-router": "git+ssh://git@github.com/netflix/falcor-router.git",
+    "falcor-router": "git+ssh://git@github.com/trxcllnt/falcor-router.git#rx-next",
+    "lodash.filter": "^3.1.1",
     "todomvc-app-css": "^2.0.0",
     "todomvc-common": "^1.0.1"
   },

@@ -2,8 +2,8 @@
   "name": "reaxtor",
   "version": "0.0.1",
   "description": "Falcor + Rx + virtual-dom",
-  "main": "dist/index.js",
-  "browser": "dist/index.js",
+  "main": "src/index.js",
+  "browser": "src/index.js",
   "scripts": {
     "test": "node test/index.js",
     "preinstall": "mkdir -p dist",
@@ -30,8 +30,9 @@
   "homepage": "https://github.com/trxcllnt/reaxtor#readme",
   "dependencies": {
     "babel-cli": "^6.3.17",
-    "falcor": "git+ssh://git@github.com/netflix/falcor.git",
+    "falcor": "git+ssh://git@github.com/trxcllnt/falcor.git#newness",
     "falcor-path-syntax": "^0.2.4",
+    "lodash.assign": "^3.2.0",
     "snabbdom": "^0.2.8",
     "snabbdom-jsx": "^0.3.0"
   },

@@ -4,58 +4,52 @@ import { Observable } from 'rxjs/Observable';
 import { pathValue as $pv } from 'falcor-json-graph';
 
 export class Task extends Base {
-    loader({ model }) {
+    loader([ model ]) {
         return model.get(`['id', 'content', 'completed']`);
     }
-    events({ model, state }) {
+    events([ model, state ]) {
         return Observable.merge(
 
-            this.listen('blur').map(() => ({ model, state: {
-                ... state, ... { editing: false }
-            }})),
-
-            this.listen('edit').map(() => ({ model, state: {
-                ... state, ... { editing: true }
-            }})),
+            this.listen('edit').map(() => ({ ...state, ...{ editing: true }})),
+            this.listen('blur').map(() => ({ ...state, ...{ editing: false}})),
 
             this.listen('done')
                 .map(({target}) => target.checked)
                 .switchMap(
                     (completed) => model.call(['toggle'], [completed]),
-                    (completed) => {
-                        state.completed = completed;
-                        return { model, state };
-                    }
+                    (completed) => ({ ...state, ...{ completed, editing: false }})
                 ),
 
             this.listen('commit')
                 .filter((ev) => ev.keyIdentifier === 'Enter')
                 .map(({target}) => target.value)
                 .switchMap(
-                    (content) => model.set({json: {content}}),
-                    (content) => {
-                        state.content = content;
-                        return { model, state };
-                    }
+                    (content) => model.set({ json: { content }}),
+                    (content) => ({ ...state, ...{ content, editing: false }})
                 ),
 
             this.listen('destroy').switchMap(
                 () => model.call([`remove`]),
-                (ev, data) => ({ model, state }))
+                (ev) => ({ id: '', content: '', completed: '' })
+            )
         )
-        .startWith({ model, state });
+        .map((newState) => [model, state = newState])
     }
-    render({ model, state: { id, content, completed, editing = false }}) {
+    render([ model, { id, content, completed, editing = false } ]) {
         return (
-            <li key={id}
-                class={{ editing, completed: (completed && !editing) }}>
+            <li class={{ editing, completed: (completed && !editing) }}>
                 <div class={{'view': true}}>
                     <input class={{'toggle': true}}
                         type='checkbox'
                         checked={completed && !editing}
+                        compKey={this.key + 'toggle'}
                         on-click={this.dispatch('done')} />
-                    <label on-dblclick={this.dispatch('edit')}>{ content }</label>
+                    <label compKey={this.key + 'toggle'}
+                        on-dblclick={this.dispatch('edit')}>{
+                            content
+                    }</label>
                     <button class={{'destroy': true}}
+                        compKey={this.key + 'toggle'}
                         on-click={this.dispatch('destroy')}></button>
                 </div>
                 <input class={{'edit': true}}

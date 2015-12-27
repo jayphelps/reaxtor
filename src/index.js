@@ -29,7 +29,6 @@ import 'rxjs/add/operator/concat';
 import 'rxjs/add/operator/groupBy';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/mergeScan';
 import 'rxjs/add/operator/zip-static';
 import 'rxjs/add/operator/combineLatest';
 import 'rxjs/add/operator/withLatestFrom';
@@ -53,34 +52,46 @@ export { hJSX, Base, List, Event, Model, reaxtor };
 
 function reaxtor(RootClass, model, node, selector) {
 
-    let reenter = false;
-    let working = false;
+    var working = false;
+    var reenter = false;
 
-    const models = new BehaviorSubject({ model });
-    const previousOnChange = model._root.onChange;
+    const models = new BehaviorSubject([ model ]);
+    const previousOnChangesCompleted = model._root.onChangesCompleted;
 
-    if (previousOnChange) {
-        model._root.onChange = function() {
-            if (working) { return reenter = true; }
-            working = true;
-            do {
-                reenter = false;
-                previousOnChange();
-                models.next({ model, index: 0 });
-            } while(reenter);
-            working = false;
-        };
-    } else {
-        model._root.onChange = function() {
-            if (working) { return reenter = true; }
-            working = true;
-            do {
-                reenter = false;
-                models.next({ model, index: 0 });
-            } while(reenter);
-            working = false;
-        };
-    }
+    model._root.onChangesCompleted = function() {
+        if (working) { return reenter = true; }
+        working = true;
+        do {
+            reenter = false;
+            // console.log('\nstart top-down render ----> [');
+            if (previousOnChangesCompleted) {
+                previousOnChangesCompleted.call(this);
+            }
+            models.next([ this ]);
+            // console.log('] <---- end top-down render\n');
+        } while(reenter === true);
+        working = false;
+    };
+
+/*
+    reaxtor.refCount = 0;
+    model._root.onChangesCompleted = function() {
+        if (reaxtor.refCount > 0) {
+            console.log(`
+----> attempted top-down render, but refCount is ${reaxtor.refCount} <----
+`);
+            return;
+        }
+        // do {
+            console.log('\nstart top-down render ----> [');
+            if (previousOnChangesCompleted) {
+                previousOnChangesCompleted.call(this);
+            }
+            models.next([ this ]);
+            console.log('] <---- end top-down render\n');
+        // } while(reaxtor.refCount > 0);
+    };
+*/
 
     return new RootClass({ models }).scan(selector, node);
 }

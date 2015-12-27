@@ -1,5 +1,4 @@
 import falcor from 'falcor';
-import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 import parsePath from 'falcor-path-syntax';
 import InvalidateResponse from 'falcor/lib/response/InvalidateResponse';
@@ -19,7 +18,7 @@ class ReaxtorModel extends falcor.Model {
     call() {
         return Observable.defer(_ => super.call.apply(this, arguments));
     }
-    invalidate2(... args) {
+    invalidate2(...args) {
         return Observable.defer(_ => new InvalidateResponse(this, args.map((path) => {
             path = parsePath(path);
             if (!Array.isArray(path)) {

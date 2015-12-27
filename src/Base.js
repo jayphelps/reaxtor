@@ -1,4 +1,5 @@
 import { Event } from './Event';
+import { reaxtor } from './index';
 import { Changes } from './Changes';
 import { isPromise } from 'rxjs/util/isPromise';
 import { Observable } from 'rxjs/Observable';
@@ -7,7 +8,7 @@ import { ReplaySubject } from 'rxjs/subject/ReplaySubject';
 const  { isArray } = Array;
 
 export class Base extends Observable {
-    constructor(attrs, children) {
+    constructor(attrs, createChild) {
         if (typeof attrs === 'function') {
             super(attrs);
         } else if(isObservable(attrs)) {
@@ -16,11 +17,11 @@ export class Base extends Observable {
         } else {
             super();
             if (typeof attrs === 'object') {
-                if (children && !this.children) {
-                    this.children = children;
+                if (createChild && !this.createChild) {
+                    this.createChild = createChild;
                 }
-                const models = attrs[models];
-                delete attrs[models];
+                const models = attrs['models'];
+                delete attrs['models'];
                 for (const key in attrs) {
                     if (attrs.hasOwnProperty(key)) {
                         this[key] = attrs[key];
@@ -34,40 +35,59 @@ export class Base extends Observable {
     }
     set models(m) {
 
+        if (this.source) {
+            this.source.unsubscribe();
+        }
+
         if (this.subscription) {
-            this.source = null;
             this.subscription.unsubscribe();
         }
 
         const updates = Changes.from(m
             .distinctUntilChanged(
-                (... args) => !this.shouldComponentUpdate(... args),
-                (... args) => this.key = this.selectKey(... args)
+                (...args) => !this.shouldComponentUpdate(...args),
+                (...args) => this.key = this.mapModelToKey(...args)
             )
             .switchMap(
-                (... args) => this.loader(... args),
-                (... args) => this.dataToProps(... args)
+                (...args) => this.loader(...args),
+                (...args) => this.mapDataToProps(...args)
             )
+            .switchMap((props) => this.events(props).startWith(props))
+            // .do(() => console.log('updated', this.key))
         );
 
         this.source = new ReplaySubject(1);
 
         this.subscription = this.create(updates)
-            .switchMap((... args) => this.events(... args))
-            .switchMap((... args) => toObservable(this.render(... args)), false)
+            .switchMap((...args) => toObservable(this.render(...args)), false)
+            // .do(() => console.log('rendered', this.key))
             .subscribe(this.source);
     }
     create(updates) {
         return updates;
     }
     loader(props) {
-        return [props];
+        return Observable.of({ json: {} });
     }
     events(props) {
-        return [props];
+        return Observable.of(props);
     }
     render(props) {
-        return [];
+        return Observable.empty();
+    }
+    mapModelToKey([ model ]) {
+        const path = model.getPath();
+        const {name} = this.constructor;
+        if (path.length === 0) {
+            return `${name} v${model.getVersion()}`;
+        }
+        return `${name} [${path.join(', ')}] v${model.getVersion()}`;
+    }
+    shouldComponentUpdate(currKey, nextKey) {
+        return currKey !== nextKey;
+    }
+    mapDataToProps([ model ], { json }) {
+        return [ model, json ];
     }
     listen(name) {
         const subjects = this.subjects || (this.subjects = {});
@@ -89,20 +109,6 @@ export class Base extends Observable {
                 subject.next(value);
             }
         }
-    }
-    selectKey({ model }) {
-        const path = model.getPath();
-        const {name} = this.constructor;
-        if (path.length === 0) {
-            return `${name} v${model.getVersion()}`;
-        }
-        return `${name} [${path.join(', ')}] v${model.getVersion()}`;
-    }
-    shouldComponentUpdate(currKey, nextKey) {
-        return currKey !== nextKey;
-    }
-    dataToProps(props, { json }) {
-        return { ... props, state: { ... props.state, ... json }};
     }
     lift(operator) {
         const component = new Base();

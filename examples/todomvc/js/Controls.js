@@ -1,45 +1,53 @@
 /** @jsx hJSX */
+import _filter from 'lodash.filter';
 import { hJSX, Base } from './../../../';
 import { Observable } from 'rxjs/Observable';
+import { ref as $ref } from 'falcor-json-graph';
+const  { fromEvent } = Observable;
 
 export class Controls extends Base {
-    loader({ model }) {
-        return model.get(
-            `length`,
-            `where['completed=true'].length`,
-            `where['completed=false'].length`
-        );
+    loader([ model ]) {
+        return model.getValue(`length`).mergeMap((length) => {
+            const paths = [`length`, `filter`];
+            if (length > 0) {
+                paths.push(`[0...${length}].completed`);
+            }
+            return model.get(...paths);
+        });
     }
-    events({ model, state }) {
+    events([ model, state ]) {
         return this.listen('clear').switchMap(
-            (ev) => model.call(['where', 'completed=true', 'remove']),
-            (ev, data) => ({
-                model, state: { ... state,
-                where: { 'completed=true': { length: 0 }}}})
-        ).startWith({ model, state });
+            (ev) => model.call(`completed.remove`),
+            (ev, { json }) => ({ ...state, ...json })
+        )
+        .map((newState) => [model, state = newState])
     }
-    render({ model, state: { length, where } }) {
+    render([ model, state ]) {
+
+        const { length } = state;
 
         if (length === 0) {
             return;
         }
 
-        const done = where['completed=true'].length;
-        const open = where['completed=false'].length;
+        const { filter } = state;
+        const done = _filter(state, ({completed}) => completed).length;
+        const open = length - done;
         const suffix = open === 1 ? 'item left' : 'items left';
+
         const children = [
             <span class={{'todo-count': true}}>
                 <strong>{open}</strong> {suffix}
             </span>,
             <ul class={{'filters': true}}>
                 <li>
-                    <a class={{'selected': true}} href='#/'>All</a>
+                    <a class-selected={filter === 'all'} href='#/'>All</a>
                 </li>
                 <li>
-                    <a href='#/active'>Active</a>
+                    <a class-selected={filter === 'active'} href='#/active'>Active</a>
                 </li>
                 <li>
-                    <a href='#/completed'>Completed</a>
+                    <a class-selected={filter === 'completed'} href='#/completed'>Completed</a>
                 </li>
             </ul>
         ];
