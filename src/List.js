@@ -3,6 +3,24 @@ import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 
 export class List extends Base {
+    static listItemLoader(
+        lengthPathSelector = () => (['length']),
+        resultPathSelector = ({ json: { length }}) => (['length']),
+        suffixPathSelector = ({ json: { length }}) => ([])
+    ) {
+        return function loadListItems(...args) {
+            const [model] = args[0];
+            return model
+                .get(lengthPathSelector(...args))
+                .mergeMap((result) => {
+                    const paths = [resultPathSelector(result)];
+                    if (paths.length > 0) {
+                        paths.push(suffixPathSelector(result));
+                    }
+                    return model.get(...paths);
+                })
+        }
+    }
     create(models) {
         var subjects = [];
         var children = [];

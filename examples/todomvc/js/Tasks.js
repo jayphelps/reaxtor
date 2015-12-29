@@ -5,15 +5,19 @@ import { hJSX, List } from './../../../';
 import { Observable } from 'rxjs/Observable';
 import { pathValue as $pv } from 'falcor-json-graph';
 
+const loadTasks = List.listItemLoader(
+    function lengthPath() { return `length`; },
+    function resultPath({ json: { length }}) {
+        return `['length', 'filter']`;
+    },
+    function suffixPath({ json: { length }}) {
+        return `[0...${length}].completed`;
+    }
+);
+
 export class Tasks extends List {
-    loader([ model ]) {
-        return model.getValue(`length`).mergeMap((length) => {
-            const paths = [`length`, `filter`];
-            if (length > 0) {
-                paths.push(`[0...${length}].completed`);
-            }
-            return model.get(...paths);
-        });
+    loader(...args) {
+        return loadTasks(...args);
     }
     deref(subjects, children, [ model, state ]) {
         const { filter } = state;

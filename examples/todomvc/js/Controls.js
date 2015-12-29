@@ -1,19 +1,23 @@
 /** @jsx hJSX */
 import _filter from 'lodash.filter';
-import { hJSX, Base } from './../../../';
+import { hJSX, Base, List } from './../../../';
 import { Observable } from 'rxjs/Observable';
 import { ref as $ref } from 'falcor-json-graph';
 const  { fromEvent } = Observable;
 
+const loadTasks = List.listItemLoader(
+    function lengthPath() { return `length`; },
+    function resultPath({ json: { length }}) {
+        return `['length', 'filter']`;
+    },
+    function suffixPath({ json: { length }}) {
+        return `[0...${length}].completed`;
+    }
+);
+
 export class Controls extends Base {
-    loader([ model ]) {
-        return model.getValue(`length`).mergeMap((length) => {
-            const paths = [`length`, `filter`];
-            if (length > 0) {
-                paths.push(`[0...${length}].completed`);
-            }
-            return model.get(...paths);
-        });
+    loader(...args) {
+        return loadTasks(...args);
     }
     events([ model, state ]) {
         return this.listen('clear').switchMap(
