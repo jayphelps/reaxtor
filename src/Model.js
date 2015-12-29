@@ -30,7 +30,7 @@ class ObservableModelResponse extends Observable {
 export class Model extends FalcorModel {
     /* implement inspect method for node's inspect utility */
     inspect() {
-        return '{' + this.getPath() + '}';
+        return `{ v${this.getVersion()} ${JSON.stringify(this.getPath())} }`;
     }
     get() {
         return new ObservableModelResponse(super.get.apply(this, arguments));

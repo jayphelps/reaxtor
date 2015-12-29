@@ -52,8 +52,8 @@ export class Base extends Observable {
                 (...args) => this.loader(...args),
                 (...args) => this.mapDataToProps(...args)
             )
-            .switchMap((props) => this.events(props).startWith(props))
             // .do(() => console.log('updated', this.key))
+            .switchMap((props) => this.events(props).startWith(props))
         );
 
         this.source = new ReplaySubject(1);
@@ -76,12 +76,7 @@ export class Base extends Observable {
         return Observable.empty();
     }
     mapModelToKey([ model ]) {
-        const path = model.getPath();
-        const {name} = this.constructor;
-        if (path.length === 0) {
-            return `${name} v${model.getVersion()}`;
-        }
-        return `${name} [${path.join(', ')}] v${model.getVersion()}`;
+        return `${name} ${model.inspect()}`;
     }
     shouldComponentUpdate(currKey, nextKey) {
         return currKey !== nextKey;
