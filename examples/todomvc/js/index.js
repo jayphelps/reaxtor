@@ -1,5 +1,5 @@
 /** @jsx hJSX */
-import { reaxtor, hJSX, Model, onChange } from './../../../';
+import { reaxtor, hJSX, Model } from './../../../';
 
 import FalcorRouter from 'falcor-router';
 import ASAPScheduler from 'falcor/lib/schedulers/ASAPScheduler';
@@ -29,18 +29,25 @@ import sdEventlisteners from 'snabbdom/modules/eventlisteners';
 import { App } from './App';
 import { Routes } from './Routes';
 
+let TodoCache = JSON.parse(localStorage.getItem('todos-reaxtor') || 'null');
+
+if (!TodoCache || !TodoCache.apiVersion || !TodoCache.apiVersion.value === 0) {
+    TodoCache = null;
+}
+
+const TodoRouter = FalcorRouter.createClass(Routes(TodoCache || undefined));
+
 reaxtor(App, new Model({
         materialized: true,
         treatErrorsAsValues: true,
         allowFromWhenceYouCame: true,
         scheduler: new ASAPScheduler(),
-        source: new (FalcorRouter.createClass(Routes()))(),
-        // cache: JSON.parse(localStorage.getItem('todos-reaxtor') || '{}'),
-        // onChangesCompleted: function() {
-        //     localStorage.setItem(
-        //         'todos-reaxtor', JSON.stringify(this.getCache())
-        //     );
-        // },
+        source: new TodoRouter(),
+        onChangesCompleted: function() {
+            localStorage.setItem(
+                'todos-reaxtor', JSON.stringify(this.getCache())
+            );
+        }
     }),
     document.body.appendChild(document.createElement('div')),
     snabbdom.init([ sdClass, sdProps, sdStyle, sdAttributes, sdEventlisteners ])

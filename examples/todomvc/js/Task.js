@@ -11,7 +11,6 @@ export class Task extends Base {
         return Observable.merge(
 
             this.listen('edit').map(() => ({ ...state, ...{ editing: true }})),
-            this.listen('blur').map(() => ({ ...state, ...{ editing: false}})),
 
             this.listen('done')
                 .map(({target}) => target.checked)
@@ -20,8 +19,8 @@ export class Task extends Base {
                     (completed) => ({ ...state, ...{ completed, editing: false }})
                 ),
 
-            this.listen('commit')
-                .filter((ev) => ev.keyIdentifier === 'Enter')
+            this.listen('blur').merge(
+            this.listen('commit').filter((ev) => ev.keyIdentifier === 'Enter'))
                 .map(({target}) => target.value)
                 .switchMap(
                     (content) => model.set({ json: { content }}),
@@ -42,14 +41,11 @@ export class Task extends Base {
                     <input class={{'toggle': true}}
                         type='checkbox'
                         checked={completed && !editing}
-                        compKey={this.key + 'toggle'}
                         on-click={this.dispatch('done')} />
-                    <label compKey={this.key + 'toggle'}
-                        on-dblclick={this.dispatch('edit')}>{
+                    <label on-dblclick={this.dispatch('edit')}>{
                             content
                     }</label>
                     <button class={{'destroy': true}}
-                        compKey={this.key + 'toggle'}
                         on-click={this.dispatch('destroy')}></button>
                 </div>
                 <input class={{'edit': true}}

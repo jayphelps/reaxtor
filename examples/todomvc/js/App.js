@@ -22,7 +22,8 @@ export class App extends Base {
         return model.get(
             `input.value`,
             `tasks.length`,
-            `tasks.filter`
+            `tasks.filter`,
+            `['apiVersion', 'globalTaskId']`
         );
     }
     events([model, state]) {
