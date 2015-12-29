@@ -1,25 +1,48 @@
-import falcor from 'falcor';
+import { Model as FalcorModel } from 'falcor';
 import { Observable } from 'rxjs/Observable';
+import { SymbolShim } from 'rxjs/util/SymbolShim';
 import parsePath from 'falcor-path-syntax';
+import ModelResponse from 'falcor/lib/response/ModelResponse';
 import InvalidateResponse from 'falcor/lib/response/InvalidateResponse';
 
+ModelResponse.prototype[SymbolShim.observable] = function() {
+    return this;
+}
 
-class ReaxtorModel extends falcor.Model {
+class ObservableModelResponse extends Observable {
+    constructor(source) {
+        super();
+        this.source = source;
+    }
+    lift(operator) {
+        const response = new ObservableModelResponse(this);
+        response.operator = operator;
+        return response;
+    }
+    _toJSONG() {
+        return new ObservableModelResponse(this.source._toJSONG());
+    }
+    progressively() {
+        return new ObservableModelResponse(this.source.progressively());
+    }
+}
+
+export class Model extends FalcorModel {
     /* implement inspect method for node's inspect utility */
     inspect() {
         return '{' + this.getPath() + '}';
     }
     get() {
-        return Observable.defer(_ => super.get.apply(this, arguments));
+        return new ObservableModelResponse(super.get.apply(this, arguments));
     }
     set() {
-        return Observable.defer(_ => super.set.apply(this, arguments));
+        return new ObservableModelResponse(super.set.apply(this, arguments));
     }
     call() {
-        return Observable.defer(_ => super.call.apply(this, arguments));
+        return new ObservableModelResponse(super.call.apply(this, arguments));
     }
     invalidate2(...args) {
-        return Observable.defer(_ => new InvalidateResponse(this, args.map((path) => {
+        return new ObservableModelResponse(new InvalidateResponse(this, args.map((path) => {
             path = parsePath(path);
             if (!Array.isArray(path)) {
                 throw new Error(`Invalid argument: ${path}`);
@@ -28,16 +51,16 @@ class ReaxtorModel extends falcor.Model {
         })));
     }
     preload() {
-        return Observable.defer(_ => super.preload.apply(this, arguments));
+        return new ObservableModelResponse(super.preload.apply(this, arguments));
     }
     getValue() {
-        return Observable.defer(_ => super.getValue.apply(this, arguments));
+        return new ObservableModelResponse(super.getValue.apply(this, arguments));
     }
     setValue() {
-        return Observable.defer(_ => super.setValue.apply(this, arguments));
+        return new ObservableModelResponse(super.setValue.apply(this, arguments));
     }
     _clone(opts) {
-        const clone = new ReaxtorModel(this);
+        const clone = new Model(this);
         for (let key in opts) {
             const value = opts[key];
             if (value === "delete") {
@@ -51,8 +74,4 @@ class ReaxtorModel extends falcor.Model {
         }
         return clone;
     }
-}
-
-export function Model(opts) {
-    return new ReaxtorModel(opts);
 }
