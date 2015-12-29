@@ -1,5 +1,4 @@
 import { Event } from './Event';
-import { reaxtor } from './index';
 import { Changes } from './Changes';
 import { isPromise } from 'rxjs/util/isPromise';
 import { Observable } from 'rxjs/Observable';

@@ -107,10 +107,7 @@ export function Routes(cache = {
                 return model
                     .get(`globalTaskId`, `tasks.length`)
                     .flatMap(({ json: { globalTaskId, tasks: { length }}}) => {
-                        if (typeof globalTaskId !== 'number') {
-                            debugger;
-                            globalTaskId = 0;
-                        }
+                        // debugger;
                         const taskId = globalTaskId + 1;
                         const taskRef = `tasksById['${taskId}']`;
                         const taskIndex = length;

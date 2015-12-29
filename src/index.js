@@ -48,9 +48,9 @@ import { List } from './List';
 import { Model } from './Model';
 import { Event } from './Event';
 
-export { hJSX, Base, List, Event, Model, reaxtor };
+export { hJSX, Base, List, Model, Event, reaxtor };
 
-function reaxtor(RootClass, model, node, selector) {
+function reaxtor(RootClass, model) {
 
     var working = false;
     var reenter = false;
@@ -73,25 +73,5 @@ function reaxtor(RootClass, model, node, selector) {
         working = false;
     };
 
-/*
-    reaxtor.refCount = 0;
-    model._root.onChangesCompleted = function() {
-        if (reaxtor.refCount > 0) {
-            console.log(`
-----> attempted top-down render, but refCount is ${reaxtor.refCount} <----
-`);
-            return;
-        }
-        // do {
-            console.log('\nstart top-down render ----> [');
-            if (previousOnChangesCompleted) {
-                previousOnChangesCompleted.call(this);
-            }
-            models.next([ this ]);
-            console.log('] <---- end top-down render\n');
-        // } while(reaxtor.refCount > 0);
-    };
-*/
-
-    return new RootClass({ models }).scan(selector, node);
+    return new RootClass({ models });
 }

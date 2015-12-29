@@ -42,7 +42,9 @@ export class Task extends Base {
                         type='checkbox'
                         checked={completed && !editing}
                         on-click={this.dispatch('done')} />
-                    <label on-dblclick={this.dispatch('edit')}>{
+                    <label
+                        style={{color: 'red'}}
+                        on-dblclick={this.dispatch('edit')}>{
                             content
                     }</label>
                     <button class={{'destroy': true}}

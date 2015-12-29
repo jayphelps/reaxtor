@@ -7,6 +7,8 @@ import { Tasks } from './Tasks';
 import { Controls } from './Controls';
 import { TaskInput } from './TaskInput';
 
+// require('./app.css');
+
 export class App extends Base {
     create(models) {
 
