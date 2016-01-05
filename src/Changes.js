@@ -1,16 +1,14 @@
-import { Observable } from 'rxjs/Observable';
-import { Subscription } from 'rxjs/Subscription';
 const  { isArray } = Array;
 
 import { asap } from 'rxjs/scheduler/asap';
 import { tryCatch } from 'rxjs/util/tryCatch';
 import { Scheduler } from 'rxjs/Scheduler';
+import { Observable } from 'rxjs/Observable';
 import { Subscriber } from 'rxjs/Subscriber';
 import { errorObject } from 'rxjs/util/errorObject';
+import { Subscription } from 'rxjs/Subscription';
 
-Observable.pairs = observablePairs;
-Observable.prototype.inspectTime = inspectTime;
-Observable.prototype.distinctUntilChanged = distinctUntilChanged;
+import { default as pathSyntax } from 'falcor-path-syntax';
 
 export class Changes extends Observable {
     constructor(subscribe) {
@@ -86,7 +84,14 @@ export class Changes extends Observable {
         });
     }
     deref(...keys) {
-        return this.lift(new DerefOperator(isArray(keys[0]) ? keys[0] : keys));
+        if (keys.length === 1) {
+            if (isArray(keys[0])) {
+                keys = keys[0];
+            } else if(typeof keys[0] === 'string') {
+                keys = pathSyntax(keys[0]);
+            }
+        }
+        return this.lift(new DerefOperator(keys));
     }
 }
 
@@ -127,120 +132,5 @@ class DerefSubscriber extends Subscriber {
         update[1] = state;
 
         super._next(update);
-    }
-}
-
-function observablePairs(obj) {
-    return Observable.create(function subscribe(subscriber) {
-        const arr = Array.isArray(obj);
-        const keys = arr ? obj : Object.keys(obj);
-        const count = keys.length;
-        let index = -1;
-        while (!subscriber.isUnsubscribed && ++index < count) {
-            const key = arr ? index : keys[index];
-            subscriber.next([key, obj[key]]);
-        }
-        subscriber.complete();
-    });
-}
-
-function distinctUntilChanged(compare, keySelector) {
-    return this.lift(new DistinctUntilChangedOperator(compare, keySelector));
-}
-
-class DistinctUntilChangedOperator {
-    constructor(compare, keySelector) {
-        this.compare = compare;
-        this.keySelector = keySelector;
-    }
-    call(subscriber) {
-        return new DistinctUntilChangedSubscriber(subscriber, this.compare, this.keySelector);
-    }
-}
-class DistinctUntilChangedSubscriber extends Subscriber {
-    constructor(destination, compare, keySelector) {
-        super(destination);
-        this.keySelector = keySelector;
-        this.hasKey = false;
-        if (typeof compare === 'function') {
-            this.compare = compare;
-        }
-    }
-    compare(x, y) {
-        return x === y;
-    }
-    _next(value) {
-        const keySelector = this.keySelector;
-        let key = value;
-        if (keySelector) {
-            key = tryCatch(this.keySelector)(value);
-            if (key === errorObject) {
-                return this.destination.error(errorObject.e);
-            }
-        }
-        let result = false;
-        if (this.hasKey) {
-            result = tryCatch(this.compare)(this.key, key);
-            if (result === errorObject) {
-                return this.destination.error(errorObject.e);
-            }
-        }
-        else {
-            this.hasKey = true;
-        }
-        if (Boolean(result) === false) {
-            this.key = key;
-            this.destination.next(value);
-        }
-    }
-}
-
-function inspectTime(delay, scheduler = asap) {
-    return this.lift(new InspectTimeOperator(delay, scheduler));
-}
-
-class InspectTimeOperator {
-    constructor(delay, scheduler) {
-        this.delay = delay;
-        this.scheduler = scheduler;
-    }
-
-    call(subscriber) {
-        return new InspectTimeSubscriber(subscriber, this.delay, this.scheduler);
-    }
-}
-
-class InspectTimeSubscriber extends Subscriber {
-
-    constructor(destination, delay, scheduler) {
-        super(destination);
-        this.delay = delay;
-        this.value = null;
-        this.hasValue = false;
-        this.scheduler = scheduler;
-    }
-
-    _next(value) {
-        this.value = value;
-        this.hasValue = true;
-        if (!this.throttled) {
-            this.add(this.throttled = this.scheduler.schedule(
-                this.clearThrottle.bind(this), this.delay, this
-            ));
-        }
-    }
-
-    clearThrottle() {
-        const { value, hasValue, throttled } = this;
-        if (throttled) {
-            throttled.unsubscribe();
-            this.remove(throttled);
-            this.throttled = null;
-        }
-        if (hasValue) {
-            this.value = null;
-            this.hasValue = false;
-            this.destination.next(value);
-        }
     }
 }

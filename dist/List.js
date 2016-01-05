@@ -102,9 +102,11 @@ var List = exports.List = (function (_Base) {
             } : arguments[2];
 
             return function loadListItems() {
-                var _arguments$ = _slicedToArray(arguments[0], 1);
+                var _ref5 = arguments.length <= 0 ? undefined : arguments[0];
 
-                var model = _arguments$[0];
+                var _ref6 = _slicedToArray(_ref5, 1);
+
+                var model = _ref6[0];
 
                 return model.get(lengthPathSelector.apply(undefined, arguments)).mergeMap(function (result) {
                     var paths = [resultPathSelector(result)];

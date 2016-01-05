@@ -32,6 +32,7 @@ import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/operator/zip-static';
 import 'rxjs/add/operator/combineLatest';
 import 'rxjs/add/operator/withLatestFrom';
+import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/operator/combineLatest-static';
 
 import { html as hJSX } from 'snabbdom-jsx';

@@ -12,9 +12,9 @@ import { TaskInput } from './TaskInput';
 export class App extends Base {
     create(models) {
 
-        const tasks = new Tasks(models.deref('tasks'));
-        const input = new TaskInput(models.deref('input'));
-        const footer = new Controls(models.deref('tasks'));
+        const tasks = new Tasks(models.deref(`tasks`));
+        const input = new TaskInput(models.deref(`input`));
+        const footer = new Controls(models.deref(`tasks`));
 
         return models.switchMap((tuple) => Observable.combineLatest(
             input, tasks, footer, (...children) => [tuple, ...children]

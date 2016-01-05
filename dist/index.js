@@ -49,6 +49,8 @@ require('rxjs/add/operator/combineLatest');
 
 require('rxjs/add/operator/withLatestFrom');
 
+require('rxjs/add/operator/distinctUntilChanged');
+
 require('rxjs/add/operator/combineLatest-static');
 
 var _snabbdomJsx = require('snabbdom-jsx');

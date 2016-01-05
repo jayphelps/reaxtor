@@ -54,7 +54,7 @@
 /******/ 	
 /******/ 	
 /******/ 	var hotApplyOnUpdate = true;
-/******/ 	var hotCurrentHash = "5447bd83f9b918470081"; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentHash = "10ea6a8bb9dc44c1469a"; // eslint-disable-line no-unused-vars
 /******/ 	var hotCurrentModuleData = {};
 /******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
 /******/ 	
@@ -8177,6 +8177,8 @@
 	
 	__webpack_require__(153);
 	
+	__webpack_require__(473);
+	
 	__webpack_require__(155);
 	
 	var _snabbdomJsx = __webpack_require__(157);
@@ -8207,9 +8209,9 @@
 	
 	var _Base = __webpack_require__(166);
 	
-	var _List = __webpack_require__(180);
+	var _List = __webpack_require__(190);
 	
-	var _Model = __webpack_require__(181);
+	var _Model = __webpack_require__(191);
 	
 	var _Event = __webpack_require__(167);
 	
@@ -8261,6 +8263,7 @@
 	
 	    return new RootClass({ models: models });
 	}
+	//# sourceMappingURL=index.js.map
 
 /***/ },
 /* 78 */
@@ -10014,6 +10017,15 @@
 	var noop_1 = __webpack_require__(84);
 	var tryCatch_1 = __webpack_require__(102);
 	var errorObject_1 = __webpack_require__(103);
+	/**
+	 * Returns a mirrored Observable of the source Observable, but modified so that the provided Observer is called
+	 * for every item emitted by the source.
+	 * This operator is useful for debugging your observables for the correct values or performing other side effects.
+	 * @param {Observer|function} [nextOrObserver] a normal observer callback or callback for onNext.
+	 * @param {function} [error] callback for errors in the source.
+	 * @param {function} [complete] callback for the completion of the source.
+	 * @reurns {Observable} a mirrored Observable with the specified Observer or callback attached for each item.
+	 */
 	function _do(nextOrObserver, error, complete) {
 	    var next;
 	    if (nextOrObserver && typeof nextOrObserver === 'object') {
@@ -10668,6 +10680,14 @@
 	var Subscriber_1 = __webpack_require__(83);
 	var tryCatch_1 = __webpack_require__(102);
 	var errorObject_1 = __webpack_require__(103);
+	/**
+	 * Returns an Observable that applies a specified accumulator function to each item emitted by the source Observable.
+	 * If a seed value is specified, then that value will be used as the initial value for the accumulator.
+	 * If no seed value is specified, the first item of the source is used as the seed.
+	 * @param {function} accumulator The accumulator function called on each item.
+	 * @param {any} [seed] The initial accumulator value.
+	 * @returns {Obervable} An observable of the accumulated values.
+	 */
 	function scan(accumulator, seed) {
 	    return this.lift(new ScanOperator(accumulator, seed));
 	}
@@ -10745,6 +10765,12 @@
 	var tryCatch_1 = __webpack_require__(102);
 	var errorObject_1 = __webpack_require__(103);
 	var EmptyError_1 = __webpack_require__(128);
+	/**
+	 * Returns an Observable that emits the first item of the source Observable that matches the specified condition.
+	 * Throws an error if matching element is not found.
+	 * @param {function} predicate function called with each item to test for condition matching.
+	 * @returns {Observable} an Observable of the first item that matches the condition.
+	 */
 	function first(predicate, resultSelector, defaultValue) {
 	    return this.lift(new FirstOperator(predicate, resultSelector, defaultValue, this));
 	}
@@ -12406,7 +12432,7 @@
 	
 	var _SymbolShim = __webpack_require__(81);
 	
-	var _ReplaySubject = __webpack_require__(178);
+	var _ReplaySubject = __webpack_require__(188);
 	
 	function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
 	
@@ -12553,9 +12579,9 @@
 	                return _this2.loader.apply(_this2, arguments);
 	            }, function () {
 	                return _this2.mapDataToProps.apply(_this2, arguments);
-	            }).do(function () {
-	                return console.log('updated', _this2.key);
-	            }).switchMap(function (props) {
+	            })
+	            // .do(() => console.log('updated', this.key))
+	            .switchMap(function (props) {
 	                return _this2.events(props).startWith(props);
 	            }));
 	
@@ -12563,9 +12589,9 @@
 	
 	            this.subscription = this.create(updates).switchMap(function () {
 	                return toObservable(_this2.render.apply(_this2, arguments));
-	            }, false).do(function () {
-	                return console.log('rendered', _this2.key);
-	            }).subscribe(this.source);
+	            }, false)
+	            // .do(() => console.log('rendered', this.key))
+	            .subscribe(this.source);
 	        }
 	    }]);
 	
@@ -12588,6 +12614,7 @@
 	    }
 	    return false;
 	}
+	//# sourceMappingURL=Base.js.map
 
 /***/ },
 /* 167 */
@@ -12645,6 +12672,7 @@
 	
 	    return Event;
 	})(_Subject2.Subject);
+	//# sourceMappingURL=Event.js.map
 
 /***/ },
 /* 168 */
@@ -12663,19 +12691,25 @@
 	});
 	exports.Changes = undefined;
 	
-	var _Observable2 = __webpack_require__(79);
-	
-	var _Subscription = __webpack_require__(88);
-	
 	var _asap = __webpack_require__(169);
 	
 	var _tryCatch = __webpack_require__(102);
 	
 	var _Scheduler = __webpack_require__(177);
 	
-	var _Subscriber4 = __webpack_require__(83);
+	var _Observable2 = __webpack_require__(79);
+	
+	var _Subscriber2 = __webpack_require__(83);
 	
 	var _errorObject = __webpack_require__(103);
+	
+	var _Subscription = __webpack_require__(88);
+	
+	var _falcorPathSyntax = __webpack_require__(178);
+	
+	var _falcorPathSyntax2 = _interopRequireDefault(_falcorPathSyntax);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -12685,10 +12719,6 @@
 	
 	var _Array = Array;
 	var isArray = _Array.isArray;
-	
-	_Observable2.Observable.pairs = observablePairs;
-	_Observable2.Observable.prototype.inspectTime = inspectTime;
-	_Observable2.Observable.prototype.distinctUntilChanged = distinctUntilChanged;
 	
 	var Changes = exports.Changes = (function (_Observable) {
 	    _inherits(Changes, _Observable);
@@ -12783,7 +12813,14 @@
 	                keys[_key] = arguments[_key];
 	            }
 	
-	            return this.lift(new DerefOperator(isArray(keys[0]) ? keys[0] : keys));
+	            if (keys.length === 1) {
+	                if (isArray(keys[0])) {
+	                    keys = keys[0];
+	                } else if (typeof keys[0] === 'string') {
+	                    keys = (0, _falcorPathSyntax2.default)(keys[0]);
+	                }
+	            }
+	            return this.lift(new DerefOperator(keys));
 	        }
 	    }], [{
 	        key: 'from',
@@ -12860,165 +12897,8 @@
 	    }]);
 	
 	    return DerefSubscriber;
-	})(_Subscriber4.Subscriber);
-	
-	function observablePairs(obj) {
-	    return _Observable2.Observable.create(function subscribe(subscriber) {
-	        var arr = Array.isArray(obj);
-	        var keys = arr ? obj : Object.keys(obj);
-	        var count = keys.length;
-	        var index = -1;
-	        while (!subscriber.isUnsubscribed && ++index < count) {
-	            var key = arr ? index : keys[index];
-	            subscriber.next([key, obj[key]]);
-	        }
-	        subscriber.complete();
-	    });
-	}
-	
-	function distinctUntilChanged(compare, keySelector) {
-	    return this.lift(new DistinctUntilChangedOperator(compare, keySelector));
-	}
-	
-	var DistinctUntilChangedOperator = (function () {
-	    function DistinctUntilChangedOperator(compare, keySelector) {
-	        _classCallCheck(this, DistinctUntilChangedOperator);
-	
-	        this.compare = compare;
-	        this.keySelector = keySelector;
-	    }
-	
-	    _createClass(DistinctUntilChangedOperator, [{
-	        key: 'call',
-	        value: function call(subscriber) {
-	            return new DistinctUntilChangedSubscriber(subscriber, this.compare, this.keySelector);
-	        }
-	    }]);
-	
-	    return DistinctUntilChangedOperator;
-	})();
-	
-	var DistinctUntilChangedSubscriber = (function (_Subscriber2) {
-	    _inherits(DistinctUntilChangedSubscriber, _Subscriber2);
-	
-	    function DistinctUntilChangedSubscriber(destination, compare, keySelector) {
-	        _classCallCheck(this, DistinctUntilChangedSubscriber);
-	
-	        var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(DistinctUntilChangedSubscriber).call(this, destination));
-	
-	        _this4.keySelector = keySelector;
-	        _this4.hasKey = false;
-	        if (typeof compare === 'function') {
-	            _this4.compare = compare;
-	        }
-	        return _this4;
-	    }
-	
-	    _createClass(DistinctUntilChangedSubscriber, [{
-	        key: 'compare',
-	        value: function compare(x, y) {
-	            return x === y;
-	        }
-	    }, {
-	        key: '_next',
-	        value: function _next(value) {
-	            var keySelector = this.keySelector;
-	            var key = value;
-	            if (keySelector) {
-	                key = (0, _tryCatch.tryCatch)(this.keySelector)(value);
-	                if (key === _errorObject.errorObject) {
-	                    return this.destination.error(_errorObject.errorObject.e);
-	                }
-	            }
-	            var result = false;
-	            if (this.hasKey) {
-	                result = (0, _tryCatch.tryCatch)(this.compare)(this.key, key);
-	                if (result === _errorObject.errorObject) {
-	                    return this.destination.error(_errorObject.errorObject.e);
-	                }
-	            } else {
-	                this.hasKey = true;
-	            }
-	            if (Boolean(result) === false) {
-	                this.key = key;
-	                this.destination.next(value);
-	            }
-	        }
-	    }]);
-	
-	    return DistinctUntilChangedSubscriber;
-	})(_Subscriber4.Subscriber);
-	
-	function inspectTime(delay) {
-	    var scheduler = arguments.length <= 1 || arguments[1] === undefined ? _asap.asap : arguments[1];
-	
-	    return this.lift(new InspectTimeOperator(delay, scheduler));
-	}
-	
-	var InspectTimeOperator = (function () {
-	    function InspectTimeOperator(delay, scheduler) {
-	        _classCallCheck(this, InspectTimeOperator);
-	
-	        this.delay = delay;
-	        this.scheduler = scheduler;
-	    }
-	
-	    _createClass(InspectTimeOperator, [{
-	        key: 'call',
-	        value: function call(subscriber) {
-	            return new InspectTimeSubscriber(subscriber, this.delay, this.scheduler);
-	        }
-	    }]);
-	
-	    return InspectTimeOperator;
-	})();
-	
-	var InspectTimeSubscriber = (function (_Subscriber3) {
-	    _inherits(InspectTimeSubscriber, _Subscriber3);
-	
-	    function InspectTimeSubscriber(destination, delay, scheduler) {
-	        _classCallCheck(this, InspectTimeSubscriber);
-	
-	        var _this5 = _possibleConstructorReturn(this, Object.getPrototypeOf(InspectTimeSubscriber).call(this, destination));
-	
-	        _this5.delay = delay;
-	        _this5.value = null;
-	        _this5.hasValue = false;
-	        _this5.scheduler = scheduler;
-	        return _this5;
-	    }
-	
-	    _createClass(InspectTimeSubscriber, [{
-	        key: '_next',
-	        value: function _next(value) {
-	            this.value = value;
-	            this.hasValue = true;
-	            if (!this.throttled) {
-	                this.add(this.throttled = this.scheduler.schedule(this.clearThrottle.bind(this), this.delay, this));
-	            }
-	        }
-	    }, {
-	        key: 'clearThrottle',
-	        value: function clearThrottle() {
-	            var value = this.value;
-	            var hasValue = this.hasValue;
-	            var throttled = this.throttled;
-	
-	            if (throttled) {
-	                throttled.unsubscribe();
-	                this.remove(throttled);
-	                this.throttled = null;
-	            }
-	            if (hasValue) {
-	                this.value = null;
-	                this.hasValue = false;
-	                this.destination.next(value);
-	            }
-	        }
-	    }]);
-	
-	    return InspectTimeSubscriber;
-	})(_Subscriber4.Subscriber);
+	})(_Subscriber2.Subscriber);
+	//# sourceMappingURL=Changes.js.map
 
 /***/ },
 /* 169 */
@@ -13043,7 +12923,6 @@
 	    __extends(AsapScheduler, _super);
 	    function AsapScheduler() {
 	        _super.apply(this, arguments);
-	        this.scheduledId = null;
 	    }
 	    AsapScheduler.prototype.scheduleNow = function (work, state) {
 	        return new AsapAction_1.AsapAction(this, work).schedule(state);
@@ -13553,13 +13432,749 @@
 /* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var Tokenizer = __webpack_require__(179);
+	var head = __webpack_require__(181);
+	var RoutedTokens = __webpack_require__(187);
+	
+	var parser = function parser(string, extendedRules) {
+	    return head(new Tokenizer(string, extendedRules));
+	};
+	
+	module.exports = parser;
+	
+	// Constructs the paths from paths / pathValues that have strings.
+	// If it does not have a string, just moves the value into the return
+	// results.
+	parser.fromPathsOrPathValues = function(paths, ext) {
+	    if (!paths) {
+	        return [];
+	    }
+	
+	    var out = [];
+	    for (var i = 0, len = paths.length; i < len; i++) {
+	
+	        // Is the path a string
+	        if (typeof paths[i] === 'string') {
+	            out[i] = parser(paths[i], ext);
+	        }
+	
+	        // is the path a path value with a string value.
+	        else if (typeof paths[i].path === 'string') {
+	            out[i] = {
+	                path: parser(paths[i].path, ext), value: paths[i].value
+	            };
+	        }
+	
+	        // just copy it over.
+	        else {
+	            out[i] = paths[i];
+	        }
+	    }
+	
+	    return out;
+	};
+	
+	// If the argument is a string, this with convert, else just return
+	// the path provided.
+	parser.fromPath = function(path, ext) {
+	    if (!path) {
+	        return [];
+	    }
+	
+	    if (typeof path === 'string') {
+	        return parser(path, ext);
+	    }
+	
+	    return path;
+	};
+	
+	// Potential routed tokens.
+	parser.RoutedTokens = RoutedTokens;
+
+
+/***/ },
+/* 179 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var TokenTypes = __webpack_require__(180);
+	var DOT_SEPARATOR = '.';
+	var COMMA_SEPARATOR = ',';
+	var OPENING_BRACKET = '[';
+	var CLOSING_BRACKET = ']';
+	var OPENING_BRACE = '{';
+	var CLOSING_BRACE = '}';
+	var COLON = ':';
+	var ESCAPE = '\\';
+	var DOUBLE_OUOTES = '"';
+	var SINGE_OUOTES = "'";
+	var TAB = "\t";
+	var SPACE = " ";
+	var LINE_FEED = '\n';
+	var CARRIAGE_RETURN = '\r';
+	var SPECIAL_CHARACTERS = '\\\'"[]., \t\n\r';
+	var EXT_SPECIAL_CHARACTERS = '\\{}\'"[]., :\t\n\r';
+	
+	var Tokenizer = module.exports = function(string, ext) {
+	    this._string = string;
+	    this._idx = -1;
+	    this._extended = ext;
+	    this.parseString = '';
+	};
+	
+	Tokenizer.prototype = {
+	    /**
+	     * grabs the next token either from the peek operation or generates the
+	     * next token.
+	     */
+	    next: function() {
+	        var nextToken = this._nextToken ?
+	            this._nextToken : getNext(this._string, this._idx, this._extended);
+	
+	        this._idx = nextToken.idx;
+	        this._nextToken = false;
+	        this.parseString += nextToken.token.token;
+	
+	        return nextToken.token;
+	    },
+	
+	    /**
+	     * will peak but not increment the tokenizer
+	     */
+	    peek: function() {
+	        var nextToken = this._nextToken ?
+	            this._nextToken : getNext(this._string, this._idx, this._extended);
+	        this._nextToken = nextToken;
+	
+	        return nextToken.token;
+	    }
+	};
+	
+	Tokenizer.toNumber = function toNumber(x) {
+	    if (!isNaN(+x)) {
+	        return +x;
+	    }
+	    return NaN;
+	};
+	
+	function toOutput(token, type, done) {
+	    return {
+	        token: token,
+	        done: done,
+	        type: type
+	    };
+	}
+	
+	function getNext(string, idx, ext) {
+	    var output = false;
+	    var token = '';
+	    var specialChars = ext ?
+	        EXT_SPECIAL_CHARACTERS : SPECIAL_CHARACTERS;
+	    var done;
+	
+	    do {
+	
+	        done = idx + 1 >= string.length;
+	        if (done) {
+	            break;
+	        }
+	
+	        // we have to peek at the next token
+	        var character = string[idx + 1];
+	
+	        if (character !== undefined &&
+	            specialChars.indexOf(character) === -1) {
+	
+	            token += character;
+	            ++idx;
+	            continue;
+	        }
+	
+	        // The token to delimiting character transition.
+	        else if (token.length) {
+	            break;
+	        }
+	
+	        ++idx;
+	        var type;
+	        switch (character) {
+	            case DOT_SEPARATOR:
+	                type = TokenTypes.dotSeparator;
+	                break;
+	            case COMMA_SEPARATOR:
+	                type = TokenTypes.commaSeparator;
+	                break;
+	            case OPENING_BRACKET:
+	                type = TokenTypes.openingBracket;
+	                break;
+	            case CLOSING_BRACKET:
+	                type = TokenTypes.closingBracket;
+	                break;
+	            case OPENING_BRACE:
+	                type = TokenTypes.openingBrace;
+	                break;
+	            case CLOSING_BRACE:
+	                type = TokenTypes.closingBrace;
+	                break;
+	            case TAB:
+	            case SPACE:
+	            case LINE_FEED:
+	            case CARRIAGE_RETURN:
+	                type = TokenTypes.space;
+	                break;
+	            case DOUBLE_OUOTES:
+	            case SINGE_OUOTES:
+	                type = TokenTypes.quote;
+	                break;
+	            case ESCAPE:
+	                type = TokenTypes.escape;
+	                break;
+	            case COLON:
+	                type = TokenTypes.colon;
+	                break;
+	            default:
+	                type = TokenTypes.unknown;
+	                break;
+	        }
+	        output = toOutput(character, type, false);
+	        break;
+	    } while (!done);
+	
+	    if (!output && token.length) {
+	        output = toOutput(token, TokenTypes.token, false);
+	    }
+	
+	    if (!output) {
+	        output = {done: true};
+	    }
+	
+	    return {
+	        token: output,
+	        idx: idx
+	    };
+	}
+	
+	
+
+
+/***/ },
+/* 180 */
+/***/ function(module, exports) {
+
+	var TokenTypes = {
+	    token: 'token',
+	    dotSeparator: '.',
+	    commaSeparator: ',',
+	    openingBracket: '[',
+	    closingBracket: ']',
+	    openingBrace: '{',
+	    closingBrace: '}',
+	    escape: '\\',
+	    space: ' ',
+	    colon: ':',
+	    quote: 'quote',
+	    unknown: 'unknown'
+	};
+	
+	module.exports = TokenTypes;
+
+
+/***/ },
+/* 181 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var TokenTypes = __webpack_require__(180);
+	var E = __webpack_require__(182);
+	var indexer = __webpack_require__(183);
+	
+	/**
+	 * The top level of the parse tree.  This returns the generated path
+	 * from the tokenizer.
+	 */
+	module.exports = function head(tokenizer) {
+	    var token = tokenizer.next();
+	    var state = {};
+	    var out = [];
+	
+	    while (!token.done) {
+	
+	        switch (token.type) {
+	            case TokenTypes.token:
+	                var first = +token.token[0];
+	                if (!isNaN(first)) {
+	                    E.throwError(E.invalidIdentifier, tokenizer);
+	                }
+	                out[out.length] = token.token;
+	                break;
+	
+	            // dotSeparators at the top level have no meaning
+	            case TokenTypes.dotSeparator:
+	                if (out.length === 0) {
+	                    E.throwError(E.unexpectedToken, tokenizer);
+	                }
+	                break;
+	
+	            // Spaces do nothing.
+	            case TokenTypes.space:
+	                // NOTE: Spaces at the top level are allowed.
+	                // titlesById  .summary is a valid path.
+	                break;
+	
+	
+	            // Its time to decend the parse tree.
+	            case TokenTypes.openingBracket:
+	                indexer(tokenizer, token, state, out);
+	                break;
+	
+	            default:
+	                E.throwError(E.unexpectedToken, tokenizer);
+	                break;
+	        }
+	
+	        // Keep cycling through the tokenizer.
+	        token = tokenizer.next();
+	    }
+	
+	    if (out.length === 0) {
+	        E.throwError(E.invalidPath, tokenizer);
+	    }
+	
+	    return out;
+	};
+	
+
+
+/***/ },
+/* 182 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	    indexer: {
+	        nested: 'Indexers cannot be nested.',
+	        needQuotes: 'unquoted indexers must be numeric.',
+	        empty: 'cannot have empty indexers.',
+	        leadingDot: 'Indexers cannot have leading dots.',
+	        leadingComma: 'Indexers cannot have leading comma.',
+	        requiresComma: 'Indexers require commas between indexer args.',
+	        routedTokens: 'Only one token can be used per indexer when specifying routed tokens.'
+	    },
+	    range: {
+	        precedingNaN: 'ranges must be preceded by numbers.',
+	        suceedingNaN: 'ranges must be suceeded by numbers.'
+	    },
+	    routed: {
+	        invalid: 'Invalid routed token.  only integers|ranges|keys are supported.'
+	    },
+	    quote: {
+	        empty: 'cannot have empty quoted keys.',
+	        illegalEscape: 'Invalid escape character.  Only quotes are escapable.'
+	    },
+	    unexpectedToken: 'Unexpected token.',
+	    invalidIdentifier: 'Invalid Identifier.',
+	    invalidPath: 'Please provide a valid path.',
+	    throwError: function(err, tokenizer, token) {
+	        if (token) {
+	            throw err + ' -- ' + tokenizer.parseString + ' with next token: ' + token;
+	        }
+	        throw err + ' -- ' + tokenizer.parseString;
+	    }
+	};
+	
+
+
+/***/ },
+/* 183 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var TokenTypes = __webpack_require__(180);
+	var E = __webpack_require__(182);
+	var idxE = E.indexer;
+	var range = __webpack_require__(184);
+	var quote = __webpack_require__(185);
+	var routed = __webpack_require__(186);
+	
+	/**
+	 * The indexer is all the logic that happens in between
+	 * the '[', opening bracket, and ']' closing bracket.
+	 */
+	module.exports = function indexer(tokenizer, openingToken, state, out) {
+	    var token = tokenizer.next();
+	    var done = false;
+	    var allowedMaxLength = 1;
+	    var routedIndexer = false;
+	
+	    // State variables
+	    state.indexer = [];
+	
+	    while (!token.done) {
+	
+	        switch (token.type) {
+	            case TokenTypes.token:
+	            case TokenTypes.quote:
+	
+	                // ensures that token adders are properly delimited.
+	                if (state.indexer.length === allowedMaxLength) {
+	                    E.throwError(idxE.requiresComma, tokenizer);
+	                }
+	                break;
+	        }
+	
+	        switch (token.type) {
+	            // Extended syntax case
+	            case TokenTypes.openingBrace:
+	                routedIndexer = true;
+	                routed(tokenizer, token, state, out);
+	                break;
+	
+	
+	            case TokenTypes.token:
+	                var t = +token.token;
+	                if (isNaN(t)) {
+	                    E.throwError(idxE.needQuotes, tokenizer);
+	                }
+	                state.indexer[state.indexer.length] = t;
+	                break;
+	
+	            // dotSeparators at the top level have no meaning
+	            case TokenTypes.dotSeparator:
+	                if (!state.indexer.length) {
+	                    E.throwError(idxE.leadingDot, tokenizer);
+	                }
+	                range(tokenizer, token, state, out);
+	                break;
+	
+	            // Spaces do nothing.
+	            case TokenTypes.space:
+	                break;
+	
+	            case TokenTypes.closingBracket:
+	                done = true;
+	                break;
+	
+	
+	            // The quotes require their own tree due to what can be in it.
+	            case TokenTypes.quote:
+	                quote(tokenizer, token, state, out);
+	                break;
+	
+	
+	            // Its time to decend the parse tree.
+	            case TokenTypes.openingBracket:
+	                E.throwError(idxE.nested, tokenizer);
+	                break;
+	
+	            case TokenTypes.commaSeparator:
+	                ++allowedMaxLength;
+	                break;
+	
+	            default:
+	                E.throwError(E.unexpectedToken, tokenizer);
+	                break;
+	        }
+	
+	        // If done, leave loop
+	        if (done) {
+	            break;
+	        }
+	
+	        // Keep cycling through the tokenizer.
+	        token = tokenizer.next();
+	    }
+	
+	    if (state.indexer.length === 0) {
+	        E.throwError(idxE.empty, tokenizer);
+	    }
+	
+	    if (state.indexer.length > 1 && routedIndexer) {
+	        E.throwError(idxE.routedTokens, tokenizer);
+	    }
+	
+	    // Remember, if an array of 1, keySets will be generated.
+	    if (state.indexer.length === 1) {
+	        state.indexer = state.indexer[0];
+	    }
+	
+	    out[out.length] = state.indexer;
+	
+	    // Clean state.
+	    state.indexer = undefined;
+	};
+	
+
+
+/***/ },
+/* 184 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Tokenizer = __webpack_require__(179);
+	var TokenTypes = __webpack_require__(180);
+	var E = __webpack_require__(182);
+	
+	/**
+	 * The indexer is all the logic that happens in between
+	 * the '[', opening bracket, and ']' closing bracket.
+	 */
+	module.exports = function range(tokenizer, openingToken, state, out) {
+	    var token = tokenizer.peek();
+	    var dotCount = 1;
+	    var done = false;
+	    var inclusive = true;
+	
+	    // Grab the last token off the stack.  Must be an integer.
+	    var idx = state.indexer.length - 1;
+	    var from = Tokenizer.toNumber(state.indexer[idx]);
+	    var to;
+	
+	    if (isNaN(from)) {
+	        E.throwError(E.range.precedingNaN, tokenizer);
+	    }
+	
+	    // Why is number checking so difficult in javascript.
+	
+	    while (!done && !token.done) {
+	
+	        switch (token.type) {
+	
+	            // dotSeparators at the top level have no meaning
+	            case TokenTypes.dotSeparator:
+	                if (dotCount === 3) {
+	                    E.throwError(E.unexpectedToken, tokenizer);
+	                }
+	                ++dotCount;
+	
+	                if (dotCount === 3) {
+	                    inclusive = false;
+	                }
+	                break;
+	
+	            case TokenTypes.token:
+	                // move the tokenizer forward and save to.
+	                to = Tokenizer.toNumber(tokenizer.next().token);
+	
+	                // throw potential error.
+	                if (isNaN(to)) {
+	                    E.throwError(E.range.suceedingNaN, tokenizer);
+	                }
+	
+	                done = true;
+	                break;
+	
+	            default:
+	                done = true;
+	                break;
+	        }
+	
+	        // Keep cycling through the tokenizer.  But ranges have to peek
+	        // before they go to the next token since there is no 'terminating'
+	        // character.
+	        if (!done) {
+	            tokenizer.next();
+	
+	            // go to the next token without consuming.
+	            token = tokenizer.peek();
+	        }
+	
+	        // break and remove state information.
+	        else {
+	            break;
+	        }
+	    }
+	
+	    state.indexer[idx] = {from: from, to: inclusive ? to : to - 1};
+	};
+	
+
+
+/***/ },
+/* 185 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var TokenTypes = __webpack_require__(180);
+	var E = __webpack_require__(182);
+	var quoteE = E.quote;
+	
+	/**
+	 * quote is all the parse tree in between quotes.  This includes the only
+	 * escaping logic.
+	 *
+	 * parse-tree:
+	 * <opening-quote>(.|(<escape><opening-quote>))*<opening-quote>
+	 */
+	module.exports = function quote(tokenizer, openingToken, state, out) {
+	    var token = tokenizer.next();
+	    var innerToken = '';
+	    var openingQuote = openingToken.token;
+	    var escaping = false;
+	    var done = false;
+	
+	    while (!token.done) {
+	
+	        switch (token.type) {
+	            case TokenTypes.token:
+	            case TokenTypes.space:
+	
+	            case TokenTypes.dotSeparator:
+	            case TokenTypes.commaSeparator:
+	
+	            case TokenTypes.openingBracket:
+	            case TokenTypes.closingBracket:
+	            case TokenTypes.openingBrace:
+	            case TokenTypes.closingBrace:
+	                if (escaping) {
+	                    E.throwError(quoteE.illegalEscape, tokenizer);
+	                }
+	
+	                innerToken += token.token;
+	                break;
+	
+	
+	            case TokenTypes.quote:
+	                // the simple case.  We are escaping
+	                if (escaping) {
+	                    innerToken += token.token;
+	                    escaping = false;
+	                }
+	
+	                // its not a quote that is the opening quote
+	                else if (token.token !== openingQuote) {
+	                    innerToken += token.token;
+	                }
+	
+	                // last thing left.  Its a quote that is the opening quote
+	                // therefore we must produce the inner token of the indexer.
+	                else {
+	                    done = true;
+	                }
+	
+	                break;
+	            case TokenTypes.escape:
+	                escaping = true;
+	                break;
+	
+	            default:
+	                E.throwError(E.unexpectedToken, tokenizer);
+	        }
+	
+	        // If done, leave loop
+	        if (done) {
+	            break;
+	        }
+	
+	        // Keep cycling through the tokenizer.
+	        token = tokenizer.next();
+	    }
+	
+	    if (innerToken.length === 0) {
+	        E.throwError(quoteE.empty, tokenizer);
+	    }
+	
+	    state.indexer[state.indexer.length] = innerToken;
+	};
+	
+
+
+/***/ },
+/* 186 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var TokenTypes = __webpack_require__(180);
+	var RoutedTokens = __webpack_require__(187);
+	var E = __webpack_require__(182);
+	var routedE = E.routed;
+	
+	/**
+	 * The routing logic.
+	 *
+	 * parse-tree:
+	 * <opening-brace><routed-token>(:<token>)<closing-brace>
+	 */
+	module.exports = function routed(tokenizer, openingToken, state, out) {
+	    var routeToken = tokenizer.next();
+	    var named = false;
+	    var name = '';
+	
+	    // ensure the routed token is a valid ident.
+	    switch (routeToken.token) {
+	        case RoutedTokens.integers:
+	        case RoutedTokens.ranges:
+	        case RoutedTokens.keys:
+	            //valid
+	            break;
+	        default:
+	            E.throwError(routedE.invalid, tokenizer);
+	            break;
+	    }
+	
+	    // Now its time for colon or ending brace.
+	    var next = tokenizer.next();
+	
+	    // we are parsing a named identifier.
+	    if (next.type === TokenTypes.colon) {
+	        named = true;
+	
+	        // Get the token name or a white space character.
+	        next = tokenizer.next();
+	
+	        // Skip over preceeding white space
+	        while (next.type === TokenTypes.space) {
+	            next = tokenizer.next();
+	        }
+	
+	        if (next.type !== TokenTypes.token) {
+	            E.throwError(routedE.invalid, tokenizer);
+	        }
+	        name = next.token;
+	
+	        // Move to the closing brace or white space character
+	        next = tokenizer.next();
+	
+	        // Skip over any white space to get to the closing brace
+	        while (next.type === TokenTypes.space) {
+	            next = tokenizer.next();
+	        }
+	    }
+	
+	    // must close with a brace.
+	
+	    if (next.type === TokenTypes.closingBrace) {
+	        var outputToken = {
+	            type: routeToken.token,
+	            named: named,
+	            name: name
+	        };
+	        state.indexer[state.indexer.length] = outputToken;
+	    }
+	
+	    // closing brace expected
+	    else {
+	        E.throwError(routedE.invalid, tokenizer);
+	    }
+	
+	};
+	
+
+
+/***/ },
+/* 187 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	    integers: 'integers',
+	    ranges: 'ranges',
+	    keys: 'keys'
+	};
+
+
+/***/ },
+/* 188 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var __extends = (this && this.__extends) || function (d, b) {
 	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Subject_1 = __webpack_require__(78);
-	var queue_1 = __webpack_require__(179);
+	var queue_1 = __webpack_require__(189);
 	var observeOn_support_1 = __webpack_require__(109);
 	var ReplaySubject = (function (_super) {
 	    __extends(ReplaySubject, _super);
@@ -13630,7 +14245,7 @@
 	//# sourceMappingURL=ReplaySubject.js.map
 
 /***/ },
-/* 179 */
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var QueueScheduler_1 = __webpack_require__(175);
@@ -13638,7 +14253,7 @@
 	//# sourceMappingURL=queue.js.map
 
 /***/ },
-/* 180 */
+/* 190 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -13745,9 +14360,11 @@
 	            } : arguments[2];
 	
 	            return function loadListItems() {
-	                var _arguments$ = _slicedToArray(arguments[0], 1);
+	                var _ref5 = arguments.length <= 0 ? undefined : arguments[0];
 	
-	                var model = _arguments$[0];
+	                var _ref6 = _slicedToArray(_ref5, 1);
+	
+	                var model = _ref6[0];
 	
 	                return model.get(lengthPathSelector.apply(undefined, arguments)).mergeMap(function (result) {
 	                    var paths = [resultPathSelector(result)];
@@ -13762,9 +14379,10 @@
 	
 	    return List;
 	})(_Base2.Base);
+	//# sourceMappingURL=List.js.map
 
 /***/ },
-/* 181 */
+/* 191 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -13778,13 +14396,13 @@
 	});
 	exports.Model = undefined;
 	
-	var _falcor = __webpack_require__(182);
+	var _falcor = __webpack_require__(192);
 	
 	var _Observable2 = __webpack_require__(79);
 	
 	var _SymbolShim = __webpack_require__(81);
 	
-	var _falcorPathSyntax = __webpack_require__(231);
+	var _falcorPathSyntax = __webpack_require__(178);
 	
 	var _falcorPathSyntax2 = _interopRequireDefault(_falcorPathSyntax);
 	
@@ -13924,9 +14542,10 @@
 	
 	    return Model;
 	})(_falcor.Model);
+	//# sourceMappingURL=Model.js.map
 
 /***/ },
-/* 182 */
+/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -13938,43 +14557,43 @@
 	if (typeof Promise === "function") {
 	    falcor.Promise = Promise;
 	} else {
-	    falcor.Promise = __webpack_require__(183);
+	    falcor.Promise = __webpack_require__(193);
 	}
 	
 	module.exports = falcor;
 	
-	falcor.Model = __webpack_require__(192);
+	falcor.Model = __webpack_require__(202);
 
 
 /***/ },
-/* 183 */
+/* 193 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	module.exports = __webpack_require__(184)
+	module.exports = __webpack_require__(194)
 
 
 /***/ },
-/* 184 */
+/* 194 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	module.exports = __webpack_require__(185);
-	__webpack_require__(187);
-	__webpack_require__(188);
-	__webpack_require__(189);
-	__webpack_require__(190);
+	module.exports = __webpack_require__(195);
+	__webpack_require__(197);
+	__webpack_require__(198);
+	__webpack_require__(199);
+	__webpack_require__(200);
 
 
 /***/ },
-/* 185 */
+/* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var asap = __webpack_require__(186);
+	var asap = __webpack_require__(196);
 	
 	function noop() {}
 	
@@ -14159,7 +14778,7 @@
 
 
 /***/ },
-/* 186 */
+/* 196 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
@@ -14386,12 +15005,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 187 */
+/* 197 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var Promise = __webpack_require__(185);
+	var Promise = __webpack_require__(195);
 	
 	module.exports = Promise;
 	Promise.prototype.done = function (onFulfilled, onRejected) {
@@ -14405,12 +15024,12 @@
 
 
 /***/ },
-/* 188 */
+/* 198 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
-	var Promise = __webpack_require__(185);
+	var Promise = __webpack_require__(195);
 	
 	module.exports = Promise;
 	Promise.prototype['finally'] = function (f) {
@@ -14427,14 +15046,14 @@
 
 
 /***/ },
-/* 189 */
+/* 199 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	//This file contains the ES6 extensions to the core Promises/A+ API
 	
-	var Promise = __webpack_require__(185);
+	var Promise = __webpack_require__(195);
 	
 	module.exports = Promise;
 	
@@ -14540,7 +15159,7 @@
 
 
 /***/ },
-/* 190 */
+/* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -14548,8 +15167,8 @@
 	// This file contains then/promise specific extensions that are only useful
 	// for node.js interop
 	
-	var Promise = __webpack_require__(185);
-	var asap = __webpack_require__(191);
+	var Promise = __webpack_require__(195);
+	var asap = __webpack_require__(201);
 	
 	module.exports = Promise;
 	
@@ -14617,13 +15236,13 @@
 
 
 /***/ },
-/* 191 */
+/* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	
 	// rawAsap provides everything we need except exception management.
-	var rawAsap = __webpack_require__(186);
+	var rawAsap = __webpack_require__(196);
 	// RawTasks are recycled to reduce GC churn.
 	var freeTasks = [];
 	// We queue errors to ensure they are thrown in right order (FIFO).
@@ -14689,36 +15308,36 @@
 
 
 /***/ },
-/* 192 */
+/* 202 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ModelRoot = __webpack_require__(193);
-	var ModelDataSourceAdapter = __webpack_require__(198);
+	var ModelRoot = __webpack_require__(203);
+	var ModelDataSourceAdapter = __webpack_require__(208);
 	
-	var RequestQueue = __webpack_require__(199);
+	var RequestQueue = __webpack_require__(209);
 	var ModelResponse = __webpack_require__(270);
 	var CallResponse = __webpack_require__(272);
 	var InvalidateResponse = __webpack_require__(296);
 	
 	var ASAPScheduler = __webpack_require__(297);
 	var TimeoutScheduler = __webpack_require__(298);
-	var ImmediateScheduler = __webpack_require__(197);
+	var ImmediateScheduler = __webpack_require__(207);
 	
 	var arrayClone = __webpack_require__(299);
 	var arraySlice = __webpack_require__(268);
 	
 	var collectLru = __webpack_require__(293);
-	var pathSyntax = __webpack_require__(231);
+	var pathSyntax = __webpack_require__(178);
 	
-	var getSize = __webpack_require__(226);
-	var isObject = __webpack_require__(196);
-	var isPrimitive = __webpack_require__(211);
+	var getSize = __webpack_require__(236);
+	var isObject = __webpack_require__(206);
+	var isPrimitive = __webpack_require__(221);
 	var isJSONEnvelope = __webpack_require__(276);
 	var isJSONGraphEnvelope = __webpack_require__(275);
 	
 	var setCache = __webpack_require__(300);
-	var setJSONGraphs = __webpack_require__(203);
-	var jsong = __webpack_require__(230);
+	var setJSONGraphs = __webpack_require__(213);
+	var jsong = __webpack_require__(240);
 	var ID = 0;
 	var validateInput = __webpack_require__(301);
 	var noOp = function() {};
@@ -15299,7 +15918,7 @@
 	
 	Model.prototype._setPathValues = __webpack_require__(253);
 	Model.prototype._setPathMaps = __webpack_require__(300);
-	Model.prototype._setJSONGs = __webpack_require__(203);
+	Model.prototype._setJSONGs = __webpack_require__(213);
 	Model.prototype._setCache = __webpack_require__(300);
 	
 	Model.prototype._invalidatePathValues = __webpack_require__(318);
@@ -15307,12 +15926,12 @@
 
 
 /***/ },
-/* 193 */
+/* 203 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isFunction = __webpack_require__(194);
-	var hasOwn = __webpack_require__(195);
-	var ImmediateScheduler = __webpack_require__(197);
+	var isFunction = __webpack_require__(204);
+	var hasOwn = __webpack_require__(205);
+	var ImmediateScheduler = __webpack_require__(207);
 	
 	function ModelRoot(o, topLevelModel) {
 	
@@ -15359,7 +15978,7 @@
 
 
 /***/ },
-/* 194 */
+/* 204 */
 /***/ function(module, exports) {
 
 	var functionTypeof = "function";
@@ -15370,10 +15989,10 @@
 
 
 /***/ },
-/* 195 */
+/* 205 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(196);
+	var isObject = __webpack_require__(206);
 	var hasOwn = Object.prototype.hasOwnProperty;
 	
 	module.exports = function(obj, prop) {
@@ -15382,7 +16001,7 @@
 
 
 /***/ },
-/* 196 */
+/* 206 */
 /***/ function(module, exports) {
 
 	var objTypeof = "object";
@@ -15392,7 +16011,7 @@
 
 
 /***/ },
-/* 197 */
+/* 207 */
 /***/ function(module, exports) {
 
 	var empty = {dispose: function() {}};
@@ -15413,7 +16032,7 @@
 
 
 /***/ },
-/* 198 */
+/* 208 */
 /***/ function(module, exports) {
 
 	function ModelDataSourceAdapter(model) {
@@ -15437,13 +16056,13 @@
 
 
 /***/ },
-/* 199 */
+/* 209 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var RequestTypes = __webpack_require__(200);
-	var sendSetRequest = __webpack_require__(201);
+	var RequestTypes = __webpack_require__(210);
+	var sendSetRequest = __webpack_require__(211);
 	var GetRequest = __webpack_require__(266);
-	var falcorPathUtils = __webpack_require__(214);
+	var falcorPathUtils = __webpack_require__(224);
 	
 	/**
 	 * The request queue is responsible for queuing the operations to
@@ -15594,7 +16213,7 @@
 
 
 /***/ },
-/* 200 */
+/* 210 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -15603,11 +16222,11 @@
 
 
 /***/ },
-/* 201 */
+/* 211 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var arrayMap = __webpack_require__(202);
-	var setJSONGraphs = __webpack_require__(203);
+	var arrayMap = __webpack_require__(212);
+	var setJSONGraphs = __webpack_require__(213);
 	var setPathValues = __webpack_require__(253);
 	var InvalidSourceError = __webpack_require__(265);
 	
@@ -15690,7 +16309,7 @@
 
 
 /***/ },
-/* 202 */
+/* 212 */
 /***/ function(module, exports) {
 
 	module.exports = function arrayMap(array, selector) {
@@ -15705,26 +16324,26 @@
 
 
 /***/ },
-/* 203 */
+/* 213 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __key = __webpack_require__(204).key;
-	var __ref = __webpack_require__(204).ref;
-	var __context = __webpack_require__(204).context;
-	var __version = __webpack_require__(204).version;
-	var __refIndex = __webpack_require__(204).refIndex;
-	var __refsLength = __webpack_require__(204).refsLength;
+	var __key = __webpack_require__(214).key;
+	var __ref = __webpack_require__(214).ref;
+	var __context = __webpack_require__(214).context;
+	var __version = __webpack_require__(214).version;
+	var __refIndex = __webpack_require__(214).refIndex;
+	var __refsLength = __webpack_require__(214).refsLength;
 	
-	var $ref = __webpack_require__(205);
+	var $ref = __webpack_require__(215);
 	
-	var promote = __webpack_require__(206);
-	var isExpired = __webpack_require__(208);
-	var isFunction = __webpack_require__(194);
-	var isPrimitive = __webpack_require__(211);
-	var expireNode = __webpack_require__(212);
-	var iterateKeySet = __webpack_require__(214).iterateKeySet;
-	var incrementVersion = __webpack_require__(223);
-	var mergeJSONGraphNode = __webpack_require__(224);
+	var promote = __webpack_require__(216);
+	var isExpired = __webpack_require__(218);
+	var isFunction = __webpack_require__(204);
+	var isPrimitive = __webpack_require__(221);
+	var expireNode = __webpack_require__(222);
+	var iterateKeySet = __webpack_require__(224).iterateKeySet;
+	var incrementVersion = __webpack_require__(233);
+	var mergeJSONGraphNode = __webpack_require__(234);
 	var NullInPathError = __webpack_require__(252);
 	
 	/**
@@ -15940,7 +16559,7 @@
 
 
 /***/ },
-/* 204 */
+/* 214 */
 /***/ function(module, exports) {
 
 	/**
@@ -15977,21 +16596,21 @@
 
 
 /***/ },
-/* 205 */
+/* 215 */
 /***/ function(module, exports) {
 
 	module.exports = "ref";
 
 
 /***/ },
-/* 206 */
+/* 216 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __head = __webpack_require__(204).head;
-	var __tail = __webpack_require__(204).tail;
-	var __next = __webpack_require__(204).next;
-	var __prev = __webpack_require__(204).prev;
-	var EXPIRES_NEVER = __webpack_require__(207);
+	var __head = __webpack_require__(214).head;
+	var __tail = __webpack_require__(214).tail;
+	var __next = __webpack_require__(214).next;
+	var __prev = __webpack_require__(214).prev;
+	var EXPIRES_NEVER = __webpack_require__(217);
 	
 	// [H] -> Next -> ... -> [T]
 	// [T] -> Prev -> ... -> [H]
@@ -16038,19 +16657,19 @@
 
 
 /***/ },
-/* 207 */
+/* 217 */
 /***/ function(module, exports) {
 
 	module.exports = 1;
 
 
 /***/ },
-/* 208 */
+/* 218 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var now = __webpack_require__(209);
-	var $now = __webpack_require__(210);
-	var $never = __webpack_require__(207);
+	var now = __webpack_require__(219);
+	var $now = __webpack_require__(220);
+	var $never = __webpack_require__(217);
 	
 	module.exports = function isAlreadyExpired(node) {
 	    var exp = node.$expires;
@@ -16062,21 +16681,21 @@
 
 
 /***/ },
-/* 209 */
+/* 219 */
 /***/ function(module, exports) {
 
 	module.exports = Date.now;
 
 
 /***/ },
-/* 210 */
+/* 220 */
 /***/ function(module, exports) {
 
 	module.exports = 0;
 
 
 /***/ },
-/* 211 */
+/* 221 */
 /***/ function(module, exports) {
 
 	var objTypeof = "object";
@@ -16086,11 +16705,11 @@
 
 
 /***/ },
-/* 212 */
+/* 222 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var splice = __webpack_require__(213);
-	var __invalidated = __webpack_require__(204).invalidated;
+	var splice = __webpack_require__(223);
+	var __invalidated = __webpack_require__(214).invalidated;
 	
 	module.exports = function expireNode(node, expired, lru) {
 	    if (!node[__invalidated]) {
@@ -16103,13 +16722,13 @@
 
 
 /***/ },
-/* 213 */
+/* 223 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __head = __webpack_require__(204).head;
-	var __tail = __webpack_require__(204).tail;
-	var __next = __webpack_require__(204).next;
-	var __prev = __webpack_require__(204).prev;
+	var __head = __webpack_require__(214).head;
+	var __tail = __webpack_require__(214).tail;
+	var __next = __webpack_require__(214).next;
+	var __prev = __webpack_require__(214).prev;
 	
 	module.exports = function lruSplice(root, object) {
 	
@@ -16134,23 +16753,23 @@
 
 
 /***/ },
-/* 214 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = {
-	    iterateKeySet: __webpack_require__(215),
-	    toTree: __webpack_require__(216),
-	    toTreeWithUnion: __webpack_require__(217),
-	    pathsComplementFromTree: __webpack_require__(218),
-	    pathsComplementFromLengthTree: __webpack_require__(220),
-	    hasIntersection: __webpack_require__(219),
-	    toPaths: __webpack_require__(221),
-	    collapse: __webpack_require__(222)
+	    iterateKeySet: __webpack_require__(225),
+	    toTree: __webpack_require__(226),
+	    toTreeWithUnion: __webpack_require__(227),
+	    pathsComplementFromTree: __webpack_require__(228),
+	    pathsComplementFromLengthTree: __webpack_require__(230),
+	    hasIntersection: __webpack_require__(229),
+	    toPaths: __webpack_require__(231),
+	    collapse: __webpack_require__(232)
 	};
 
 
 /***/ },
-/* 215 */
+/* 225 */
 /***/ function(module, exports) {
 
 	var isArray = Array.isArray;
@@ -16261,10 +16880,10 @@
 
 
 /***/ },
-/* 216 */
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var iterateKeySet = __webpack_require__(215);
+	var iterateKeySet = __webpack_require__(225);
 	var isArray = Array.isArray;
 	
 	/**
@@ -16311,16 +16930,16 @@
 
 
 /***/ },
-/* 217 */
+/* 227 */
 /***/ function(module, exports) {
 
 
 
 /***/ },
-/* 218 */
+/* 228 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var hasIntersection = __webpack_require__(219);
+	var hasIntersection = __webpack_require__(229);
 	
 	/**
 	 * Compares the paths passed in with the tree.  Any of the paths that are in
@@ -16350,10 +16969,10 @@
 
 
 /***/ },
-/* 219 */
+/* 229 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var iterateKeySet = __webpack_require__(215);
+	var iterateKeySet = __webpack_require__(225);
 	
 	/**
 	 * Tests to see if the intersection should be stripped from the
@@ -16403,10 +17022,10 @@
 
 
 /***/ },
-/* 220 */
+/* 230 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var hasIntersection = __webpack_require__(219);
+	var hasIntersection = __webpack_require__(229);
 	
 	/**
 	 * Compares the paths passed in with the tree.  Any of the paths that are in
@@ -16437,7 +17056,7 @@
 
 
 /***/ },
-/* 221 */
+/* 231 */
 /***/ function(module, exports) {
 
 	var isArray = Array.isArray;
@@ -16663,11 +17282,11 @@
 
 
 /***/ },
-/* 222 */
+/* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var toPaths = __webpack_require__(221);
-	var toTree = __webpack_require__(216);
+	var toPaths = __webpack_require__(231);
+	var toTree = __webpack_require__(226);
 	
 	module.exports = function collapse(paths) {
 	    var collapseMap = paths.
@@ -16691,7 +17310,7 @@
 
 
 /***/ },
-/* 223 */
+/* 233 */
 /***/ function(module, exports) {
 
 	var version = 1;
@@ -16701,23 +17320,23 @@
 
 
 /***/ },
-/* 224 */
+/* 234 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __parent = __webpack_require__(204).parent;
+	var __parent = __webpack_require__(214).parent;
 	
-	var $ref = __webpack_require__(205);
-	var $error = __webpack_require__(225);
-	var getSize = __webpack_require__(226);
-	var getTimestamp = __webpack_require__(227);
-	var isObject = __webpack_require__(196);
-	var isExpired = __webpack_require__(228);
-	var isFunction = __webpack_require__(194);
+	var $ref = __webpack_require__(215);
+	var $error = __webpack_require__(235);
+	var getSize = __webpack_require__(236);
+	var getTimestamp = __webpack_require__(237);
+	var isObject = __webpack_require__(206);
+	var isExpired = __webpack_require__(238);
+	var isFunction = __webpack_require__(204);
 	
-	var promote = __webpack_require__(206);
-	var wrapNode = __webpack_require__(229);
+	var promote = __webpack_require__(216);
+	var wrapNode = __webpack_require__(239);
 	var insertNode = __webpack_require__(243);
-	var expireNode = __webpack_require__(212);
+	var expireNode = __webpack_require__(222);
 	var replaceNode = __webpack_require__(244);
 	var updateNodeAncestors = __webpack_require__(250);
 	
@@ -16908,39 +17527,39 @@
 
 
 /***/ },
-/* 225 */
+/* 235 */
 /***/ function(module, exports) {
 
 	module.exports = "error";
 
 
 /***/ },
-/* 226 */
+/* 236 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(196);
+	var isObject = __webpack_require__(206);
 	module.exports = function getSize(node) {
 	    return isObject(node) && node.$size || 0;
 	};
 
 
 /***/ },
-/* 227 */
+/* 237 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(196);
+	var isObject = __webpack_require__(206);
 	module.exports = function getTimestamp(node) {
 	    return isObject(node) && node.$timestamp || undefined;
 	};
 
 
 /***/ },
-/* 228 */
+/* 238 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var now = __webpack_require__(209);
-	var $now = __webpack_require__(210);
-	var $never = __webpack_require__(207);
+	var now = __webpack_require__(219);
+	var $now = __webpack_require__(220);
+	var $never = __webpack_require__(217);
 	
 	module.exports = function isExpired(node) {
 	    var exp = node.$expires;
@@ -16951,22 +17570,22 @@
 
 
 /***/ },
-/* 229 */
+/* 239 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jsong = __webpack_require__(230);
+	var jsong = __webpack_require__(240);
 	var $atom = jsong.atom;
 	
-	var now = __webpack_require__(209);
-	var expiresNow = __webpack_require__(210);
+	var now = __webpack_require__(219);
+	var expiresNow = __webpack_require__(220);
 	
-	var $modelCreated = __webpack_require__(204).modelCreated;
+	var $modelCreated = __webpack_require__(214).modelCreated;
 	
 	var atomSize = 50;
 	
 	var clone = __webpack_require__(241);
 	var isArray = Array.isArray;
-	var getSize = __webpack_require__(226);
+	var getSize = __webpack_require__(236);
 	var getExpires = __webpack_require__(242);
 	
 	module.exports = function wrapNode(nodeArg, typeArg, value) {
@@ -17018,10 +17637,10 @@
 
 
 /***/ },
-/* 230 */
+/* 240 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var pathSyntax = __webpack_require__(231);
+	var pathSyntax = __webpack_require__(178);
 	
 	function sentinel(type, value, props) {
 	    var copy = Object.create(null);
@@ -17062,732 +17681,13 @@
 
 
 /***/ },
-/* 231 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Tokenizer = __webpack_require__(232);
-	var head = __webpack_require__(234);
-	var RoutedTokens = __webpack_require__(240);
-	
-	var parser = function parser(string, extendedRules) {
-	    return head(new Tokenizer(string, extendedRules));
-	};
-	
-	module.exports = parser;
-	
-	// Constructs the paths from paths / pathValues that have strings.
-	// If it does not have a string, just moves the value into the return
-	// results.
-	parser.fromPathsOrPathValues = function(paths, ext) {
-	    if (!paths) {
-	        return [];
-	    }
-	
-	    var out = [];
-	    for (var i = 0, len = paths.length; i < len; i++) {
-	
-	        // Is the path a string
-	        if (typeof paths[i] === 'string') {
-	            out[i] = parser(paths[i], ext);
-	        }
-	
-	        // is the path a path value with a string value.
-	        else if (typeof paths[i].path === 'string') {
-	            out[i] = {
-	                path: parser(paths[i].path, ext), value: paths[i].value
-	            };
-	        }
-	
-	        // just copy it over.
-	        else {
-	            out[i] = paths[i];
-	        }
-	    }
-	
-	    return out;
-	};
-	
-	// If the argument is a string, this with convert, else just return
-	// the path provided.
-	parser.fromPath = function(path, ext) {
-	    if (!path) {
-	        return [];
-	    }
-	
-	    if (typeof path === 'string') {
-	        return parser(path, ext);
-	    }
-	
-	    return path;
-	};
-	
-	// Potential routed tokens.
-	parser.RoutedTokens = RoutedTokens;
-
-
-/***/ },
-/* 232 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var TokenTypes = __webpack_require__(233);
-	var DOT_SEPARATOR = '.';
-	var COMMA_SEPARATOR = ',';
-	var OPENING_BRACKET = '[';
-	var CLOSING_BRACKET = ']';
-	var OPENING_BRACE = '{';
-	var CLOSING_BRACE = '}';
-	var COLON = ':';
-	var ESCAPE = '\\';
-	var DOUBLE_OUOTES = '"';
-	var SINGE_OUOTES = "'";
-	var SPACE = " ";
-	var SPECIAL_CHARACTERS = '\\\'"[]., ';
-	var EXT_SPECIAL_CHARACTERS = '\\{}\'"[]., :';
-	
-	var Tokenizer = module.exports = function(string, ext) {
-	    this._string = string;
-	    this._idx = -1;
-	    this._extended = ext;
-	    this.parseString = '';
-	};
-	
-	Tokenizer.prototype = {
-	    /**
-	     * grabs the next token either from the peek operation or generates the
-	     * next token.
-	     */
-	    next: function() {
-	        var nextToken = this._nextToken ?
-	            this._nextToken : getNext(this._string, this._idx, this._extended);
-	
-	        this._idx = nextToken.idx;
-	        this._nextToken = false;
-	        this.parseString += nextToken.token.token;
-	
-	        return nextToken.token;
-	    },
-	
-	    /**
-	     * will peak but not increment the tokenizer
-	     */
-	    peek: function() {
-	        var nextToken = this._nextToken ?
-	            this._nextToken : getNext(this._string, this._idx, this._extended);
-	        this._nextToken = nextToken;
-	
-	        return nextToken.token;
-	    }
-	};
-	
-	Tokenizer.toNumber = function toNumber(x) {
-	    if (!isNaN(+x)) {
-	        return +x;
-	    }
-	    return NaN;
-	};
-	
-	function toOutput(token, type, done) {
-	    return {
-	        token: token,
-	        done: done,
-	        type: type
-	    };
-	}
-	
-	function getNext(string, idx, ext) {
-	    var output = false;
-	    var token = '';
-	    var specialChars = ext ?
-	        EXT_SPECIAL_CHARACTERS : SPECIAL_CHARACTERS;
-	    var done;
-	
-	    do {
-	
-	        done = idx + 1 >= string.length;
-	        if (done) {
-	            break;
-	        }
-	
-	        // we have to peek at the next token
-	        var character = string[idx + 1];
-	
-	        if (character !== undefined &&
-	            specialChars.indexOf(character) === -1) {
-	
-	            token += character;
-	            ++idx;
-	            continue;
-	        }
-	
-	        // The token to delimiting character transition.
-	        else if (token.length) {
-	            break;
-	        }
-	
-	        ++idx;
-	        var type;
-	        switch (character) {
-	            case DOT_SEPARATOR:
-	                type = TokenTypes.dotSeparator;
-	                break;
-	            case COMMA_SEPARATOR:
-	                type = TokenTypes.commaSeparator;
-	                break;
-	            case OPENING_BRACKET:
-	                type = TokenTypes.openingBracket;
-	                break;
-	            case CLOSING_BRACKET:
-	                type = TokenTypes.closingBracket;
-	                break;
-	            case OPENING_BRACE:
-	                type = TokenTypes.openingBrace;
-	                break;
-	            case CLOSING_BRACE:
-	                type = TokenTypes.closingBrace;
-	                break;
-	            case SPACE:
-	                type = TokenTypes.space;
-	                break;
-	            case DOUBLE_OUOTES:
-	            case SINGE_OUOTES:
-	                type = TokenTypes.quote;
-	                break;
-	            case ESCAPE:
-	                type = TokenTypes.escape;
-	                break;
-	            case COLON:
-	                type = TokenTypes.colon;
-	                break;
-	            default:
-	                type = TokenTypes.unknown;
-	                break;
-	        }
-	        output = toOutput(character, type, false);
-	        break;
-	    } while (!done);
-	
-	    if (!output && token.length) {
-	        output = toOutput(token, TokenTypes.token, false);
-	    }
-	
-	    if (!output) {
-	        output = {done: true};
-	    }
-	
-	    return {
-	        token: output,
-	        idx: idx
-	    };
-	}
-	
-	
-
-
-/***/ },
-/* 233 */
-/***/ function(module, exports) {
-
-	var TokenTypes = {
-	    token: 'token',
-	    dotSeparator: '.',
-	    commaSeparator: ',',
-	    openingBracket: '[',
-	    closingBracket: ']',
-	    openingBrace: '{',
-	    closingBrace: '}',
-	    escape: '\\',
-	    space: ' ',
-	    colon: ':',
-	    quote: 'quote',
-	    unknown: 'unknown'
-	};
-	
-	module.exports = TokenTypes;
-
-
-/***/ },
-/* 234 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var TokenTypes = __webpack_require__(233);
-	var E = __webpack_require__(235);
-	var indexer = __webpack_require__(236);
-	
-	/**
-	 * The top level of the parse tree.  This returns the generated path
-	 * from the tokenizer.
-	 */
-	module.exports = function head(tokenizer) {
-	    var token = tokenizer.next();
-	    var state = {};
-	    var out = [];
-	
-	    while (!token.done) {
-	
-	        switch (token.type) {
-	            case TokenTypes.token:
-	                var first = +token.token[0];
-	                if (!isNaN(first)) {
-	                    E.throwError(E.invalidIdentifier, tokenizer);
-	                }
-	                out[out.length] = token.token;
-	                break;
-	
-	            // dotSeparators at the top level have no meaning
-	            case TokenTypes.dotSeparator:
-	                if (out.length === 0) {
-	                    E.throwError(E.unexpectedToken, tokenizer);
-	                }
-	                break;
-	
-	            // Spaces do nothing.
-	            case TokenTypes.space:
-	                // NOTE: Spaces at the top level are allowed.
-	                // titlesById  .summary is a valid path.
-	                break;
-	
-	
-	            // Its time to decend the parse tree.
-	            case TokenTypes.openingBracket:
-	                indexer(tokenizer, token, state, out);
-	                break;
-	
-	            default:
-	                E.throwError(E.unexpectedToken, tokenizer);
-	                break;
-	        }
-	
-	        // Keep cycling through the tokenizer.
-	        token = tokenizer.next();
-	    }
-	
-	    if (out.length === 0) {
-	        E.throwError(E.invalidPath, tokenizer);
-	    }
-	
-	    return out;
-	};
-	
-
-
-/***/ },
-/* 235 */
-/***/ function(module, exports) {
-
-	module.exports = {
-	    indexer: {
-	        nested: 'Indexers cannot be nested.',
-	        needQuotes: 'unquoted indexers must be numeric.',
-	        empty: 'cannot have empty indexers.',
-	        leadingDot: 'Indexers cannot have leading dots.',
-	        leadingComma: 'Indexers cannot have leading comma.',
-	        requiresComma: 'Indexers require commas between indexer args.',
-	        routedTokens: 'Only one token can be used per indexer when specifying routed tokens.'
-	    },
-	    range: {
-	        precedingNaN: 'ranges must be preceded by numbers.',
-	        suceedingNaN: 'ranges must be suceeded by numbers.'
-	    },
-	    routed: {
-	        invalid: 'Invalid routed token.  only integers|ranges|keys are supported.'
-	    },
-	    quote: {
-	        empty: 'cannot have empty quoted keys.',
-	        illegalEscape: 'Invalid escape character.  Only quotes are escapable.'
-	    },
-	    unexpectedToken: 'Unexpected token.',
-	    invalidIdentifier: 'Invalid Identifier.',
-	    invalidPath: 'Please provide a valid path.',
-	    throwError: function(err, tokenizer, token) {
-	        if (token) {
-	            throw err + ' -- ' + tokenizer.parseString + ' with next token: ' + token;
-	        }
-	        throw err + ' -- ' + tokenizer.parseString;
-	    }
-	};
-	
-
-
-/***/ },
-/* 236 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var TokenTypes = __webpack_require__(233);
-	var E = __webpack_require__(235);
-	var idxE = E.indexer;
-	var range = __webpack_require__(237);
-	var quote = __webpack_require__(238);
-	var routed = __webpack_require__(239);
-	
-	/**
-	 * The indexer is all the logic that happens in between
-	 * the '[', opening bracket, and ']' closing bracket.
-	 */
-	module.exports = function indexer(tokenizer, openingToken, state, out) {
-	    var token = tokenizer.next();
-	    var done = false;
-	    var allowedMaxLength = 1;
-	    var routedIndexer = false;
-	
-	    // State variables
-	    state.indexer = [];
-	
-	    while (!token.done) {
-	
-	        switch (token.type) {
-	            case TokenTypes.token:
-	            case TokenTypes.quote:
-	
-	                // ensures that token adders are properly delimited.
-	                if (state.indexer.length === allowedMaxLength) {
-	                    E.throwError(idxE.requiresComma, tokenizer);
-	                }
-	                break;
-	        }
-	
-	        switch (token.type) {
-	            // Extended syntax case
-	            case TokenTypes.openingBrace:
-	                routedIndexer = true;
-	                routed(tokenizer, token, state, out);
-	                break;
-	
-	
-	            case TokenTypes.token:
-	                var t = +token.token;
-	                if (isNaN(t)) {
-	                    E.throwError(idxE.needQuotes, tokenizer);
-	                }
-	                state.indexer[state.indexer.length] = t;
-	                break;
-	
-	            // dotSeparators at the top level have no meaning
-	            case TokenTypes.dotSeparator:
-	                if (!state.indexer.length) {
-	                    E.throwError(idxE.leadingDot, tokenizer);
-	                }
-	                range(tokenizer, token, state, out);
-	                break;
-	
-	            // Spaces do nothing.
-	            case TokenTypes.space:
-	                break;
-	
-	            case TokenTypes.closingBracket:
-	                done = true;
-	                break;
-	
-	
-	            // The quotes require their own tree due to what can be in it.
-	            case TokenTypes.quote:
-	                quote(tokenizer, token, state, out);
-	                break;
-	
-	
-	            // Its time to decend the parse tree.
-	            case TokenTypes.openingBracket:
-	                E.throwError(idxE.nested, tokenizer);
-	                break;
-	
-	            case TokenTypes.commaSeparator:
-	                ++allowedMaxLength;
-	                break;
-	
-	            default:
-	                E.throwError(E.unexpectedToken, tokenizer);
-	                break;
-	        }
-	
-	        // If done, leave loop
-	        if (done) {
-	            break;
-	        }
-	
-	        // Keep cycling through the tokenizer.
-	        token = tokenizer.next();
-	    }
-	
-	    if (state.indexer.length === 0) {
-	        E.throwError(idxE.empty, tokenizer);
-	    }
-	
-	    if (state.indexer.length > 1 && routedIndexer) {
-	        E.throwError(idxE.routedTokens, tokenizer);
-	    }
-	
-	    // Remember, if an array of 1, keySets will be generated.
-	    if (state.indexer.length === 1) {
-	        state.indexer = state.indexer[0];
-	    }
-	
-	    out[out.length] = state.indexer;
-	
-	    // Clean state.
-	    state.indexer = undefined;
-	};
-	
-
-
-/***/ },
-/* 237 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Tokenizer = __webpack_require__(232);
-	var TokenTypes = __webpack_require__(233);
-	var E = __webpack_require__(235);
-	
-	/**
-	 * The indexer is all the logic that happens in between
-	 * the '[', opening bracket, and ']' closing bracket.
-	 */
-	module.exports = function range(tokenizer, openingToken, state, out) {
-	    var token = tokenizer.peek();
-	    var dotCount = 1;
-	    var done = false;
-	    var inclusive = true;
-	
-	    // Grab the last token off the stack.  Must be an integer.
-	    var idx = state.indexer.length - 1;
-	    var from = Tokenizer.toNumber(state.indexer[idx]);
-	    var to;
-	
-	    if (isNaN(from)) {
-	        E.throwError(E.range.precedingNaN, tokenizer);
-	    }
-	
-	    // Why is number checking so difficult in javascript.
-	
-	    while (!done && !token.done) {
-	
-	        switch (token.type) {
-	
-	            // dotSeparators at the top level have no meaning
-	            case TokenTypes.dotSeparator:
-	                if (dotCount === 3) {
-	                    E.throwError(E.unexpectedToken, tokenizer);
-	                }
-	                ++dotCount;
-	
-	                if (dotCount === 3) {
-	                    inclusive = false;
-	                }
-	                break;
-	
-	            case TokenTypes.token:
-	                // move the tokenizer forward and save to.
-	                to = Tokenizer.toNumber(tokenizer.next().token);
-	
-	                // throw potential error.
-	                if (isNaN(to)) {
-	                    E.throwError(E.range.suceedingNaN, tokenizer);
-	                }
-	
-	                done = true;
-	                break;
-	
-	            default:
-	                done = true;
-	                break;
-	        }
-	
-	        // Keep cycling through the tokenizer.  But ranges have to peek
-	        // before they go to the next token since there is no 'terminating'
-	        // character.
-	        if (!done) {
-	            tokenizer.next();
-	
-	            // go to the next token without consuming.
-	            token = tokenizer.peek();
-	        }
-	
-	        // break and remove state information.
-	        else {
-	            break;
-	        }
-	    }
-	
-	    state.indexer[idx] = {from: from, to: inclusive ? to : to - 1};
-	};
-	
-
-
-/***/ },
-/* 238 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var TokenTypes = __webpack_require__(233);
-	var E = __webpack_require__(235);
-	var quoteE = E.quote;
-	
-	/**
-	 * quote is all the parse tree in between quotes.  This includes the only
-	 * escaping logic.
-	 *
-	 * parse-tree:
-	 * <opening-quote>(.|(<escape><opening-quote>))*<opening-quote>
-	 */
-	module.exports = function quote(tokenizer, openingToken, state, out) {
-	    var token = tokenizer.next();
-	    var innerToken = '';
-	    var openingQuote = openingToken.token;
-	    var escaping = false;
-	    var done = false;
-	
-	    while (!token.done) {
-	
-	        switch (token.type) {
-	            case TokenTypes.token:
-	            case TokenTypes.space:
-	
-	            case TokenTypes.dotSeparator:
-	            case TokenTypes.commaSeparator:
-	
-	            case TokenTypes.openingBracket:
-	            case TokenTypes.closingBracket:
-	            case TokenTypes.openingBrace:
-	            case TokenTypes.closingBrace:
-	                if (escaping) {
-	                    E.throwError(quoteE.illegalEscape, tokenizer);
-	                }
-	
-	                innerToken += token.token;
-	                break;
-	
-	
-	            case TokenTypes.quote:
-	                // the simple case.  We are escaping
-	                if (escaping) {
-	                    innerToken += token.token;
-	                    escaping = false;
-	                }
-	
-	                // its not a quote that is the opening quote
-	                else if (token.token !== openingQuote) {
-	                    innerToken += token.token;
-	                }
-	
-	                // last thing left.  Its a quote that is the opening quote
-	                // therefore we must produce the inner token of the indexer.
-	                else {
-	                    done = true;
-	                }
-	
-	                break;
-	            case TokenTypes.escape:
-	                escaping = true;
-	                break;
-	
-	            default:
-	                E.throwError(E.unexpectedToken, tokenizer);
-	        }
-	
-	        // If done, leave loop
-	        if (done) {
-	            break;
-	        }
-	
-	        // Keep cycling through the tokenizer.
-	        token = tokenizer.next();
-	    }
-	
-	    if (innerToken.length === 0) {
-	        E.throwError(quoteE.empty, tokenizer);
-	    }
-	
-	    state.indexer[state.indexer.length] = innerToken;
-	};
-	
-
-
-/***/ },
-/* 239 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var TokenTypes = __webpack_require__(233);
-	var RoutedTokens = __webpack_require__(240);
-	var E = __webpack_require__(235);
-	var routedE = E.routed;
-	
-	/**
-	 * The routing logic.
-	 *
-	 * parse-tree:
-	 * <opening-brace><routed-token>(:<token>)<closing-brace>
-	 */
-	module.exports = function routed(tokenizer, openingToken, state, out) {
-	    var routeToken = tokenizer.next();
-	    var named = false;
-	    var name = '';
-	
-	    // ensure the routed token is a valid ident.
-	    switch (routeToken.token) {
-	        case RoutedTokens.integers:
-	        case RoutedTokens.ranges:
-	        case RoutedTokens.keys:
-	            //valid
-	            break;
-	        default:
-	            E.throwError(routedE.invalid, tokenizer);
-	            break;
-	    }
-	
-	    // Now its time for colon or ending brace.
-	    var next = tokenizer.next();
-	
-	    // we are parsing a named identifier.
-	    if (next.type === TokenTypes.colon) {
-	        named = true;
-	
-	        // Get the token name.
-	        next = tokenizer.next();
-	        if (next.type !== TokenTypes.token) {
-	            E.throwError(routedE.invalid, tokenizer);
-	        }
-	        name = next.token;
-	
-	        // move to the closing brace.
-	        next = tokenizer.next();
-	    }
-	
-	    // must close with a brace.
-	
-	    if (next.type === TokenTypes.closingBrace) {
-	        var outputToken = {
-	            type: routeToken.token,
-	            named: named,
-	            name: name
-	        };
-	        state.indexer[state.indexer.length] = outputToken;
-	    }
-	
-	    // closing brace expected
-	    else {
-	        E.throwError(routedE.invalid, tokenizer);
-	    }
-	
-	};
-	
-
-
-/***/ },
-/* 240 */
-/***/ function(module, exports) {
-
-	module.exports = {
-	    integers: 'integers',
-	    ranges: 'ranges',
-	    keys: 'keys'
-	};
-
-
-/***/ },
 /* 241 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var prefix = __webpack_require__(204).prefix;
-	var hasOwn = __webpack_require__(195);
+	var prefix = __webpack_require__(214).prefix;
+	var hasOwn = __webpack_require__(205);
 	var isArray = Array.isArray;
-	var isObject = __webpack_require__(196);
+	var isObject = __webpack_require__(206);
 	
 	module.exports = function clone(value) {
 	    var dest = value;
@@ -17809,7 +17709,7 @@
 /* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(196);
+	var isObject = __webpack_require__(206);
 	module.exports = function getSize(node) {
 	    return isObject(node) && node.$expires || undefined;
 	};
@@ -17819,10 +17719,10 @@
 /* 243 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __key = __webpack_require__(204).key;
-	var __parent = __webpack_require__(204).parent;
-	var __version = __webpack_require__(204).version;
-	var __absolutePath = __webpack_require__(204).absolutePath;
+	var __key = __webpack_require__(214).key;
+	var __parent = __webpack_require__(214).parent;
+	var __version = __webpack_require__(214).version;
+	var __absolutePath = __webpack_require__(214).absolutePath;
 	
 	module.exports = function insertNode(node, parent, key, version, optimizedPath) {
 	    node[__key] = key;
@@ -17845,7 +17745,7 @@
 /* 244 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(196);
+	var isObject = __webpack_require__(206);
 	var transferBackReferences = __webpack_require__(245);
 	var removeNodeAndDescendants = __webpack_require__(246);
 	
@@ -17866,9 +17766,9 @@
 /* 245 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __ref = __webpack_require__(204).ref;
-	var __context = __webpack_require__(204).context;
-	var __refsLength = __webpack_require__(204).refsLength;
+	var __ref = __webpack_require__(214).ref;
+	var __context = __webpack_require__(214).context;
+	var __refsLength = __webpack_require__(214).refsLength;
 	
 	module.exports = function transferBackReferences(fromNode, destNode) {
 	    var fromNodeRefsLength = fromNode[__refsLength] || 0,
@@ -17892,8 +17792,8 @@
 /* 246 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var hasOwn = __webpack_require__(195);
-	var prefix = __webpack_require__(204).prefix;
+	var hasOwn = __webpack_require__(205);
+	var prefix = __webpack_require__(214).prefix;
 	var removeNode = __webpack_require__(247);
 	
 	module.exports = function removeNodeAndDescendants(node, parent, key, lru) {
@@ -17915,10 +17815,10 @@
 /* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var $ref = __webpack_require__(205);
-	var __parent = __webpack_require__(204).parent;
-	var splice = __webpack_require__(213);
-	var isObject = __webpack_require__(196);
+	var $ref = __webpack_require__(215);
+	var __parent = __webpack_require__(214).parent;
+	var splice = __webpack_require__(223);
+	var isObject = __webpack_require__(206);
 	var unlinkBackReferences = __webpack_require__(248);
 	var unlinkForwardReference = __webpack_require__(249);
 	
@@ -17943,10 +17843,10 @@
 /* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __ref = __webpack_require__(204).ref;
-	var __context = __webpack_require__(204).context;
-	var __refIndex = __webpack_require__(204).refIndex;
-	var __refsLength = __webpack_require__(204).refsLength;
+	var __ref = __webpack_require__(214).ref;
+	var __context = __webpack_require__(214).context;
+	var __refIndex = __webpack_require__(214).refIndex;
+	var __refsLength = __webpack_require__(214).refsLength;
 	
 	module.exports = function unlinkBackReferences(node) {
 	    var i = -1, n = node[__refsLength] || 0;
@@ -17965,10 +17865,10 @@
 /* 249 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __ref = __webpack_require__(204).ref;
-	var __context = __webpack_require__(204).context;
-	var __refIndex = __webpack_require__(204).refIndex;
-	var __refsLength = __webpack_require__(204).refsLength;
+	var __ref = __webpack_require__(214).ref;
+	var __context = __webpack_require__(214).context;
+	var __refIndex = __webpack_require__(214).refIndex;
+	var __refsLength = __webpack_require__(214).refsLength;
 	
 	module.exports = function unlinkForwardReference(reference) {
 	    var destination = reference[__context];
@@ -17989,9 +17889,9 @@
 /* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __key = __webpack_require__(204).key;
-	var __version = __webpack_require__(204).version;
-	var __parent = __webpack_require__(204).parent;
+	var __key = __webpack_require__(214).key;
+	var __version = __webpack_require__(214).version;
+	var __parent = __webpack_require__(214).parent;
 	var removeNode = __webpack_require__(247);
 	var updateBackReferenceVersions = __webpack_require__(251);
 	
@@ -18015,10 +17915,10 @@
 /* 251 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __ref = __webpack_require__(204).ref;
-	var __parent = __webpack_require__(204).parent;
-	var __version = __webpack_require__(204).version;
-	var __refsLength = __webpack_require__(204).refsLength;
+	var __ref = __webpack_require__(214).ref;
+	var __parent = __webpack_require__(214).parent;
+	var __version = __webpack_require__(214).version;
+	var __refsLength = __webpack_require__(214).refsLength;
 	
 	module.exports = function updateBackReferenceVersions(nodeArg, version) {
 	    var stack = [nodeArg];
@@ -18066,25 +17966,25 @@
 /* 253 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __key = __webpack_require__(204).key;
-	var __ref = __webpack_require__(204).ref;
-	var __parent = __webpack_require__(204).parent;
-	var __context = __webpack_require__(204).context;
-	var __version = __webpack_require__(204).version;
-	var __refIndex = __webpack_require__(204).refIndex;
-	var __refsLength = __webpack_require__(204).refsLength;
+	var __key = __webpack_require__(214).key;
+	var __ref = __webpack_require__(214).ref;
+	var __parent = __webpack_require__(214).parent;
+	var __context = __webpack_require__(214).context;
+	var __version = __webpack_require__(214).version;
+	var __refIndex = __webpack_require__(214).refIndex;
+	var __refsLength = __webpack_require__(214).refsLength;
 	
-	var $ref = __webpack_require__(205);
+	var $ref = __webpack_require__(215);
 	
 	var getBoundValue = __webpack_require__(254);
 	
-	var promote = __webpack_require__(206);
-	var isExpired = __webpack_require__(228);
-	var isFunction = __webpack_require__(194);
-	var isPrimitive = __webpack_require__(211);
-	var expireNode = __webpack_require__(212);
-	var iterateKeySet = __webpack_require__(214).iterateKeySet;
-	var incrementVersion = __webpack_require__(223);
+	var promote = __webpack_require__(216);
+	var isExpired = __webpack_require__(238);
+	var isFunction = __webpack_require__(204);
+	var isPrimitive = __webpack_require__(221);
+	var expireNode = __webpack_require__(222);
+	var iterateKeySet = __webpack_require__(224).iterateKeySet;
+	var incrementVersion = __webpack_require__(233);
 	var mergeValueOrInsertBranch = __webpack_require__(263);
 	var NullInPathError = __webpack_require__(252);
 	
@@ -18355,10 +18255,10 @@
 	var followReference = __webpack_require__(256);
 	var clone = __webpack_require__(259);
 	var isExpired = __webpack_require__(261);
-	var promote = __webpack_require__(206);
-	var $ref = __webpack_require__(205);
+	var promote = __webpack_require__(216);
+	var $ref = __webpack_require__(215);
 	var $atom = __webpack_require__(260);
-	var $error = __webpack_require__(225);
+	var $error = __webpack_require__(235);
 	
 	module.exports = function getValueSync(model, simplePath, noClone) {
 	    var root = model._root.cache;
@@ -18480,9 +18380,9 @@
 	var createHardlink = hardLink.create;
 	var onValue = __webpack_require__(258);
 	var isExpired = __webpack_require__(261);
-	var $ref = __webpack_require__(205);
-	var __context = __webpack_require__(204).context;
-	var promote = __webpack_require__(206);
+	var $ref = __webpack_require__(215);
+	var __context = __webpack_require__(214).context;
+	var promote = __webpack_require__(216);
 	
 	/* eslint-disable no-constant-condition */
 	function followReference(model, root, nodeArg, referenceContainerArg,
@@ -18575,10 +18475,10 @@
 /* 257 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __ref = __webpack_require__(204).ref;
-	var __context = __webpack_require__(204).context;
-	var __refIndex = __webpack_require__(204).refIndex;
-	var __refsLength = __webpack_require__(204).refsLength;
+	var __ref = __webpack_require__(214).ref;
+	var __context = __webpack_require__(214).context;
+	var __refIndex = __webpack_require__(214).refIndex;
+	var __refsLength = __webpack_require__(214).refsLength;
 	
 	function createHardlink(from, to) {
 	
@@ -18601,12 +18501,12 @@
 /* 258 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var promote = __webpack_require__(206);
+	var promote = __webpack_require__(216);
 	var clone = __webpack_require__(259);
-	var $ref = __webpack_require__(205);
+	var $ref = __webpack_require__(215);
 	var $atom = __webpack_require__(260);
-	var $error = __webpack_require__(225);
-	var $modelCreated = __webpack_require__(204).modelCreated;
+	var $error = __webpack_require__(235);
+	var $modelCreated = __webpack_require__(214).modelCreated;
 	
 	module.exports = function onValue(model, node, seed, depth, outerResults,
 	                                  branchInfo, requestedPath, optimizedPath,
@@ -18730,9 +18630,9 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	// Copies the node
-	var prefix = __webpack_require__(204).prefix;
+	var prefix = __webpack_require__(214).prefix;
 	var includedInternalKeys = {};
-	var internalKeys = __webpack_require__(204);
+	var internalKeys = __webpack_require__(214);
 	includedInternalKeys[internalKeys.path] = true;
 	includedInternalKeys[internalKeys.refPath] = true;
 	includedInternalKeys[internalKeys.toReference] = true;
@@ -18770,7 +18670,7 @@
 /* 261 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var now = __webpack_require__(209);
+	var now = __webpack_require__(219);
 	module.exports = function isExpired(node) {
 	    var $expires = node.$expires === void 0 && -1 || node.$expires;
 	    return $expires !== -1 && $expires !== 1 && ($expires === 0 || $expires < now());
@@ -18809,18 +18709,18 @@
 /* 263 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var $ref = __webpack_require__(205);
-	var $error = __webpack_require__(225);
+	var $ref = __webpack_require__(215);
+	var $error = __webpack_require__(235);
 	var getType = __webpack_require__(264);
-	var getSize = __webpack_require__(226);
-	var getTimestamp = __webpack_require__(227);
+	var getSize = __webpack_require__(236);
+	var getTimestamp = __webpack_require__(237);
 	
-	var isExpired = __webpack_require__(228);
-	var isPrimitive = __webpack_require__(211);
-	var isFunction = __webpack_require__(194);
+	var isExpired = __webpack_require__(238);
+	var isPrimitive = __webpack_require__(221);
+	var isFunction = __webpack_require__(204);
 	
-	var wrapNode = __webpack_require__(229);
-	var expireNode = __webpack_require__(212);
+	var wrapNode = __webpack_require__(239);
+	var expireNode = __webpack_require__(222);
 	var insertNode = __webpack_require__(243);
 	var replaceNode = __webpack_require__(244);
 	var updateNodeAncestors = __webpack_require__(250);
@@ -18881,7 +18781,7 @@
 /* 264 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(196);
+	var isObject = __webpack_require__(206);
 	
 	module.exports = function getType(node, anyType) {
 	    var type = isObject(node) && node.$type || void 0;
@@ -18928,10 +18828,10 @@
 	var complement = __webpack_require__(267);
 	var flushGetRequest = __webpack_require__(269);
 	var REQUEST_ID = 0;
-	var GetRequestType = __webpack_require__(200).GetRequest;
-	var setJSONGraphs = __webpack_require__(203);
+	var GetRequestType = __webpack_require__(210).GetRequest;
+	var setJSONGraphs = __webpack_require__(213);
 	var setPathValues = __webpack_require__(253);
-	var $error = __webpack_require__(225);
+	var $error = __webpack_require__(235);
 	var emptyArray = [];
 	var InvalidSourceError = __webpack_require__(265);
 	
@@ -19172,7 +19072,7 @@
 /* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var hasIntersection = __webpack_require__(214).hasIntersection;
+	var hasIntersection = __webpack_require__(224).hasIntersection;
 	var arraySlice = __webpack_require__(268);
 	
 	/**
@@ -19253,7 +19153,7 @@
 /* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var pathUtils = __webpack_require__(214);
+	var pathUtils = __webpack_require__(224);
 	var toTree = pathUtils.toTree;
 	var toPaths = pathUtils.toPaths;
 	var InvalidSourceError = __webpack_require__(265);
@@ -19347,7 +19247,7 @@
 /* 270 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var falcor = __webpack_require__(182);
+	var falcor = __webpack_require__(192);
 	var noop = __webpack_require__(271);
 	
 	/**
@@ -19489,9 +19389,9 @@
 	var ModelResponse = __webpack_require__(270);
 	var InvalidSourceError = __webpack_require__(265);
 	var SetResponse = __webpack_require__(273);
-	var pathSyntax = __webpack_require__(231);
-	var __version = __webpack_require__(204).version;
-	var incrementVersion = __webpack_require__(223);
+	var pathSyntax = __webpack_require__(178);
+	var __version = __webpack_require__(214).version;
+	var incrementVersion = __webpack_require__(233);
 	
 	/**
 	 * @private
@@ -19511,9 +19411,7 @@
 	
 	    var currentVersion = model._root.cache[__version];
 	
-	    if (typeof initialCacheVersion === 'number') {
-	        this.initialCacheVersion = initialCacheVersion;
-	    } else if (typeof currentVersion === 'number') {
+	    if (typeof currentVersion === "number") {
 	        this.initialCacheVersion = currentVersion;
 	    } else {
 	        this.initialCacheVersion =
@@ -19592,14 +19490,14 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var ModelResponse = __webpack_require__(270);
-	var pathSyntax = __webpack_require__(231);
+	var pathSyntax = __webpack_require__(178);
 	var isArray = Array.isArray;
 	var isPathValue = __webpack_require__(274);
 	var isJSONGraphEnvelope = __webpack_require__(275);
 	var isJSONEnvelope = __webpack_require__(276);
 	var setRequestCycle = __webpack_require__(277);
-	var __version = __webpack_require__(204).version;
-	var incrementVersion = __webpack_require__(223);
+	var __version = __webpack_require__(214).version;
+	var incrementVersion = __webpack_require__(233);
 	
 	/**
 	 *  The set response is responsible for doing the request loop for the set
@@ -19631,9 +19529,9 @@
 	
 	    var currentVersion = model._root.cache[__version];
 	
-	    if (typeof initialCacheVersion === 'number') {
+	    if (typeof initialCacheVersion === "number") {
 	        this.initialCacheVersion = initialCacheVersion;
-	    } else if (typeof currentVersion === 'number') {
+	    } else if (typeof currentVersion === "number") {
 	        this.initialCacheVersion = currentVersion;
 	    } else {
 	        this.initialCacheVersion =
@@ -19720,7 +19618,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var isArray = Array.isArray;
-	var isObject = __webpack_require__(196);
+	var isObject = __webpack_require__(206);
 	
 	module.exports = function isPathValue(pathValue) {
 	    return isObject(pathValue) && (
@@ -19735,7 +19633,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var isArray = Array.isArray;
-	var isObject = __webpack_require__(196);
+	var isObject = __webpack_require__(206);
 	
 	module.exports = function isJSONGraphEnvelope(envelope) {
 	    return isObject(envelope) && isArray(envelope.paths) && (
@@ -19752,7 +19650,7 @@
 /* 276 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(196);
+	var isObject = __webpack_require__(206);
 	
 	module.exports = function isJSONEnvelope(envelope) {
 	    return isObject(envelope) && ("json" in envelope);
@@ -19925,11 +19823,11 @@
 	var checkCacheAndReport = __webpack_require__(280);
 	var getRequestCycle = __webpack_require__(291);
 	var empty = {dispose: function() {}};
-	var __version = __webpack_require__(204).version;
+	var __version = __webpack_require__(214).version;
 	var collectLru = __webpack_require__(293);
-	var getSize = __webpack_require__(226);
-	var isFunction = __webpack_require__(194);
-	var incrementVersion = __webpack_require__(223);
+	var getSize = __webpack_require__(236);
+	var isFunction = __webpack_require__(204);
+	var incrementVersion = __webpack_require__(233);
 	
 	/**
 	 * The get response.  It takes in a model and paths and starts
@@ -19953,9 +19851,9 @@
 	
 	    var currentVersion = model._root.cache[__version];
 	
-	    if (typeof initialCacheVersion === 'number') {
+	    if (typeof initialCacheVersion === "number") {
 	        this.initialCacheVersion = initialCacheVersion;
-	    } else if (typeof currentVersion === 'number') {
+	    } else if (typeof currentVersion === "number") {
 	        this.initialCacheVersion = currentVersion;
 	    } else {
 	        this.initialCacheVersion =
@@ -20270,15 +20168,15 @@
 	var onValueType = __webpack_require__(286);
 	var onValue = __webpack_require__(258);
 	var isExpired = __webpack_require__(261);
-	var isObject = __webpack_require__(196);
-	var iterateKeySet = __webpack_require__(214).iterateKeySet;
-	var $ref = __webpack_require__(205);
+	var isObject = __webpack_require__(206);
+	var iterateKeySet = __webpack_require__(224).iterateKeySet;
+	var $ref = __webpack_require__(215);
 	var NullInPathError = __webpack_require__(252);
-	var promote = __webpack_require__(206);
-	var __path = __webpack_require__(204).path;
-	var __refPath = __webpack_require__(204).refPath;
-	var __toReference = __webpack_require__(204).toReference;
-	var __absolutePath = __webpack_require__(204).absolutePath;
+	var promote = __webpack_require__(216);
+	var __path = __webpack_require__(214).path;
+	var __refPath = __webpack_require__(214).refPath;
+	var __toReference = __webpack_require__(214).toReference;
+	var __absolutePath = __webpack_require__(214).absolutePath;
 	var isArray = Array.isArray;
 	
 	module.exports = function walkPath(model, root, curr, path, depth, seed,
@@ -20433,13 +20331,13 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var isExpired = __webpack_require__(261);
-	var $error = __webpack_require__(225);
+	var $error = __webpack_require__(235);
 	var onError = __webpack_require__(287);
 	var onValue = __webpack_require__(258);
 	var onMissing = __webpack_require__(288);
 	var isMaterialized = __webpack_require__(290);
-	var __invalidated = __webpack_require__(204).invalidated;
-	var expireNode = __webpack_require__(212);
+	var __invalidated = __webpack_require__(214).invalidated;
+	var expireNode = __webpack_require__(222);
 	
 	/**
 	 * When we land on a valueType (or nothing) then we need to report it out to
@@ -20514,7 +20412,7 @@
 /* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var promote = __webpack_require__(206);
+	var promote = __webpack_require__(216);
 	var clone = __webpack_require__(259);
 	
 	module.exports = function onError(model, node, depth,
@@ -20624,11 +20522,11 @@
 	var MaxRetryExceededError = __webpack_require__(292);
 	var fastCat = __webpack_require__(289).fastCat;
 	var collectLru = __webpack_require__(293);
-	var getSize = __webpack_require__(226);
+	var getSize = __webpack_require__(236);
 	var AssignableDisposable = __webpack_require__(278);
-	var __version = __webpack_require__(204).version;
+	var __version = __webpack_require__(214).version;
 	var InvalidSourceError = __webpack_require__(265);
-	var isFunction = __webpack_require__(194);
+	var isFunction = __webpack_require__(204);
 	
 	/**
 	 * The get request cycle for checking the cache and reporting
@@ -20755,13 +20653,13 @@
 /* 293 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __key = __webpack_require__(204).key;
-	var __parent = __webpack_require__(204).parent;
+	var __key = __webpack_require__(214).key;
+	var __parent = __webpack_require__(214).parent;
 	
-	var __head = __webpack_require__(204).head;
-	var __tail = __webpack_require__(204).tail;
-	var __next = __webpack_require__(204).next;
-	var __prev = __webpack_require__(204).prev;
+	var __head = __webpack_require__(214).head;
+	var __tail = __webpack_require__(214).tail;
+	var __next = __webpack_require__(214).next;
+	var __prev = __webpack_require__(214).prev;
 	
 	var removeNode = __webpack_require__(247);
 	var updateNodeAncestors = __webpack_require__(250);
@@ -20904,9 +20802,9 @@
 	var isPathValue = __webpack_require__(274);
 	var isJSONEnvelope = __webpack_require__(276);
 	var empty = {dispose: function() {}};
-	var __version = __webpack_require__(204).version;
-	var isFunction = __webpack_require__(194);
-	var incrementVersion = __webpack_require__(223);
+	var __version = __webpack_require__(214).version;
+	var isFunction = __webpack_require__(204);
+	var incrementVersion = __webpack_require__(233);
 	
 	function InvalidateResponse(model, args, initialCacheVersion) {
 	    // TODO: This should be removed.  There should only be 1 type of arguments
@@ -20920,9 +20818,9 @@
 	
 	    var currentVersion = model._root.cache[__version];
 	
-	    if (typeof initialCacheVersion === 'number') {
+	    if (typeof initialCacheVersion === "number") {
 	        this.initialCacheVersion = initialCacheVersion;
-	    } else if (typeof currentVersion === 'number') {
+	    } else if (typeof currentVersion === "number") {
 	        this.initialCacheVersion = currentVersion;
 	    } else {
 	        this.initialCacheVersion =
@@ -21001,7 +20899,7 @@
 /* 297 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var asap = __webpack_require__(191);
+	var asap = __webpack_require__(201);
 	var empty = {dispose: function() {}};
 	
 	function ASAPScheduler() {}
@@ -21082,28 +20980,28 @@
 /* 300 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __key = __webpack_require__(204).key;
-	var __ref = __webpack_require__(204).ref;
-	var __prefix = __webpack_require__(204).prefix;
-	var __parent = __webpack_require__(204).parent;
-	var __context = __webpack_require__(204).context;
-	var __version = __webpack_require__(204).version;
-	var __refIndex = __webpack_require__(204).refIndex;
-	var __refsLength = __webpack_require__(204).refsLength;
+	var __key = __webpack_require__(214).key;
+	var __ref = __webpack_require__(214).ref;
+	var __prefix = __webpack_require__(214).prefix;
+	var __parent = __webpack_require__(214).parent;
+	var __context = __webpack_require__(214).context;
+	var __version = __webpack_require__(214).version;
+	var __refIndex = __webpack_require__(214).refIndex;
+	var __refsLength = __webpack_require__(214).refsLength;
 	
-	var $ref = __webpack_require__(205);
+	var $ref = __webpack_require__(215);
 	
 	var getBoundValue = __webpack_require__(254);
 	
 	var isArray = Array.isArray;
-	var promote = __webpack_require__(206);
-	var hasOwn = __webpack_require__(195);
-	var isObject = __webpack_require__(196);
-	var isExpired = __webpack_require__(228);
-	var isFunction = __webpack_require__(194);
-	var isPrimitive = __webpack_require__(211);
-	var expireNode = __webpack_require__(212);
-	var incrementVersion = __webpack_require__(223);
+	var promote = __webpack_require__(216);
+	var hasOwn = __webpack_require__(205);
+	var isObject = __webpack_require__(206);
+	var isExpired = __webpack_require__(238);
+	var isFunction = __webpack_require__(204);
+	var isPrimitive = __webpack_require__(221);
+	var expireNode = __webpack_require__(222);
+	var incrementVersion = __webpack_require__(233);
 	var mergeValueOrInsertBranch = __webpack_require__(263);
 	var NullInPathError = __webpack_require__(252);
 	
@@ -21346,7 +21244,7 @@
 	var isPathValue = __webpack_require__(274);
 	var isJSONGraphEnvelope = __webpack_require__(275);
 	var isJSONEnvelope = __webpack_require__(276);
-	var pathSyntax = __webpack_require__(231);
+	var pathSyntax = __webpack_require__(178);
 	
 	/**
 	 *
@@ -21404,7 +21302,7 @@
 /* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var $modelCreated = __webpack_require__(204).modelCreated;
+	var $modelCreated = __webpack_require__(214).modelCreated;
 	var clone = __webpack_require__(259);
 	var isInternalKey = __webpack_require__(303);
 	
@@ -21464,8 +21362,8 @@
 /* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var prefix = __webpack_require__(204).prefix;
-	var $modelCreated = __webpack_require__(204).modelCreated;
+	var prefix = __webpack_require__(214).prefix;
+	var $modelCreated = __webpack_require__(214).modelCreated;
 	
 	/**
 	 * Determines if the key passed in is an internal key.
@@ -21493,7 +21391,7 @@
 /* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var pathSyntax = __webpack_require__(231);
+	var pathSyntax = __webpack_require__(178);
 	var ModelResponse = __webpack_require__(270);
 	var GET_VALID_INPUT = __webpack_require__(304);
 	var validateInput = __webpack_require__(301);
@@ -21582,10 +21480,10 @@
 	var InvalidDerefInputError = __webpack_require__(310);
 	var getCachePosition = __webpack_require__(283);
 	var CONTAINER_DOES_NOT_EXIST = "e";
-	var $ref = __webpack_require__(205);
-	var __path = __webpack_require__(204).path;
-	var __refPath = __webpack_require__(204).refPath;
-	var __toReference = __webpack_require__(204).toReference;
+	var $ref = __webpack_require__(215);
+	var __path = __webpack_require__(214).path;
+	var __refPath = __webpack_require__(214).refPath;
+	var __toReference = __webpack_require__(214).toReference;
 	
 	module.exports = function deref(boundJSONArg) {
 	
@@ -21675,8 +21573,8 @@
 /* 311 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __parent = __webpack_require__(204).parent;
-	var __invalidated = __webpack_require__(204).invalidated;
+	var __parent = __webpack_require__(214).parent;
+	var __invalidated = __webpack_require__(214).invalidated;
 	module.exports = function fromWhenceYeCame() {
 	    var reference = this._referenceContainer;
 	
@@ -21715,7 +21613,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var ModelResponse = __webpack_require__(270);
-	var pathSyntax = __webpack_require__(231);
+	var pathSyntax = __webpack_require__(178);
 	
 	module.exports = function getValue(path) {
 	    var parsedPath = pathSyntax.fromPath(path);
@@ -21755,7 +21653,7 @@
 /* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jsong = __webpack_require__(230);
+	var jsong = __webpack_require__(240);
 	var ModelResponse = __webpack_require__(270);
 	var isPathValue = __webpack_require__(274);
 	
@@ -21797,7 +21695,7 @@
 /* 314 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var pathSyntax = __webpack_require__(231);
+	var pathSyntax = __webpack_require__(178);
 	
 	module.exports = function getValueSync(pathArg) {
 	    var path = pathSyntax.fromPath(pathArg);
@@ -21815,7 +21713,7 @@
 /* 315 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var pathSyntax = __webpack_require__(231);
+	var pathSyntax = __webpack_require__(178);
 	var isPathValue = __webpack_require__(274);
 	var setPathValues = __webpack_require__(253);
 	
@@ -21860,7 +21758,7 @@
 /* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var pathSyntax = __webpack_require__(231);
+	var pathSyntax = __webpack_require__(178);
 	var getBoundValue = __webpack_require__(254);
 	var InvalidModelError = __webpack_require__(262);
 	
@@ -21894,7 +21792,7 @@
 /* 317 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __version = __webpack_require__(204).version;
+	var __version = __webpack_require__(214).version;
 	
 	module.exports = function _getVersion(model, path) {
 	    // ultra fast clone for boxed values.
@@ -21912,26 +21810,26 @@
 /* 318 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __key = __webpack_require__(204).key;
-	var __ref = __webpack_require__(204).ref;
-	var __parent = __webpack_require__(204).parent;
-	var __context = __webpack_require__(204).context;
-	var __version = __webpack_require__(204).version;
-	var __refIndex = __webpack_require__(204).refIndex;
-	var __refsLength = __webpack_require__(204).refsLength;
+	var __key = __webpack_require__(214).key;
+	var __ref = __webpack_require__(214).ref;
+	var __parent = __webpack_require__(214).parent;
+	var __context = __webpack_require__(214).context;
+	var __version = __webpack_require__(214).version;
+	var __refIndex = __webpack_require__(214).refIndex;
+	var __refsLength = __webpack_require__(214).refsLength;
 	
-	var $ref = __webpack_require__(205);
+	var $ref = __webpack_require__(215);
 	
 	var getBoundValue = __webpack_require__(254);
 	
-	var promote = __webpack_require__(206);
-	var getSize = __webpack_require__(226);
-	var isExpired = __webpack_require__(228);
-	var isFunction = __webpack_require__(194);
-	var isPrimitive = __webpack_require__(211);
-	var expireNode = __webpack_require__(212);
-	var iterateKeySet = __webpack_require__(214).iterateKeySet;
-	var incrementVersion = __webpack_require__(223);
+	var promote = __webpack_require__(216);
+	var getSize = __webpack_require__(236);
+	var isExpired = __webpack_require__(238);
+	var isFunction = __webpack_require__(204);
+	var isPrimitive = __webpack_require__(221);
+	var expireNode = __webpack_require__(222);
+	var iterateKeySet = __webpack_require__(224).iterateKeySet;
+	var incrementVersion = __webpack_require__(233);
 	var updateNodeAncestors = __webpack_require__(250);
 	var removeNodeAndDescendants = __webpack_require__(246);
 	
@@ -22102,28 +22000,28 @@
 /* 319 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __key = __webpack_require__(204).key;
-	var __ref = __webpack_require__(204).ref;
-	var __prefix = __webpack_require__(204).prefix;
-	var __parent = __webpack_require__(204).parent;
-	var __context = __webpack_require__(204).context;
-	var __version = __webpack_require__(204).version;
-	var __refIndex = __webpack_require__(204).refIndex;
-	var __refsLength = __webpack_require__(204).refsLength;
+	var __key = __webpack_require__(214).key;
+	var __ref = __webpack_require__(214).ref;
+	var __prefix = __webpack_require__(214).prefix;
+	var __parent = __webpack_require__(214).parent;
+	var __context = __webpack_require__(214).context;
+	var __version = __webpack_require__(214).version;
+	var __refIndex = __webpack_require__(214).refIndex;
+	var __refsLength = __webpack_require__(214).refsLength;
 	
-	var $ref = __webpack_require__(205);
+	var $ref = __webpack_require__(215);
 	
 	var getBoundValue = __webpack_require__(254);
 	
-	var promote = __webpack_require__(206);
-	var getSize = __webpack_require__(226);
-	var hasOwn = __webpack_require__(195);
-	var isObject = __webpack_require__(196);
-	var isExpired = __webpack_require__(228);
-	var isFunction = __webpack_require__(194);
-	var isPrimitive = __webpack_require__(211);
-	var expireNode = __webpack_require__(212);
-	var incrementVersion = __webpack_require__(223);
+	var promote = __webpack_require__(216);
+	var getSize = __webpack_require__(236);
+	var hasOwn = __webpack_require__(205);
+	var isObject = __webpack_require__(206);
+	var isExpired = __webpack_require__(238);
+	var isFunction = __webpack_require__(204);
+	var isPrimitive = __webpack_require__(221);
+	var expireNode = __webpack_require__(222);
+	var incrementVersion = __webpack_require__(233);
 	var updateNodeAncestors = __webpack_require__(250);
 	var removeNodeAndDescendants = __webpack_require__(246);
 	
@@ -24913,6 +24811,11 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Subscriber_1 = __webpack_require__(83);
+	/**
+	 * Returns an Observable that emits the elements of the source or a specified default value if empty.
+	 * @param {any} defaultValue the default value used if source is empty; defaults to null.
+	 * @returns {Observable} an Observable of the items emitted by the where empty values are replaced by the specified default value or null.
+	 */
 	function defaultIfEmpty(defaultValue) {
 	    if (defaultValue === void 0) { defaultValue = null; }
 	    return this.lift(new DefaultIfEmptyOperator(defaultValue));
@@ -24962,6 +24865,14 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var expand_support_1 = __webpack_require__(373);
+	/**
+	 * Returns an Observable where for each item in the source Observable, the supplied function is applied to each item,
+	 * resulting in a new value to then be applied again with the function.
+	 * @param {function} project the function for projecting the next emitted item of the Observable.
+	 * @param {number} [concurrent] the max number of observables that can be created concurrently. defaults to infinity.
+	 * @param {Scheduler} [scheduler] The Scheduler to use for managing the expansions.
+	 * @returns {Observable} an Observable containing the expansions of the source Observable.
+	 */
 	function expand(project, concurrent, scheduler) {
 	    if (concurrent === void 0) { concurrent = Number.POSITIVE_INFINITY; }
 	    if (scheduler === void 0) { scheduler = undefined; }
@@ -27399,8 +27310,12 @@
 	        var sourceObj = this.sourceObj;
 	        var eventName = this.eventName;
 	        var selector = this.selector;
-	        var handler = selector ? function (e) {
-	            var result = tryCatch_1.tryCatch(selector)(e);
+	        var handler = selector ? function () {
+	            var args = [];
+	            for (var _i = 0; _i < arguments.length; _i++) {
+	                args[_i - 0] = arguments[_i];
+	            }
+	            var result = tryCatch_1.tryCatch(selector).apply(void 0, args);
 	            if (result === errorObject_1.errorObject) {
 	                subscriber.error(result.e);
 	            }
@@ -27513,6 +27428,13 @@
 	var isDate_1 = __webpack_require__(421);
 	var Subscriber_1 = __webpack_require__(83);
 	var Notification_1 = __webpack_require__(110);
+	/**
+	 * Returns an Observable that delays the emission of items from the source Observable
+	 * by a given timeout or until a given Date.
+	 * @param {number|Date} delay the timeout value or date until which the emission of the source items is delayed.
+	 * @param {Scheduler} [scheduler] the Scheduler to use for managing the timers that handle the timeout for each item.
+	 * @returns {Observable} an Observable that delays the emissions of the source Observable by the specified timeout or Date.
+	 */
 	function delay(delay, scheduler) {
 	    if (scheduler === void 0) { scheduler = asap_1.asap; }
 	    var absoluteDelay = isDate_1.isDate(delay);
@@ -27682,6 +27604,12 @@
 	};
 	var Subscriber_1 = __webpack_require__(83);
 	var Subscription_1 = __webpack_require__(88);
+	/**
+	 * Returns an Observable that mirrors the source Observable, but will call a specified function when
+	 * the source terminates on complete or error.
+	 * @param {function} finallySelector function to be called when source terminates.
+	 * @returns {Observable} an Observable that mirrors the source, but will call the specified function on termination.
+	 */
 	function _finally(finallySelector) {
 	    return this.lift(new FinallyOperator(finallySelector));
 	}
@@ -28168,6 +28096,18 @@
 	};
 	var Subscriber_1 = __webpack_require__(83);
 	var asap_1 = __webpack_require__(169);
+	/**
+	 * Returns the source Observable delayed by the computed debounce duration,
+	 * with the duration lengthened if a new source item arrives before the delay
+	 * duration ends.
+	 * In practice, for each item emitted on the source, this operator holds the
+	 * latest item, waits for a silence for the `dueTime` length, and only then
+	 * emits the latest source item on the result Observable.
+	 * Optionally takes a scheduler for manging timers.
+	 * @param {number} dueTime the timeout value for the window of time required to not drop the item.
+	 * @param {Scheduler} [scheduler] the Scheduler to use for managing the timers that handle the timeout for each item.
+	 * @returns {Observable} an Observable the same as source Observable, but drops items.
+	 */
 	function debounceTime(dueTime, scheduler) {
 	    if (scheduler === void 0) { scheduler = asap_1.asap; }
 	    return this.lift(new DebounceTimeOperator(dueTime, scheduler));
@@ -30685,9 +30625,7 @@
 	                        'on-click': this.dispatch('done') }),
 	                    (0, _.hJSX)(
 	                        'label',
-	                        {
-	                            style: { color: 'red' },
-	                            'on-dblclick': this.dispatch('edit') },
+	                        { 'on-dblclick': this.dispatch('edit') },
 	                        content
 	                    ),
 	                    (0, _.hJSX)('button', { 'class': { 'destroy': true },
@@ -31980,6 +31918,89 @@
 	        };
 	    }
 	}
+
+/***/ },
+/* 473 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Observable_1 = __webpack_require__(79);
+	var distinctUntilChanged_1 = __webpack_require__(474);
+	Observable_1.Observable.prototype.distinctUntilChanged = distinctUntilChanged_1.distinctUntilChanged;
+	//# sourceMappingURL=distinctUntilChanged.js.map
+
+/***/ },
+/* 474 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Subscriber_1 = __webpack_require__(83);
+	var tryCatch_1 = __webpack_require__(102);
+	var errorObject_1 = __webpack_require__(103);
+	/**
+	 * Returns an Observable that emits all items emitted by the source Observable that are distinct by comparison from the previous item.
+	 * If a comparator function is provided, then it will be called for each item to test for whether or not that value should be emitted.
+	 * If a comparator function is not provided, an equality check is used by default.
+	 * @param {function} [compare] optional comparison function called to test if an item is distinct from the previous item in the source.
+	 * @returns {Observable} an Observable that emits items from the source Observable with distinct values.
+	 */
+	function distinctUntilChanged(compare, keySelector) {
+	    return this.lift(new DistinctUntilChangedOperator(compare, keySelector));
+	}
+	exports.distinctUntilChanged = distinctUntilChanged;
+	var DistinctUntilChangedOperator = (function () {
+	    function DistinctUntilChangedOperator(compare, keySelector) {
+	        this.compare = compare;
+	        this.keySelector = keySelector;
+	    }
+	    DistinctUntilChangedOperator.prototype.call = function (subscriber) {
+	        return new DistinctUntilChangedSubscriber(subscriber, this.compare, this.keySelector);
+	    };
+	    return DistinctUntilChangedOperator;
+	})();
+	var DistinctUntilChangedSubscriber = (function (_super) {
+	    __extends(DistinctUntilChangedSubscriber, _super);
+	    function DistinctUntilChangedSubscriber(destination, compare, keySelector) {
+	        _super.call(this, destination);
+	        this.keySelector = keySelector;
+	        this.hasKey = false;
+	        if (typeof compare === 'function') {
+	            this.compare = compare;
+	        }
+	    }
+	    DistinctUntilChangedSubscriber.prototype.compare = function (x, y) {
+	        return x === y;
+	    };
+	    DistinctUntilChangedSubscriber.prototype._next = function (value) {
+	        var keySelector = this.keySelector;
+	        var key = value;
+	        if (keySelector) {
+	            key = tryCatch_1.tryCatch(this.keySelector)(value);
+	            if (key === errorObject_1.errorObject) {
+	                return this.destination.error(errorObject_1.errorObject.e);
+	            }
+	        }
+	        var result = false;
+	        if (this.hasKey) {
+	            result = tryCatch_1.tryCatch(this.compare)(this.key, key);
+	            if (result === errorObject_1.errorObject) {
+	                return this.destination.error(errorObject_1.errorObject.e);
+	            }
+	        }
+	        else {
+	            this.hasKey = true;
+	        }
+	        if (Boolean(result) === false) {
+	            this.key = key;
+	            this.destination.next(value);
+	        }
+	    };
+	    return DistinctUntilChangedSubscriber;
+	})(Subscriber_1.Subscriber);
+	//# sourceMappingURL=distinctUntilChanged.js.map
 
 /***/ }
 /******/ ]);

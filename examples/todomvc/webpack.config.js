@@ -1,5 +1,5 @@
 var path = require("path");
-var WriteFileWebpackPlugin = require('write-file-webpack-plugin')['default'];
+var WriteFileWebpackPlugin = require('write-file-webpack-plugin');
 var devServer = {
   outputPath: path.join(__dirname, './dist'),
   contentBase: path.resolve(__dirname, './'),
@@ -31,8 +31,7 @@ module.exports = {
         exclude: /(node_modules|dist)/,
         loader: 'babel-loader',
         query: {
-          presets: ['react', 'es2015'],
-          plugins: ['transform-object-rest-spread']
+          presets: ['es2015', 'stage-0', 'react']
         }
       }, {
         test: /\.css$/,
