@@ -31,8 +31,8 @@ var List = exports.List = (function (_Base) {
     }
 
     _createClass(List, [{
-        key: 'create',
-        value: function create(models) {
+        key: 'createChildren',
+        value: function createChildren(models) {
             var _this2 = this;
 
             var subjects = [];
@@ -65,7 +65,7 @@ var List = exports.List = (function (_Base) {
             while (++index < count) {
                 if (!subjects[index]) {
                     subjects[index] = new _Subject.Subject();
-                    children[index] = this.createChild(subjects[index], index);
+                    children[index] = this.createChild(subjects[index], _state[index], index);
                 }
             }
 

@@ -21,7 +21,7 @@ export class List extends Base {
                 })
         }
     }
-    create(models) {
+    createChildren(models) {
         var subjects = [];
         var children = [];
         return models.switchMap((tuple) => {
@@ -42,7 +42,7 @@ export class List extends Base {
         while (++index < count) {
             if (!subjects[index]) {
                 subjects[index] = new Subject();
-                children[index] = this.createChild(subjects[index], index);
+                children[index] = this.createChild(subjects[index], _state[index], index);
             }
         }
 

@@ -32,7 +32,7 @@ export class Tasks extends List {
 
         return super.deref(subjects, children, [model, state]);
     }
-    createChild(childUpdates, childIndex) {
+    createChild(childUpdates, childState, childIndex) {
         return new Task(childUpdates);
     }
     events([ model, state ]) {

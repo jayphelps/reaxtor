@@ -10,7 +10,7 @@ import { TaskInput } from './TaskInput';
 // require('./app.css');
 
 export class App extends Base {
-    create(models) {
+    createChildren(models) {
 
         const tasks = new Tasks(models.deref(`tasks`));
         const input = new TaskInput(models.deref(`input`));

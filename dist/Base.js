@@ -67,8 +67,8 @@ var Base = exports.Base = (function (_Observable) {
     }
 
     _createClass(Base, [{
-        key: 'create',
-        value: function create(updates) {
+        key: 'createChildren',
+        value: function createChildren(updates) {
             return updates;
         }
     }, {
@@ -174,7 +174,7 @@ var Base = exports.Base = (function (_Observable) {
 
             this.source = new _ReplaySubject.ReplaySubject(1);
 
-            this.subscription = this.create(updates).switchMap(function () {
+            this.subscription = this.createChildren(updates).switchMap(function () {
                 return toObservable(_this2.render.apply(_this2, arguments));
             }, false)
             // .do(() => console.log('rendered', this.key))

@@ -57,12 +57,12 @@ export class Base extends Observable {
 
         this.source = new ReplaySubject(1);
 
-        this.subscription = this.create(updates)
+        this.subscription = this.createChildren(updates)
             .switchMap((...args) => toObservable(this.render(...args)), false)
             // .do(() => console.log('rendered', this.key))
             .subscribe(this.source);
     }
-    create(updates) {
+    createChildren(updates) {
         return updates;
     }
     loader(props) {
