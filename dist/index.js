@@ -13,6 +13,8 @@ var _Subscriber = require('rxjs/Subscriber');
 
 var _BehaviorSubject = require('rxjs/subject/BehaviorSubject');
 
+require('rxjs/add/observable/zip');
+
 require('rxjs/add/observable/from');
 
 require('rxjs/add/observable/defer');
@@ -20,6 +22,8 @@ require('rxjs/add/observable/defer');
 require('rxjs/add/observable/empty');
 
 require('rxjs/add/observable/fromArray');
+
+require('rxjs/add/observable/combineLatest');
 
 require('rxjs/add/operator/do');
 
@@ -43,15 +47,11 @@ require('rxjs/add/operator/mergeMap');
 
 require('rxjs/add/operator/switchMap');
 
-require('rxjs/add/operator/zip-static');
-
 require('rxjs/add/operator/combineLatest');
 
 require('rxjs/add/operator/withLatestFrom');
 
 require('rxjs/add/operator/distinctUntilChanged');
-
-require('rxjs/add/operator/combineLatest-static');
 
 var _snabbdomJsx = require('snabbdom-jsx');
 

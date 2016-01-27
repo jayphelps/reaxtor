@@ -13,10 +13,12 @@ Subject.prototype.onNext = Subject.prototype.next;
 Subject.prototype.onError = Subject.prototype.error;
 Subject.prototype.onCompleted = Subject.prototype.complete;
 
+import 'rxjs/add/observable/zip';
 import 'rxjs/add/observable/from';
 import 'rxjs/add/observable/defer';
 import 'rxjs/add/observable/empty';
 import 'rxjs/add/observable/fromArray';
+import 'rxjs/add/observable/combineLatest';
 
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/map';
@@ -29,11 +31,9 @@ import 'rxjs/add/operator/concat';
 import 'rxjs/add/operator/groupBy';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/zip-static';
 import 'rxjs/add/operator/combineLatest';
 import 'rxjs/add/operator/withLatestFrom';
 import 'rxjs/add/operator/distinctUntilChanged';
-import 'rxjs/add/operator/combineLatest-static';
 
 import { html as hJSX } from 'snabbdom-jsx';
 import snabbdom from 'snabbdom';
