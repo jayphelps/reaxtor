@@ -1,17 +1,17 @@
 'use strict';
 
-var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; })();
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.List = undefined;
+exports.Container = undefined;
 
-var _Base2 = require('./Base');
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _Subject = require('rxjs/Subject');
+
+var _Component2 = require('./Component');
 
 var _Observable = require('rxjs/Observable');
 
@@ -21,16 +21,16 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var List = exports.List = (function (_Base) {
-    _inherits(List, _Base);
+var Container = exports.Container = function (_Component) {
+    _inherits(Container, _Component);
 
-    function List() {
-        _classCallCheck(this, List);
+    function Container() {
+        _classCallCheck(this, Container);
 
-        return _possibleConstructorReturn(this, Object.getPrototypeOf(List).apply(this, arguments));
+        return _possibleConstructorReturn(this, Object.getPrototypeOf(Container).apply(this, arguments));
     }
 
-    _createClass(List, [{
+    _createClass(Container, [{
         key: 'createChildren',
         value: function createChildren(models) {
             var _this2 = this;
@@ -59,6 +59,7 @@ var List = exports.List = (function (_Base) {
             var _model = _ref2[0];
             var _state = _ref2[1];
 
+
             var index = -1;
             var count = _state.length;
 
@@ -86,39 +87,8 @@ var List = exports.List = (function (_Base) {
 
             return children;
         }
-    }], [{
-        key: 'listItemLoader',
-        value: function listItemLoader() {
-            var lengthPathSelector = arguments.length <= 0 || arguments[0] === undefined ? function () {
-                return ['length'];
-            } : arguments[0];
-            var resultPathSelector = arguments.length <= 1 || arguments[1] === undefined ? function (_ref3) {
-                var length = _ref3.json.length;
-                return ['length'];
-            } : arguments[1];
-            var suffixPathSelector = arguments.length <= 2 || arguments[2] === undefined ? function (_ref4) {
-                var length = _ref4.json.length;
-                return [];
-            } : arguments[2];
-
-            return function loadListItems() {
-                var _ref5 = arguments.length <= 0 ? undefined : arguments[0];
-
-                var _ref6 = _slicedToArray(_ref5, 1);
-
-                var model = _ref6[0];
-
-                return model.get(lengthPathSelector.apply(undefined, arguments)).mergeMap(function (result) {
-                    var paths = [resultPathSelector(result)];
-                    if (paths.length > 0) {
-                        paths.push(suffixPathSelector(result));
-                    }
-                    return model.get.apply(model, paths);
-                });
-            };
-        }
     }]);
 
-    return List;
-})(_Base2.Base);
-//# sourceMappingURL=List.js.map
+    return Container;
+}(_Component2.Component);
+//# sourceMappingURL=Container.js.map

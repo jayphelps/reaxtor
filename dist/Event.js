@@ -1,11 +1,11 @@
 'use strict';
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 exports.Event = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _Subject2 = require('rxjs/Subject');
 
@@ -15,7 +15,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var Event = exports.Event = (function (_Subject) {
+var Event = exports.Event = function (_Subject) {
     _inherits(Event, _Subject);
 
     function Event() {
@@ -27,7 +27,7 @@ var Event = exports.Event = (function (_Subject) {
     _createClass(Event, [{
         key: 'lift',
         value: function lift(operator) {
-            var event = new Event(this, this.destination || this);
+            var event = new Event(this.destination || this, this);
             event.operator = operator;
             return event;
         }
@@ -49,5 +49,5 @@ var Event = exports.Event = (function (_Subject) {
     }]);
 
     return Event;
-})(_Subject2.Subject);
+}(_Subject2.Subject);
 //# sourceMappingURL=Event.js.map

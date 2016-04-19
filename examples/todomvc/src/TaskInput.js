@@ -1,8 +1,8 @@
 /** @jsx hJSX */
-import { hJSX, Base } from './../../../';
+import { hJSX, Component } from './../../../';
 import { Observable } from 'rxjs/Observable';
 
-export class TaskInput extends Base {
+export class TaskInput extends Component {
     loader([ model ]) {
         return model.get(`value`);
     }

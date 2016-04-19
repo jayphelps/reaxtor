@@ -1,5 +1,5 @@
 /** @jsx hJSX */
-import { hJSX, Base } from './../../../';
+import { hJSX, Component } from './../../../';
 import { Observable } from 'rxjs/Observable';
 const  { fromEvent } = Observable;
 
@@ -9,7 +9,7 @@ import { TaskInput } from './TaskInput';
 
 // require('./app.css');
 
-export class App extends Base {
+export class App extends Component {
     createChildren(models) {
 
         const tasks = new Tasks(models.deref(`tasks`));

@@ -1,13 +1,8 @@
 import { Model as FalcorModel } from 'falcor';
 import { Observable } from 'rxjs/Observable';
-import { SymbolShim } from 'rxjs/util/SymbolShim';
 import parsePath from 'falcor-path-syntax';
-import ModelResponse from 'falcor/lib/response/ModelResponse';
+import { fromPath, fromPathsOrPathValues } from 'falcor-path-syntax';
 import InvalidateResponse from 'falcor/lib/response/InvalidateResponse';
-
-ModelResponse.prototype[SymbolShim.observable] = function() {
-    return this;
-}
 
 class ObservableModelResponse extends Observable {
     constructor(source) {
@@ -32,32 +27,58 @@ export class Model extends FalcorModel {
     inspect() {
         return `{ v${this.getVersion()} ${JSON.stringify(this.getPath())} }`;
     }
-    get() {
-        return new ObservableModelResponse(super.get.apply(this, arguments));
+    get(...getArgs) {
+        return new ObservableModelResponse(super.get.apply(
+            this, fromPathsOrPathValues(getArgs)));
     }
-    set() {
-        return new ObservableModelResponse(super.set.apply(this, arguments));
+    set(...setArgs) {
+        return new ObservableModelResponse(super.set.apply(
+            this, fromPathsOrPathValues(setArgs)));
     }
-    call() {
-        return new ObservableModelResponse(super.call.apply(this, arguments));
+    call(fnPath, fnArgs, refPaths, thisPaths) {
+        fnPath = fromPath(fnPath);
+        refPaths = refPaths && fromPathsOrPathValues(refPaths) || [];
+        thisPaths = thisPaths && fromPathsOrPathValues(thisPaths) || [];
+        return new ObservableModelResponse(super.call.call(this,
+            fnPath, fnArgs, refPaths, thisPaths
+        ));
     }
-    invalidate2(...args) {
-        return new ObservableModelResponse(new InvalidateResponse(this, args.map((path) => {
-            path = parsePath(path);
-            if (!Array.isArray(path)) {
-                throw new Error(`Invalid argument: ${path}`);
-            }
-            return path;
-        })));
+    getItems(thisPathsSelector = () => [['length']],
+             restPathsSelector = ({ json: { length }}) => []) {
+
+        const thisPaths = fromPathsOrPathValues(
+            [].concat(thisPathsSelector(this))
+        );
+
+        return (thisPaths.length === 0) ?
+            Observable.empty() :
+            this.get(...thisPaths).mergeMap((result) => {
+
+                const restPaths = fromPathsOrPathValues(
+                    [].concat(restPathsSelector(result))
+                );
+
+                return (restPaths.length === 0) ?
+                    Observable.of(result) :
+                    this.get(...thisPaths.concat(restPaths));
+            });
     }
-    preload() {
-        return new ObservableModelResponse(super.preload.apply(this, arguments));
+    invalidateAsync(...invalidateArgs) {
+        return new ObservableModelResponse(new InvalidateResponse(
+            this, fromPathsOrPathValues(invalidateArgs)
+        ));
     }
-    getValue() {
-        return new ObservableModelResponse(super.getValue.apply(this, arguments));
+    preload(...preloadArgs) {
+        return new ObservableModelResponse(super.preload.apply(
+            this, fromPathsOrPathValues(preloadArgs)));
     }
-    setValue() {
-        return new ObservableModelResponse(super.setValue.apply(this, arguments));
+    getValue(...getValueArgs) {
+        return new ObservableModelResponse(super.getValue.apply(
+            this, fromPathsOrPathValues(getValueArgs)));
+    }
+    setValue(...setValueArgs) {
+        return new ObservableModelResponse(super.setValue.apply(
+            this, fromPathsOrPathValues(setValueArgs)));
     }
     _clone(opts) {
         const clone = new Model(this);

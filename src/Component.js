@@ -2,11 +2,11 @@ import { Event } from './Event';
 import { Changes } from './Changes';
 import { isPromise } from 'rxjs/util/isPromise';
 import { Observable } from 'rxjs/Observable';
-import { SymbolShim } from 'rxjs/util/SymbolShim';
-import { ReplaySubject } from 'rxjs/subject/ReplaySubject';
+import { $$observable } from 'rxjs/symbol/observable';
+import { ReplaySubject } from 'rxjs/ReplaySubject';
 const  { isArray } = Array;
 
-export class Base extends Observable {
+export class Component extends Observable {
     constructor(attrs, createChild) {
         if (typeof attrs === 'function') {
             super(attrs);
@@ -105,7 +105,7 @@ export class Base extends Observable {
         }
     }
     lift(operator) {
-        const component = new Base();
+        const component = new Component();
         component.source = this;
         component.operator = operator;
         return component;
@@ -119,7 +119,7 @@ function toObservable(ish, skipNull) {
         isArray(ish)      ||
         isPromise(ish)    ||
         isObservable(ish) ||
-        typeof ish[SymbolShim.observable] === 'function') {
+        typeof ish[$$observable] === 'function') {
         return ish;
     } else {
         return Observable.of(ish);

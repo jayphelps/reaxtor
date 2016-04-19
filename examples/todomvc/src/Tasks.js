@@ -1,23 +1,22 @@
 /** @jsx hJSX */
 import _filter from 'lodash.filter';
 import { Task } from './Task';
-import { hJSX, List } from './../../../';
+import { hJSX, Container } from './../../../';
 import { Observable } from 'rxjs/Observable';
 import { pathValue as $pv } from 'falcor-json-graph';
 
-const loadTasks = List.listItemLoader(
-    function lengthPath() { return `length`; },
-    function resultPath({ json: { length }}) {
-        return `['length', 'filter']`;
-    },
-    function suffixPath({ json: { length }}) {
-        return `[0...${length}].completed`;
-    }
-);
-
-export class Tasks extends List {
-    loader(...args) {
-        return loadTasks(...args);
+export class Tasks extends Container {
+    loader([ model ]) {
+        return model.getItems(
+            function getTasksPaths() {
+                return [['length']];
+            },
+            function getTaskPaths({ json: { length }}) {
+                return length === 0 ?
+                    [['filter']] :
+                    [['filter'], [{length}, 'completed']];
+            }
+        );
     }
     deref(subjects, children, [ model, state ]) {
         const { filter } = state;

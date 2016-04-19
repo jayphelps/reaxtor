@@ -2,7 +2,7 @@ import { Subject } from 'rxjs/Subject';
 
 export class Event extends Subject {
     lift(operator) {
-        const event = new Event(this, this.destination || this);
+        const event = new Event(this.destination || this, this);
         event.operator = operator;
         return event;
     }

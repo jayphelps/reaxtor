@@ -99,8 +99,8 @@ class DerefOperator {
     constructor(keys) {
         this.keys = keys;
     }
-    call(subscriber) {
-        return new DerefSubscriber(subscriber, this.keys);
+    call(subscriber, source) {
+        return source._subscribe(new DerefSubscriber(subscriber, this.keys));
     }
 }
 

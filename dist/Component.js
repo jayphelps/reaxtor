@@ -1,13 +1,15 @@
 'use strict';
 
-var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; })();
-
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.Base = undefined;
+exports.Component = undefined;
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _Event = require('./Event');
 
@@ -17,11 +19,9 @@ var _isPromise = require('rxjs/util/isPromise');
 
 var _Observable2 = require('rxjs/Observable');
 
-var _SymbolShim = require('rxjs/util/SymbolShim');
+var _observable = require('rxjs/symbol/observable');
 
-var _ReplaySubject = require('rxjs/subject/ReplaySubject');
-
-function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+var _ReplaySubject = require('rxjs/ReplaySubject');
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -29,23 +29,22 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var _Array = Array;
-var isArray = _Array.isArray;
+var isArray = Array.isArray;
 
-var Base = exports.Base = (function (_Observable) {
-    _inherits(Base, _Observable);
+var Component = exports.Component = function (_Observable) {
+    _inherits(Component, _Observable);
 
-    function Base(attrs, createChild) {
-        _classCallCheck(this, Base);
+    function Component(attrs, createChild) {
+        _classCallCheck(this, Component);
 
         if (typeof attrs === 'function') {
-            var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Base).call(this, attrs));
+            var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Component).call(this, attrs));
         } else if (isObservable(attrs)) {
-            var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Base).call(this));
+            var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Component).call(this));
 
             _this.models = attrs;
         } else {
-            var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Base).call(this));
+            var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Component).call(this));
 
             if ((typeof attrs === 'undefined' ? 'undefined' : _typeof(attrs)) === 'object') {
                 if (createChild && !_this.createChild) {
@@ -66,7 +65,7 @@ var Base = exports.Base = (function (_Observable) {
         return _possibleConstructorReturn(_this);
     }
 
-    _createClass(Base, [{
+    _createClass(Component, [{
         key: 'createChildren',
         value: function createChildren(updates) {
             return updates;
@@ -140,7 +139,7 @@ var Base = exports.Base = (function (_Observable) {
     }, {
         key: 'lift',
         value: function lift(operator) {
-            var component = new Base();
+            var component = new Component();
             component.source = this;
             component.operator = operator;
             return component;
@@ -182,13 +181,13 @@ var Base = exports.Base = (function (_Observable) {
         }
     }]);
 
-    return Base;
-})(_Observable2.Observable);
+    return Component;
+}(_Observable2.Observable);
 
 function toObservable(ish, skipNull) {
     if (ish == null) {
         return skipNull ? _Observable2.Observable.empty() : _Observable2.Observable.of(ish);
-    } else if (isArray(ish) || (0, _isPromise.isPromise)(ish) || isObservable(ish) || typeof ish[_SymbolShim.SymbolShim.observable] === 'function') {
+    } else if (isArray(ish) || (0, _isPromise.isPromise)(ish) || isObservable(ish) || typeof ish[_observable.$$observable] === 'function') {
         return ish;
     } else {
         return _Observable2.Observable.of(ish);
@@ -201,4 +200,4 @@ function isObservable(ish) {
     }
     return false;
 }
-//# sourceMappingURL=Base.js.map
+//# sourceMappingURL=Component.js.map

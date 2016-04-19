@@ -2,7 +2,7 @@
   "name": "reaxtor-todomvc-example",
   "version": "1.0.0",
   "description": "TodoMVC implementation with Reaxtor (Falcor + Rx + virtual-dom)",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --hot --inline",
@@ -24,10 +24,8 @@
     "write-file-webpack-plugin": "^2.1.1"
   },
   "dependencies": {
-    "falcor-json-graph": "^1.1.7",
     "lodash.filter": "^3.1.1",
     "todomvc-app-css": "^2.0.3",
-    "todomvc-common": "^1.0.2",
-    "falcor-router": "git+ssh://git@github.com/trxcllnt/falcor-router.git#rx-next"
+    "todomvc-common": "^1.0.2"
   }
 }

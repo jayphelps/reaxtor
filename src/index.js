@@ -3,7 +3,20 @@
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 import { Subscriber } from 'rxjs/Subscriber';
-import { BehaviorSubject } from 'rxjs/subject/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
+import 'rxjs/add/observable/of';
+import 'rxjs/add/observable/from';
+import 'rxjs/add/observable/defer';
+import 'rxjs/add/observable/empty';
+import 'rxjs/add/observable/combineLatest';
+
+import 'rxjs/add/operator/do';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/scan';
+import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/operator/switchMap';
+import 'rxjs/add/operator/distinctUntilChanged';
 
 Subscriber.prototype.onNext = Subscriber.prototype.next;
 Subscriber.prototype.onError = Subscriber.prototype.error;
@@ -13,43 +26,14 @@ Subject.prototype.onNext = Subject.prototype.next;
 Subject.prototype.onError = Subject.prototype.error;
 Subject.prototype.onCompleted = Subject.prototype.complete;
 
-import 'rxjs/add/observable/zip';
-import 'rxjs/add/observable/from';
-import 'rxjs/add/observable/defer';
-import 'rxjs/add/observable/empty';
-import 'rxjs/add/observable/fromArray';
-import 'rxjs/add/observable/combineLatest';
-
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/zip';
-import 'rxjs/add/operator/last';
-import 'rxjs/add/operator/scan';
-import 'rxjs/add/operator/first';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/concat';
-import 'rxjs/add/operator/groupBy';
-import 'rxjs/add/operator/mergeMap';
-import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/combineLatest';
-import 'rxjs/add/operator/withLatestFrom';
-import 'rxjs/add/operator/distinctUntilChanged';
-
-import { html as hJSX } from 'snabbdom-jsx';
-import snabbdom from 'snabbdom';
-import sdClass from 'snabbdom/modules/class';
-import sdProps from 'snabbdom/modules/props';
-import sdStyle from 'snabbdom/modules/style';
-import sdAttributes from 'snabbdom/modules/attributes';
-import sdEventlisteners from 'snabbdom/modules/eventlisteners';
-const patch = snabbdom.init([ sdClass, sdProps, sdStyle, sdAttributes, sdEventlisteners ]);
-
-import { Base } from './Base';
-import { List } from './List';
+import Router from 'falcor-router';
 import { Model } from './Model';
 import { Event } from './Event';
+import { Component } from './Component';
+import { Container } from './Container';
+import { html as hJSX } from 'snabbdom-jsx';
 
-export { hJSX, Base, List, Model, Event, reaxtor };
+export { hJSX, Model, Event, Router, Component, Container, reaxtor };
 
 function reaxtor(RootClass, model) {
 
@@ -71,8 +55,9 @@ function reaxtor(RootClass, model) {
             models.next([ this ]);
             // console.log('] <---- end top-down render\n');
         } while(reenter === true);
-        working = false;
     };
 
-    return new RootClass({ models });
+    return new RootClass({ models }).do(() => {
+        working = false;
+    });
 }

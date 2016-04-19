@@ -1,22 +1,26 @@
 /** @jsx hJSX */
-import { reaxtor, hJSX, Model } from './../../../';
+import { reaxtor, hJSX, Model, Router } from './../../../';
 
-import FalcorRouter from 'falcor-router';
 import ASAPScheduler from 'falcor/lib/schedulers/ASAPScheduler';
 
-import { BehaviorSubject } from 'rxjs/subject/BehaviorSubject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/observable/fromEvent';
+import 'rxjs/add/observable/merge';
+import 'rxjs/add/observable/combineLatest';
+
 import 'rxjs/add/operator/do';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/scan';
 import 'rxjs/add/operator/take';
 import 'rxjs/add/operator/delay';
 import 'rxjs/add/operator/merge';
+import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/finally';
 import 'rxjs/add/operator/concatMap';
-import 'rxjs/add/operator/multicast';
+import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/takeUntil';
 import 'rxjs/add/operator/mergeMapTo';
-import 'rxjs/add/operator/merge-static';
 import 'rxjs/add/operator/debounceTime';
 
 import snabbdom from 'snabbdom';
@@ -29,7 +33,11 @@ import sdEventlisteners from 'snabbdom/modules/eventlisteners';
 import { App } from './App';
 import { Routes } from './Routes';
 
-const patch = snabbdom.init([ sdClass, sdProps, sdStyle, sdAttributes, sdEventlisteners ]);
+const patch = snabbdom.init([
+    sdClass, sdProps, sdStyle,
+    sdAttributes, sdEventlisteners
+]);
+
 const rootElement = document.body.appendChild(document.createElement('div'));
 
 const modules = new BehaviorSubject({ App, Routes });
@@ -43,7 +51,7 @@ modules.switchMap(({ App, Routes }) => {
     }
 
     // Initialize the routes with the cache from local storage.
-    const TodoRouter = FalcorRouter.createClass(Routes(TodoCache || undefined));
+    const TodoRouter = Router.createClass(Routes(TodoCache || undefined));
 
     // Create root App Component (Observable)
     return reaxtor(App, new Model({

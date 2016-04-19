@@ -1,9 +1,8 @@
 /** @jsx hJSX */
-import { hJSX, Base } from './../../../';
+import { hJSX, Component } from './../../../';
 import { Observable } from 'rxjs/Observable';
-import { pathValue as $pv } from 'falcor-json-graph';
 
-export class Task extends Base {
+export class Task extends Component {
     loader([ model ]) {
         return model.get(`['id', 'content', 'completed']`);
     }
