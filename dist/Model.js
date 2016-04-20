@@ -15,8 +15,6 @@ var _Observable2 = require('rxjs/Observable');
 
 var _falcorPathSyntax = require('falcor-path-syntax');
 
-var _falcorPathSyntax2 = _interopRequireDefault(_falcorPathSyntax);
-
 var _InvalidateResponse = require('falcor/lib/response/InvalidateResponse');
 
 var _InvalidateResponse2 = _interopRequireDefault(_InvalidateResponse);

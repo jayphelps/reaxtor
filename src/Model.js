@@ -1,6 +1,5 @@
 import { Model as FalcorModel } from 'falcor';
 import { Observable } from 'rxjs/Observable';
-import parsePath from 'falcor-path-syntax';
 import { fromPath, fromPathsOrPathValues } from 'falcor-path-syntax';
 import InvalidateResponse from 'falcor/lib/response/InvalidateResponse';
 

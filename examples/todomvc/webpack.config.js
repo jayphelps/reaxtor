@@ -21,7 +21,7 @@ module.exports = {
   },
   plugins: [
     new WriteFileWebpackPlugin({
-      test: /\.js$/
+      test: /\.(js|map|css)$/
     })
   ],
   module: {
