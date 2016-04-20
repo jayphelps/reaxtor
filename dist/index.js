@@ -31,6 +31,8 @@ require('rxjs/add/operator/scan');
 
 require('rxjs/add/operator/mergeMap');
 
+require('rxjs/add/operator/startWith');
+
 require('rxjs/add/operator/switchMap');
 
 require('rxjs/add/operator/distinctUntilChanged');
@@ -51,8 +53,9 @@ var _snabbdomJsx = require('snabbdom-jsx');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_Subscriber.Subscriber.prototype.onNext = _Subscriber.Subscriber.prototype.next; /** @jsx hJSX */
+/** @jsx hJSX */
 
+_Subscriber.Subscriber.prototype.onNext = _Subscriber.Subscriber.prototype.next;
 _Subscriber.Subscriber.prototype.onError = _Subscriber.Subscriber.prototype.error;
 _Subscriber.Subscriber.prototype.onCompleted = _Subscriber.Subscriber.prototype.complete;
 

@@ -75,7 +75,7 @@ export class Component extends Observable {
         return Observable.empty();
     }
     mapModelToKey([ model ]) {
-        return `${name} ${model.inspect()}`;
+        return `${this.constructor.name} ${model.inspect()}`;
     }
     shouldComponentUpdate(currKey, nextKey) {
         return currKey !== nextKey;

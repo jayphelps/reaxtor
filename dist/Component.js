@@ -92,7 +92,7 @@ var Component = exports.Component = function (_Observable) {
 
             var model = _ref2[0];
 
-            return name + ' ' + model.inspect();
+            return this.constructor.name + ' ' + model.inspect();
         }
     }, {
         key: 'shouldComponentUpdate',
