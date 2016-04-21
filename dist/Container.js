@@ -5,6 +5,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Container = undefined;
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -58,12 +60,16 @@ var Container = exports.Container = function (_Component) {
 
             var _model = _ref2[0];
             var _state = _ref2[1];
-
+            var range = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+            var _range$from = range.from;
+            var from = _range$from === undefined ? 0 : _range$from;
+            var _range$to = range.to;
+            var to = _range$to === undefined ? _state.length : _range$to;
 
             var index = -1;
-            var count = _state.length;
+            var count = to - from;
 
-            while (++index < count) {
+            while (++index <= count) {
                 if (!subjects[index]) {
                     subjects[index] = new _Subject.Subject();
                     children[index] = this.createChild(subjects[index], _state[index], index);
@@ -80,9 +86,11 @@ var Container = exports.Container = function (_Component) {
             index = -1;
             count = subjects.length = children.length;
             while (++index < count) {
-                var state = _state[index];
-                var model = _model.deref(state);
-                subjects[index].next([model, state, index]);
+                var state = _state[index + from];
+                if (state && (typeof state === 'undefined' ? 'undefined' : _typeof(state)) === 'object') {
+                    var model = _model.deref(state);
+                    subjects[index].next([model, state, index]);
+                }
             }
 
             return children;

@@ -146,7 +146,7 @@ var Component = exports.Component = function (_Observable) {
         }
     }, {
         key: 'models',
-        set: function set(m) {
+        set: function set(models) {
             var _this2 = this;
 
             if (this.source) {
@@ -157,7 +157,7 @@ var Component = exports.Component = function (_Observable) {
                 this.subscription.unsubscribe();
             }
 
-            var updates = _Changes.Changes.from(m.distinctUntilChanged(function () {
+            var updates = _Changes.Changes.from(models.distinctUntilChanged(function () {
                 return !_this2.shouldComponentUpdate.apply(_this2, arguments);
             }, function () {
                 return _this2.key = _this2.mapModelToKey.apply(_this2, arguments);

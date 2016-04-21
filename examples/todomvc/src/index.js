@@ -1,8 +1,7 @@
 /** @jsx hJSX */
 import { reaxtor, hJSX, Model, Router } from './../../../';
 
-import ASAPScheduler from 'falcor/lib/schedulers/ASAPScheduler';
-
+import { Scheduler } from 'rxjs/Rx';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import 'rxjs/add/observable/fromEvent';
 import 'rxjs/add/observable/merge';
@@ -46,7 +45,7 @@ modules.switchMap(({ App, Routes }) => {
 
     // Read the cache from local storage if possible.
     let TodoCache = JSON.parse(localStorage.getItem('todos-reaxtor') || 'null');
-    if (!TodoCache || !TodoCache.apiVersion || !TodoCache.apiVersion.value === 0) {
+    if (!TodoCache || TodoCache.apiVersion !== 0) {
         TodoCache = null;
     }
 
@@ -58,8 +57,8 @@ modules.switchMap(({ App, Routes }) => {
             materialized: true,
             treatErrorsAsValues: true,
             allowFromWhenceYouCame: true,
-            scheduler: new ASAPScheduler(),
             source: new TodoRouter(),
+            scheduler: Scheduler.asap,
             onChangesCompleted: function() {
                 localStorage.setItem(
                     'todos-reaxtor', JSON.stringify(this.getCache())
@@ -67,7 +66,9 @@ modules.switchMap(({ App, Routes }) => {
             }
         }));
     })
-    .scan(patch, rootElement)
+    .scan((currentRootDom, [rootModel, newRootVDom]) => {
+        return patch(currentRootDom, newRootVDom);
+    }, rootElement)
     .subscribe();
 
 // If hot module replacement is enabled, listen for changes to App and Routes.

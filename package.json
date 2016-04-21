@@ -8,7 +8,7 @@
     "test": "node test/index.js",
     "clean": "rimraf dist && mkdirp dist",
     "build": "npm run clean && babel src -d dist --source-maps",
-    "install": "npm run build"
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",

@@ -16,7 +16,7 @@ export function Routes(cache = {
 }) {
 
     const model = new Model({
-        cache, // boxed: true,
+        cache, //boxed: true,
         materialized: true,
         treatErrorsAsValues: true
     });

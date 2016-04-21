@@ -16,12 +16,16 @@ export class Container extends Component {
             );
         });
     }
-    deref(subjects, children, [ _model, _state ]) {
+    deref(subjects, children, [ _model, _state ], range = {}) {
 
+        const {
+            from = 0,
+            to = _state.length
+        } = range;
         let index = -1;
-        let count = _state.length;
+        let count = to - from;
 
-        while (++index < count) {
+        while (++index <= count) {
             if (!subjects[index]) {
                 subjects[index] = new Subject();
                 children[index] = this.createChild(subjects[index], _state[index], index);
@@ -38,9 +42,11 @@ export class Container extends Component {
         index = -1;
         count = subjects.length = children.length;
         while (++index < count) {
-            const state = _state[index];
-            const model = _model.deref(state);
-            subjects[index].next([model, state, index]);
+            const state = _state[index + from];
+            if (state && typeof state === 'object') {
+                const model = _model.deref(state);
+                subjects[index].next([model, state, index]);
+            }
         }
 
         return children;

@@ -32,7 +32,7 @@ export class Component extends Observable {
             }
         }
     }
-    set models(m) {
+    set models(models) {
 
         if (this.source) {
             this.source.unsubscribe();
@@ -42,7 +42,7 @@ export class Component extends Observable {
             this.subscription.unsubscribe();
         }
 
-        const updates = Changes.from(m
+        const updates = Changes.from(models
             .distinctUntilChanged(
                 (...args) => !this.shouldComponentUpdate(...args),
                 (...args) => this.key = this.mapModelToKey(...args)
