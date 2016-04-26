@@ -3,37 +3,38 @@ import { hJSX, Component } from './../../../';
 import { Observable } from 'rxjs/Observable';
 
 export class Task extends Component {
-    loader([ model ]) {
+    loadProps(model) {
         return model.get(`['id', 'content', 'completed']`);
     }
-    events([ model, state ]) {
+    loadState(model, props) {
         return Observable.merge(
 
-            this.listen('edit').map(() => ({ ...state, ...{ editing: true }})),
+            this.listen('edit').mapTo({ editing: true }),
 
             this.listen('done')
                 .map(({target}) => target.checked)
                 .switchMap(
                     (completed) => model.call(['toggle'], [completed]),
-                    (completed) => ({ ...state, ...{ completed, editing: false }})
+                    (completed) => ({ completed, editing: false })
                 ),
 
-            this.listen('blur').merge(
-            this.listen('commit').filter((ev) => ev.keyIdentifier === 'Enter'))
-                .map(({target}) => target.value)
-                .switchMap(
-                    (content) => model.set({ json: { content }}),
-                    (content) => ({ ...state, ...{ content, editing: false }})
-                ),
+            Observable.merge(
+                this.listen('blur'),
+                this.listen('commit').filter((ev) => ev.keyIdentifier === 'Enter')
+            )
+            .map(({target}) => target.value)
+            .switchMap(
+                (content) => model.set({ json: { content }}),
+                (content) => ({ content, editing: false })
+            ),
 
             this.listen('destroy').switchMap(
                 () => model.call([`remove`]),
-                (ev) => ({ id: '', content: '', completed: '' })
+                () => ({ id: '', content: '', completed: '' })
             )
-        )
-        .map((newState) => [model, state = newState])
+        );
     }
-    render([ model, { id, content, completed, editing = false } ]) {
+    render(model, { id, content, completed, editing = false }) {
         return (
             <li class={{ editing, completed: (completed && !editing) }}>
                 <div class={{'view': true}}>

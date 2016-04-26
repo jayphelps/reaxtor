@@ -6,7 +6,23 @@ import { Observable } from 'rxjs/Observable';
 import { pathValue as $pv } from 'falcor-json-graph';
 
 export class Tasks extends Container {
-    loader([ model ]) {
+    deref(subjects, children, model, state, range) {
+        const { filter } = state;
+
+        if (filter === 'completed') {
+            state = _filter(state, ({completed}) => completed);
+        } else if (filter === 'active') {
+            state = _filter(state, ({completed}) => !completed);
+        }
+
+        state.filter = filter;
+
+        return super.deref(subjects, children, model, state, range);
+    }
+    createChild(models, index, state) {
+        return new Task({ index, models, ...state });
+    }
+    loadProps(model) {
         return model.getItems(
             function getTasksPaths() {
                 return [['length']];
@@ -18,35 +34,18 @@ export class Tasks extends Container {
             }
         );
     }
-    deref(subjects, children, [ model, state ]) {
-        const { filter } = state;
-
-        if (filter === 'completed') {
-            state = _filter(state, ({completed}) => completed);
-        } else if (filter === 'active') {
-            state = _filter(state, ({completed}) => !completed);
-        }
-
-        state.filter = filter;
-
-        return super.deref(subjects, children, [model, state]);
-    }
-    createChild(childUpdates, childState, childIndex) {
-        return new Task(childUpdates);
-    }
-    events([ model, state ]) {
-        return this.listen('toggleAll')
-            .map(({target}) => target.checked)
+    loadState(model, props) {
+        return this
+            .listen('toggleAll')
+            .map(({ target: { checked }}) => checked)
             .switchMap(
                 (bool) => model.set(
-                    $pv(`length`, state.length),
-                    $pv(`[0...${state.length}].completed`, bool)
+                    $pv(`length`, props.length),
+                    $pv(`[0...${props.length}].completed`, bool)
                 ),
-                (bool, { json }) => json
-            )
-            .map((newState) => [ model, state = newState ])
+                (bool, { json }) => json);
     }
-    render([[ model, state ], ...taskVDoms]) {
+    render(model, state, ...taskVDoms) {
 
         const children = [];
         const { length } = state;

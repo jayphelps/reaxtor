@@ -190,12 +190,11 @@ var DerefSubscriber = function (_Subscriber) {
             var keys = this.keys;
             var count = keys.length;
             var keysIdx = -1;
-            var _update = update;
 
-            var _update2 = _slicedToArray(_update, 2);
+            var _update = _slicedToArray(update, 2);
 
-            var model = _update2[0];
-            var state = _update2[1];
+            var model = _update[0];
+            var state = _update[1];
 
 
             while (++keysIdx < count) {
@@ -209,11 +208,7 @@ var DerefSubscriber = function (_Subscriber) {
                 }
             }
 
-            update = update.slice(0);
-            update[0] = model;
-            update[1] = state;
-
-            _get(Object.getPrototypeOf(DerefSubscriber.prototype), '_next', this).call(this, update);
+            _get(Object.getPrototypeOf(DerefSubscriber.prototype), '_next', this).call(this, model);
         }
     }]);
 

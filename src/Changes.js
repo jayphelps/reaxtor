@@ -127,10 +127,6 @@ class DerefSubscriber extends Subscriber {
             }
         }
 
-        update = update.slice(0);
-        update[0] = model;
-        update[1] = state;
-
-        super._next(update);
+        super._next(model);
     }
 }

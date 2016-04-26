@@ -10,17 +10,7 @@ import { TaskInput } from './TaskInput';
 // require('./app.css');
 
 export class App extends Component {
-    createChildren(models) {
-
-        const tasks = new Tasks(models.deref(`tasks`));
-        const input = new TaskInput(models.deref(`input`));
-        const footer = new Controls(models.deref(`tasks`));
-
-        return models.switchMap((tuple) => Observable.combineLatest(
-            input, tasks, footer, (...children) => [tuple, ...children]
-        ));
-    }
-    loader([model]) {
+    loadProps(model) {
         return model.get(
             `input.value`,
             `tasks.length`,
@@ -28,17 +18,36 @@ export class App extends Component {
             `['apiVersion', 'globalTaskId']`
         );
     }
-    events([model, state]) {
-        return fromEvent(window, 'hashchange')//.startWith(0)
+    loadState(model, props) {
+        return fromEvent(window, 'hashchange')
             .map(() => (location.hash || '#/').slice(2) || 'all')
-            .filter((filter) => filter !== state.tasks.filter)
+            .filter((filter) => filter !== props.tasks.filter)
             .switchMap(
-                (filter) => model.set({ json: { tasks: { filter }}}),
-                (filter, { json }) => ({ ...state, ...json })
-            )
-            .map((newState) => [model, state = newState]);
+                (filter) => model.set({
+                    json: { tasks: { filter
+                }}}),
+                (filter, { json }) => json);
     }
-    render([[model, state], ...children]) {
+    initialize(models) {
+
+        const tasks = new Tasks({
+            index: 0,
+            models: models.deref(`tasks`)
+        });
+        const input = new TaskInput({
+            index: 1,
+            models: models.deref(`input`)
+        });
+        const footer = new Controls({
+            index: 2,
+            models: models.deref(`tasks`)
+        });
+
+        return models.switchMap((tuple) => Observable.combineLatest(
+            input, tasks, footer, (...children) => [...tuple, ...children]
+        ));
+    }
+    render(model, state, ...children) {
         return (
             <section class={{ 'todoapp': true }}>{
                 children.filter(x => !!x)

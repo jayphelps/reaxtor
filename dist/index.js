@@ -87,7 +87,7 @@ function reaxtor(RootClass, model) {
     var working = false;
     var reenter = false;
     var array = new Array(2);
-    var models = new _BehaviorSubject.BehaviorSubject([model]);
+    var models = new _BehaviorSubject.BehaviorSubject(model);
     var previousOnChangesCompleted = model._root.onChangesCompleted;
 
     model._root.onChangesCompleted = function () {
@@ -101,7 +101,7 @@ function reaxtor(RootClass, model) {
             if (previousOnChangesCompleted) {
                 previousOnChangesCompleted.call(this);
             }
-            models.next([model = this]);
+            models.next(model = this);
             // console.log('] <---- end top-down render\n');
         } while (reenter === true);
     };

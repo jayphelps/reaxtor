@@ -5,9 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Component = undefined;
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -15,13 +13,17 @@ var _Event = require('./Event');
 
 var _Changes = require('./Changes');
 
-var _isPromise = require('rxjs/util/isPromise');
+var _Subscriber = require('rxjs/Subscriber');
 
 var _Observable2 = require('rxjs/Observable');
 
+var _BehaviorSubject = require('rxjs/BehaviorSubject');
+
+var _isPromise = require('rxjs/util/isPromise');
+
 var _observable = require('rxjs/symbol/observable');
 
-var _ReplaySubject = require('rxjs/ReplaySubject');
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -34,80 +36,85 @@ var isArray = Array.isArray;
 var Component = exports.Component = function (_Observable) {
     _inherits(Component, _Observable);
 
-    function Component(attrs, createChild) {
+    function Component(props, createChild) {
         _classCallCheck(this, Component);
 
-        if (typeof attrs === 'function') {
-            var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Component).call(this, attrs));
-        } else if (isObservable(attrs)) {
-            var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Component).call(this));
+        var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Component).call(this));
 
-            _this.models = attrs;
-        } else {
-            var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Component).call(this));
+        var index = props.index;
+        var models = props.models;
 
-            if ((typeof attrs === 'undefined' ? 'undefined' : _typeof(attrs)) === 'object') {
-                if (createChild && !_this.createChild) {
-                    _this.createChild = createChild;
-                }
-                var models = attrs['models'];
-                delete attrs['models'];
-                for (var key in attrs) {
-                    if (attrs.hasOwnProperty(key)) {
-                        _this[key] = attrs[key];
-                    }
-                }
-                if (isObservable(models)) {
-                    _this.models = models;
-                }
+        delete props.index;
+        delete props.models;
+
+        _this.index = index || 0;
+
+        for (var key in props) {
+            if (props.hasOwnProperty(key)) {
+                _this[key] = props[key];
             }
         }
-        return _possibleConstructorReturn(_this);
+
+        if (createChild) {
+            _this.createChild = createChild;
+        }
+
+        var modelsAndStates = models.distinctUntilChanged(function () {
+            return !_this.shouldComponentUpdate.apply(_this, arguments);
+        }, function () {
+            return _this.mapUpdate.apply(_this, arguments);
+        }).switchMap(function (model) {
+            return convertToObservable(_this.loadProps(model) || { json: {} });
+        }, function (model, props) {
+            return _this.mapProps(model, props) || [model, props.json];
+        }).switchMap(function (modelAndState) {
+            return convertToObservable(_this.loadState.apply(_this, _toConsumableArray(modelAndState)), true).startWith(modelAndState[1]);
+        }, function (modelAndState, newState) {
+            return (modelAndState[1] = _this.mapState(modelAndState[1], newState) || _extends({}, modelAndState[1], { newState: newState
+            })) && modelAndState || modelAndState;
+        });
+
+        var modelAndStateChanges = _Changes.Changes.from(modelsAndStates);
+
+        var vDOMs = convertToObservable(_this.initialize(modelAndStateChanges) || modelAndStateChanges).switchMap(function (args) {
+            return convertToObservable(_this.render.apply(_this, _toConsumableArray(args)));
+        }).do(function () {
+            return console.log('rendered', _this.key);
+        });
+
+        _this.source = vDOMs;
+        return _this;
     }
 
     _createClass(Component, [{
-        key: 'createChildren',
-        value: function createChildren(updates) {
-            return updates;
-        }
-    }, {
-        key: 'loader',
-        value: function loader(props) {
-            return _Observable2.Observable.of({ json: {} });
-        }
-    }, {
-        key: 'events',
-        value: function events(props) {
-            return _Observable2.Observable.of(props);
-        }
-    }, {
-        key: 'render',
-        value: function render(props) {
-            return _Observable2.Observable.empty();
-        }
-    }, {
-        key: 'mapModelToKey',
-        value: function mapModelToKey(_ref) {
-            var _ref2 = _slicedToArray(_ref, 1);
-
-            var model = _ref2[0];
-
-            return this.constructor.name + ' ' + model.inspect();
-        }
-    }, {
         key: 'shouldComponentUpdate',
         value: function shouldComponentUpdate(currKey, nextKey) {
             return currKey !== nextKey;
         }
     }, {
-        key: 'mapDataToProps',
-        value: function mapDataToProps(_ref3, _ref4) {
-            var _ref5 = _slicedToArray(_ref3, 1);
-
-            var model = _ref5[0];
-            var json = _ref4.json;
-
-            return [model, json];
+        key: 'mapUpdate',
+        value: function mapUpdate(model) {
+            return this.key = this.constructor.name + ' ' + this.index + ' ' + model.inspect();
+        }
+    }, {
+        key: 'loadProps',
+        value: function loadProps(model) {}
+    }, {
+        key: 'mapProps',
+        value: function mapProps(model, props) {}
+    }, {
+        key: 'loadState',
+        value: function loadState(model, state) {}
+    }, {
+        key: 'mapState',
+        value: function mapState(state, newState) {}
+    }, {
+        key: 'initialize',
+        value: function initialize(changes) {}
+    }, {
+        key: 'render',
+        value: function render() {
+            return _Observable2.Observable.empty();
         }
     }, {
         key: 'listen',
@@ -136,68 +143,23 @@ var Component = exports.Component = function (_Observable) {
                 }
             }
         }
-    }, {
-        key: 'lift',
-        value: function lift(operator) {
-            var component = new Component();
-            component.source = this;
-            component.operator = operator;
-            return component;
-        }
-    }, {
-        key: 'models',
-        set: function set(models) {
-            var _this2 = this;
-
-            if (this.source) {
-                this.source.unsubscribe();
-            }
-
-            if (this.subscription) {
-                this.subscription.unsubscribe();
-            }
-
-            var updates = _Changes.Changes.from(models.distinctUntilChanged(function () {
-                return !_this2.shouldComponentUpdate.apply(_this2, arguments);
-            }, function () {
-                return _this2.key = _this2.mapModelToKey.apply(_this2, arguments);
-            }).switchMap(function () {
-                return _this2.loader.apply(_this2, arguments);
-            }, function () {
-                return _this2.mapDataToProps.apply(_this2, arguments);
-            })
-            // .do(() => console.log('updated', this.key))
-            .switchMap(function (props) {
-                return _this2.events(props).startWith(props);
-            }));
-
-            this.source = new _ReplaySubject.ReplaySubject(1);
-
-            this.subscription = this.createChildren(updates).switchMap(function () {
-                return toObservable(_this2.render.apply(_this2, arguments));
-            }, false)
-            // .do(() => console.log('rendered', this.key))
-            .subscribe(this.source);
-        }
     }]);
 
     return Component;
 }(_Observable2.Observable);
 
-function toObservable(ish, skipNull) {
+function convertToObservable(ish, skipNulls) {
     if (ish == null) {
-        return skipNull ? _Observable2.Observable.empty() : _Observable2.Observable.of(ish);
-    } else if (isArray(ish) || (0, _isPromise.isPromise)(ish) || isObservable(ish) || typeof ish[_observable.$$observable] === 'function') {
+        if (skipNulls) {
+            return _Observable2.Observable.empty();
+        }
+        return _Observable2.Observable.of(ish);
+    } else if (ish instanceof _Observable2.Observable || isArray(ish) || (0, _isPromise.isPromise)(ish)) {
         return ish;
+    } else if (typeof ish[_observable.$$observable] === 'function') {
+        return ish[_observable.$$observable]();
     } else {
         return _Observable2.Observable.of(ish);
     }
-}
-
-function isObservable(ish) {
-    if (ish && (typeof ish === 'undefined' ? 'undefined' : _typeof(ish)) === 'object') {
-        return ish instanceof _Observable2.Observable;
-    }
-    return false;
 }
 //# sourceMappingURL=Component.js.map

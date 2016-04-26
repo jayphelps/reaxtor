@@ -7,15 +7,15 @@ exports.Container = undefined;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _Subject = require('rxjs/Subject');
 
 var _Component2 = require('./Component');
 
 var _Observable = require('rxjs/Observable');
+
+var _BehaviorSubject = require('rxjs/BehaviorSubject');
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -33,34 +33,27 @@ var Container = exports.Container = function (_Component) {
     }
 
     _createClass(Container, [{
-        key: 'createChildren',
-        value: function createChildren(models) {
+        key: 'initialize',
+        value: function initialize(models) {
             var _this2 = this;
 
             var subjects = [];
             var children = [];
             return models.switchMap(function (tuple) {
-                var kids = _this2.deref(subjects, children, tuple);
-                if (kids.length === 0) {
-                    return _Observable.Observable.of([tuple]);
-                }
-                return _Observable.Observable.combineLatest(children = kids, function () {
-                    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-                        args[_key] = arguments[_key];
+                var active = _this2.deref.apply(_this2, [subjects, children].concat(_toConsumableArray(tuple)));
+                return active.length === 0 ? _Observable.Observable.of(tuple) : _Observable.Observable.combineLatest(children = active, function () {
+                    for (var _len = arguments.length, kids = Array(_len), _key = 0; _key < _len; _key++) {
+                        kids[_key] = arguments[_key];
                     }
 
-                    return [tuple].concat(args);
+                    return [].concat(_toConsumableArray(tuple), kids);
                 });
             });
         }
     }, {
         key: 'deref',
-        value: function deref(subjects, children, _ref) {
-            var _ref2 = _slicedToArray(_ref, 2);
-
-            var _model = _ref2[0];
-            var _state = _ref2[1];
-            var range = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
+        value: function deref(subjects, children, _model, _state) {
+            var range = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
             var _range$from = range.from;
             var from = _range$from === undefined ? 0 : _range$from;
             var _range$to = range.to;
@@ -71,8 +64,8 @@ var Container = exports.Container = function (_Component) {
 
             while (++index <= count) {
                 if (!subjects[index]) {
-                    subjects[index] = new _Subject.Subject();
-                    children[index] = this.createChild(subjects[index], _state[index], index);
+                    subjects[index] = new _BehaviorSubject.BehaviorSubject();
+                    children[index] = this.createChild(subjects[index], index, _state[index]);
                 }
             }
 
@@ -89,7 +82,7 @@ var Container = exports.Container = function (_Component) {
                 var state = _state[index + from];
                 if (state && (typeof state === 'undefined' ? 'undefined' : _typeof(state)) === 'object') {
                     var model = _model.deref(state);
-                    subjects[index].next([model, state, index]);
+                    subjects[index].next(model);
                 }
             }
 

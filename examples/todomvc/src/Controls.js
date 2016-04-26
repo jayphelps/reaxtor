@@ -4,7 +4,7 @@ import { hJSX, Component, Container } from './../../../';
 import { Observable } from 'rxjs/Observable';
 
 export class Controls extends Component {
-    loader([ model ]) {
+    loadProps(model) {
         return model.getItems(
             function getControlsPaths() {
                 return [['length']];
@@ -16,14 +16,12 @@ export class Controls extends Component {
             }
         );
     }
-    events([ model, state ]) {
+    loadState(model) {
         return this.listen('clear').switchMap(
             (ev) => model.call(`completed.remove`),
-            (ev, { json }) => ({ ...state, ...json })
-        )
-        .map((newState) => [model, state = newState])
+            (ev, { json }) => json);
     }
-    render([ model, state ]) {
+    render(model, state) {
 
         const { length } = state;
 

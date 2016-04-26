@@ -3,10 +3,10 @@ import { hJSX, Component } from './../../../';
 import { Observable } from 'rxjs/Observable';
 
 export class TaskInput extends Component {
-    loader([ model ]) {
+    loadProps(model) {
         return model.get(`value`);
     }
-    events([ model, state ]) {
+    loadState(model, state) {
 
         const entered = this
             .listen('keydown')
@@ -19,16 +19,13 @@ export class TaskInput extends Component {
                 .takeUntil(entered)
                 .switchMap(
                     (ev) => model.set({ json: { value: ev.target.value }}),
-                    (ev, {json}) => ({ ...state, ...json })
-                ),
+                    (ev, {json}) => json),
             entered.switchMap(
-                    (ev) => model.call(`add`, [ev.target.value]),
-                    (ev) => ({ value: ev.target.value = '' })
-                )
-            )
-            .map((newState) => [model, state = newState]);
+                (ev) => model.call(`add`, [ev.target.value]),
+                (ev) => ({ value: ev.target.value = '' }))
+        );
     }
-    render([ model, { value }]) {
+    render(model, { value }) {
         return (
             <header class={{'header': true}}>
                 <h1>todos</h1>

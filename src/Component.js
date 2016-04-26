@@ -1,87 +1,84 @@
 import { Event } from './Event';
 import { Changes } from './Changes';
-import { isPromise } from 'rxjs/util/isPromise';
+import { Subscriber } from 'rxjs/Subscriber';
 import { Observable } from 'rxjs/Observable';
-import { $$observable } from 'rxjs/symbol/observable';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+
 const  { isArray } = Array;
+import { isPromise } from 'rxjs/util/isPromise';
+import { $$observable } from 'rxjs/symbol/observable';
 
 export class Component extends Observable {
-    constructor(attrs, createChild) {
-        if (typeof attrs === 'function') {
-            super(attrs);
-        } else if(isObservable(attrs)) {
-            super();
-            this.models = attrs;
-        } else {
-            super();
-            if (typeof attrs === 'object') {
-                if (createChild && !this.createChild) {
-                    this.createChild = createChild;
-                }
-                const models = attrs['models'];
-                delete attrs['models'];
-                for (const key in attrs) {
-                    if (attrs.hasOwnProperty(key)) {
-                        this[key] = attrs[key];
-                    }
-                }
-                if (isObservable(models)) {
-                    this.models = models;
-                }
+    constructor(props, createChild) {
+
+        super();
+
+        let { index, models } = props;
+        delete props.index;
+        delete props.models;
+
+        this.index = index || 0;
+
+        for (const key in props) {
+            if (props.hasOwnProperty(key)) {
+                this[key] = props[key];
             }
         }
-    }
-    set models(models) {
 
-        if (this.source) {
-            this.source.unsubscribe();
+        if (createChild) {
+            this.createChild = createChild;
         }
 
-        if (this.subscription) {
-            this.subscription.unsubscribe();
-        }
-
-        const updates = Changes.from(models
+        const modelsAndStates = models
             .distinctUntilChanged(
                 (...args) => !this.shouldComponentUpdate(...args),
-                (...args) => this.key = this.mapModelToKey(...args)
+                (...args) => this.mapUpdate(...args)
             )
             .switchMap(
-                (...args) => this.loader(...args),
-                (...args) => this.mapDataToProps(...args)
+                (model) => convertToObservable(
+                    this.loadProps(model) || { json: { }}),
+                (model, props) => (
+                    this.mapProps(model, props) || [model, props.json])
             )
-            // .do(() => console.log('updated', this.key))
-            .switchMap((props) => this.events(props).startWith(props))
-        );
+            .switchMap(
+                (modelAndState) => convertToObservable(this
+                    .loadState(...modelAndState), true)
+                    .startWith(modelAndState[1]),
+                (modelAndState, newState) => ((modelAndState[1] =
+                    this.mapState(modelAndState[1], newState) || {
+                    ...modelAndState[1], newState
+                }) && modelAndState || modelAndState)
+            );
 
-        this.source = new ReplaySubject(1);
+        const modelAndStateChanges = Changes.from(modelsAndStates);
 
-        this.subscription = this.createChildren(updates)
-            .switchMap((...args) => toObservable(this.render(...args)), false)
-            // .do(() => console.log('rendered', this.key))
-            .subscribe(this.source);
-    }
-    createChildren(updates) {
-        return updates;
-    }
-    loader(props) {
-        return Observable.of({ json: {} });
-    }
-    events(props) {
-        return Observable.of(props);
-    }
-    render(props) {
-        return Observable.empty();
-    }
-    mapModelToKey([ model ]) {
-        return `${this.constructor.name} ${model.inspect()}`;
+        const vDOMs = (convertToObservable(this
+            .initialize(modelAndStateChanges) || modelAndStateChanges))
+            .switchMap((args) => convertToObservable(
+                this.render(...args)))
+            .do(() => console.log('rendered', this.key));
+
+        this.source = vDOMs;
     }
     shouldComponentUpdate(currKey, nextKey) {
         return currKey !== nextKey;
     }
-    mapDataToProps([ model ], { json }) {
-        return [ model, json ];
+    mapUpdate(model) {
+        return (this.key =
+            `${this.constructor.name} ${this.index} ${model.inspect()}`);
+    }
+    loadProps(model) {
+    }
+    mapProps(model, props) {
+    }
+    loadState(model, state) {
+    }
+    mapState(state, newState) {
+    }
+    initialize(changes) {
+    }
+    render() {
+        return Observable.empty();
     }
     listen(name) {
         const subjects = this.subjects || (this.subjects = {});
@@ -104,31 +101,20 @@ export class Component extends Observable {
             }
         }
     }
-    lift(operator) {
-        const component = new Component();
-        component.source = this;
-        component.operator = operator;
-        return component;
-    }
 }
 
-function toObservable(ish, skipNull) {
+function convertToObservable(ish, skipNulls) {
     if (ish == null) {
-        return skipNull ? Observable.empty() : Observable.of(ish);
-    } else if(
-        isArray(ish)      ||
-        isPromise(ish)    ||
-        isObservable(ish) ||
-        typeof ish[$$observable] === 'function') {
+        if (skipNulls) {
+            return Observable.empty();
+        }
+        return Observable.of(ish);
+    } else if (ish instanceof Observable ||
+        isArray(ish) || isPromise(ish)) {
         return ish;
+    } else if (typeof ish[$$observable] === 'function') {
+        return ish[$$observable]();
     } else {
         return Observable.of(ish);
     }
-}
-
-function isObservable(ish) {
-    if (ish && typeof ish === 'object') {
-        return ish instanceof Observable;
-    }
-    return false;
 }
