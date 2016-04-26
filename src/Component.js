@@ -55,8 +55,7 @@ export class Component extends Observable {
         const vDOMs = (convertToObservable(this
             .initialize(modelAndStateChanges) || modelAndStateChanges))
             .switchMap((args) => convertToObservable(
-                this.render(...args)))
-            .do(() => console.log('rendered', this.key));
+                this.render(...args)));
 
         this.source = vDOMs;
     }

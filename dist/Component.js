@@ -78,8 +78,6 @@ var Component = exports.Component = function (_Observable) {
 
         var vDOMs = convertToObservable(_this.initialize(modelAndStateChanges) || modelAndStateChanges).switchMap(function (args) {
             return convertToObservable(_this.render.apply(_this, _toConsumableArray(args)));
-        }).do(function () {
-            return console.log('rendered', _this.key);
         });
 
         _this.source = vDOMs;
