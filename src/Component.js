@@ -46,7 +46,7 @@ export class Component extends Observable {
                     .startWith(modelAndState[1]),
                 (modelAndState, newState) => ((modelAndState[1] =
                     this.mapState(modelAndState[1], newState) || {
-                    ...modelAndState[1], newState
+                    ...modelAndState[1], ...newState
                 }) && modelAndState || modelAndState)
             );
 

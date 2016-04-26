@@ -70,8 +70,7 @@ var Component = exports.Component = function (_Observable) {
         }).switchMap(function (modelAndState) {
             return convertToObservable(_this.loadState.apply(_this, _toConsumableArray(modelAndState)), true).startWith(modelAndState[1]);
         }, function (modelAndState, newState) {
-            return (modelAndState[1] = _this.mapState(modelAndState[1], newState) || _extends({}, modelAndState[1], { newState: newState
-            })) && modelAndState || modelAndState;
+            return (modelAndState[1] = _this.mapState(modelAndState[1], newState) || _extends({}, modelAndState[1], newState)) && modelAndState || modelAndState;
         });
 
         var modelAndStateChanges = _Changes.Changes.from(modelsAndStates);
