@@ -42,7 +42,7 @@ import { html as hJSX } from 'snabbdom-jsx';
 
 export { hJSX, Model, Event, Router, Component, Container, falcor, reaxtor };
 
-function reaxtor(RootClass, model) {
+function reaxtor(RootClass, model, props = {}) {
 
     var working = false;
     var reenter = false;
@@ -64,7 +64,7 @@ function reaxtor(RootClass, model) {
         } while(reenter === true);
     };
 
-    return new RootClass({ models }).map((rootVDom) => {
+    return new RootClass({ ...props, models }).map((rootVDom) => {
         working = false;
         array[0] = model;
         array[1] = rootVDom;

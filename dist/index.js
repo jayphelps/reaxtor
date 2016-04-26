@@ -5,6 +5,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.reaxtor = exports.falcor = exports.Container = exports.Component = exports.Router = exports.Event = exports.Model = exports.hJSX = undefined;
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /** @jsx hJSX */
+
 var _Subject = require('rxjs/Subject');
 
 var _Observable = require('rxjs/Observable');
@@ -59,8 +61,7 @@ var _snabbdomJsx = require('snabbdom-jsx');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_Subscriber.Subscriber.prototype.onNext = _Subscriber.Subscriber.prototype.next; /** @jsx hJSX */
-
+_Subscriber.Subscriber.prototype.onNext = _Subscriber.Subscriber.prototype.next;
 _Subscriber.Subscriber.prototype.onError = _Subscriber.Subscriber.prototype.error;
 _Subscriber.Subscriber.prototype.onCompleted = _Subscriber.Subscriber.prototype.complete;
 _Subscriber.Subscriber.prototype.dispose = _Subscriber.Subscriber.prototype.unsubscribe;
@@ -83,6 +84,8 @@ exports.reaxtor = reaxtor;
 
 
 function reaxtor(RootClass, model) {
+    var props = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
 
     var working = false;
     var reenter = false;
@@ -106,7 +109,7 @@ function reaxtor(RootClass, model) {
         } while (reenter === true);
     };
 
-    return new RootClass({ models: models }).map(function (rootVDom) {
+    return new RootClass(_extends({}, props, { models: models })).map(function (rootVDom) {
         working = false;
         array[0] = model;
         array[1] = rootVDom;
