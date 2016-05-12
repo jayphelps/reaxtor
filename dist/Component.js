@@ -21,7 +21,7 @@ var _BehaviorSubject = require('rxjs/BehaviorSubject');
 
 var _isPromise = require('rxjs/util/isPromise');
 
-var _observable = require('rxjs/symbol/observable');
+var _symbolObservable = require('symbol-observable');
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -153,8 +153,8 @@ function convertToObservable(ish, skipNulls) {
         return _Observable2.Observable.of(ish);
     } else if (ish instanceof _Observable2.Observable || isArray(ish) || (0, _isPromise.isPromise)(ish)) {
         return ish;
-    } else if (typeof ish[_observable.$$observable] === 'function') {
-        return ish[_observable.$$observable]();
+    } else if (typeof ish[_symbolObservable.$$observable] === 'function') {
+        return ish[_symbolObservable.$$observable]();
     } else {
         return _Observable2.Observable.of(ish);
     }
