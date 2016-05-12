@@ -6,7 +6,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 const  { isArray } = Array;
 import { isPromise } from 'rxjs/util/isPromise';
-import { $$observable } from 'rxjs/symbol/observable';
+import { $$observable } from 'symbol-observable';
 
 export class Component extends Observable {
     constructor(props, createChild) {

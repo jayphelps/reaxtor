@@ -35,12 +35,13 @@
     "babel-preset-stage-0": "~6.5.0",
     "falcor": "trxcllnt/falcor#onChangesCompleted",
     "falcor-json-graph": "trxcllnt/falcor-json-graph",
-    "falcor-path-utils": "trxcllnt/falcor-path-utils",
     "falcor-path-syntax": "trxcllnt/falcor-path-syntax",
+    "falcor-path-utils": "trxcllnt/falcor-path-utils",
     "falcor-router": "trxcllnt/falcor-router#rx-5-and-complex-refs",
     "mkdirp": "~0.5.1",
     "rimraf": "~2.5.2",
-    "rxjs": "~5.0.0-beta.6",
-    "snabbdom-jsx": "~0.3.0"
+    "rxjs": "~5.0.0-beta.7",
+    "snabbdom-jsx": "~0.3.0",
+    "symbol-observable": "~0.2.4"
   }
 }
