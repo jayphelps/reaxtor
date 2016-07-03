@@ -53,19 +53,21 @@ var Container = exports.Container = function (_Component) {
     }, {
         key: 'deref',
         value: function deref(subjects, children, _model, _state) {
-            var range = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
-            var _range$from = range.from;
-            var from = _range$from === undefined ? 0 : _range$from;
-            var _range$to = range.to;
-            var to = _range$to === undefined ? _state.length : _range$to;
+            var ids = arguments.length <= 4 || arguments[4] === undefined ? _state : arguments[4];
+
+
+            var isRange = !Array.isArray(ids) && ('from' in ids || 'to' in ids);
+            var offset = isRange ? ids.from || 0 : 0;
+            var to = isRange ? ids.to || ids.length + 1 : ids.length || offset;
 
             var index = -1;
-            var count = to - from;
+            var count = to - offset;
 
             while (++index <= count) {
+                var key = isRange || index > to ? index + offset : ids !== _state && ids[index] || index;
                 if (!subjects[index]) {
                     subjects[index] = new _BehaviorSubject.BehaviorSubject();
-                    children[index] = this.createChild(subjects[index], index, _state[index]);
+                    children[index] = this.createChild(subjects[index], index, key, _state[key]);
                 }
             }
 
@@ -79,7 +81,8 @@ var Container = exports.Container = function (_Component) {
             index = -1;
             count = subjects.length = children.length;
             while (++index < count) {
-                var state = _state[index + from];
+                var _key2 = isRange || index > to ? index + offset : ids !== _state && ids[index] || index;
+                var state = _state[_key2];
                 if (state && (typeof state === 'undefined' ? 'undefined' : _typeof(state)) === 'object') {
                     var model = _model.deref(state);
                     subjects[index].next(model);

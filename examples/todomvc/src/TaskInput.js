@@ -1,12 +1,12 @@
 /** @jsx hJSX */
-import { hJSX, Component } from './../../../';
+import { hJSX, Component } from 'reaxtor';
 import { Observable } from 'rxjs/Observable';
 
 export class TaskInput extends Component {
     loadProps(model) {
         return model.get(`value`);
     }
-    loadState(model, state) {
+    loadState(model, props) {
 
         const entered = this
             .listen('keydown')

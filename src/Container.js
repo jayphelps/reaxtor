@@ -16,19 +16,25 @@ export class Container extends Component {
                 );
         });
     }
-    deref(subjects, children, _model, _state, range = {}) {
+    deref(subjects, children, _model, _state, ids = _state) {
 
-        const {
-            from = 0,
-            to = _state.length } = range;
+        const isRange = !Array.isArray(ids) && (
+            ('from' in ids) || ('to' in ids)
+        );
+        const offset = isRange ? ids.from || 0 : 0;
+        const to = isRange ? ids.to || (ids.length + 1) : ids.length || offset;
+
         let index = -1;
-        let count = to - from;
+        let count = to - offset;
 
         while (++index <= count) {
+            const key = isRange || index > to ?
+                index + offset :
+                ids !== _state && ids[index] || index;
             if (!subjects[index]) {
                 subjects[index] = new BehaviorSubject();
                 children[index] = this.createChild(
-                    subjects[index], index, _state[index]
+                    subjects[index], index, key, _state[key]
                 );
             }
         }
@@ -43,7 +49,10 @@ export class Container extends Component {
         index = -1;
         count = subjects.length = children.length;
         while (++index < count) {
-            const state = _state[index + from];
+            const key = isRange || index > to ?
+                index + offset :
+                ids !== _state && ids[index] || index;
+            const state = _state[key];
             if (state && typeof state === 'object') {
                 const model = _model.deref(state);
                 subjects[index].next(model);

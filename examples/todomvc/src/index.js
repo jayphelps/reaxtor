@@ -1,5 +1,5 @@
 /** @jsx hJSX */
-import { reaxtor, hJSX, Model, Router } from './../../../';
+import { reaxtor, hJSX, Model, Router } from 'reaxtor';
 
 import { Scheduler } from 'rxjs/Rx';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -84,12 +84,12 @@ if (module.hot) {
     ], () => {
         // Dispatch the new modules to the modules Subject.
         modules.next({
-            App: require('./App.js'),
-            Controls: require('./Controls.js'),
-            Routes: require('./Routes.js'),
-            Task: require('./Task.js'),
-            TaskInput: require('./TaskInput.js'),
-            Tasks: require('./Tasks.js')
+            App: require('./App.js').App,
+            Controls: require('./Controls.js').Controls,
+            Routes: require('./Routes.js').Routes,
+            Task: require('./Task.js').Task,
+            TaskInput: require('./TaskInput.js').TaskInput,
+            Tasks: require('./Tasks.js').Tasks
         });
     });
 }

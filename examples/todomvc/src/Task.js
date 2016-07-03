@@ -1,5 +1,5 @@
 /** @jsx hJSX */
-import { hJSX, Component } from './../../../';
+import { hJSX, Component } from 'reaxtor';
 import { Observable } from 'rxjs/Observable';
 
 export class Task extends Component {

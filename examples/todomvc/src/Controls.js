@@ -1,6 +1,6 @@
 /** @jsx hJSX */
 import _filter from 'lodash.filter';
-import { hJSX, Component, Container } from './../../../';
+import { hJSX, Component } from 'reaxtor';
 import { Observable } from 'rxjs/Observable';
 
 export class Controls extends Component {
@@ -16,7 +16,7 @@ export class Controls extends Component {
             }
         );
     }
-    loadState(model) {
+    loadState(model, props) {
         return this.listen('clear').switchMap(
             (ev) => model.call(`completed.remove`),
             (ev, { json }) => json);

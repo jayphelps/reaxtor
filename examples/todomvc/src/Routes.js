@@ -1,5 +1,5 @@
 import _filter from 'lodash.filter';
-import { Model } from './../../../';
+import { Model } from 'reaxtor';
 import { Observable } from 'rxjs/Observable';
 import {
     ref as $ref,
