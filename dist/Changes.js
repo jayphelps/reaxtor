@@ -202,7 +202,7 @@ var DerefSubscriber = function (_Subscriber) {
             while (++keysIdx <= count) {
                 var key = keys[keysIdx];
                 if (state == null || (typeof state === 'undefined' ? 'undefined' : _typeof(state)) !== 'object' || !state.hasOwnProperty(key)) {
-                    model = model.clone({
+                    model = model._clone({
                         _path: model._path.concat(keys.slice(keysIdx))
                     });
                     break;

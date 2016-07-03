@@ -119,7 +119,7 @@ class DerefSubscriber extends Subscriber {
         while (++keysIdx <= count) {
             const key = keys[keysIdx];
             if (state == null || typeof state !== 'object' || !state.hasOwnProperty(key)) {
-                model = model.clone({
+                model = model._clone({
                     _path: model._path.concat(keys.slice(keysIdx))
                 });
                 break;
