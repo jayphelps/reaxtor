@@ -1,6 +1,6 @@
 {
   "name": "reaxtor",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Falcor + Rx + virtual-dom",
   "main": "dist/index.js",
   "browser": "dist/index.js",
