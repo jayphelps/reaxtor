@@ -1,5 +1,5 @@
+import { Observable } from 'rxjs';
 import { Model as FalcorModel } from 'falcor';
-import { Observable } from 'rxjs/Observable';
 import { fromPath, fromPathsOrPathValues } from 'falcor-path-syntax';
 import InvalidateResponse from 'falcor/lib/response/InvalidateResponse';
 
@@ -24,7 +24,7 @@ class ObservableModelResponse extends Observable {
 export class Model extends FalcorModel {
     /* implement inspect method for node's inspect utility */
     inspect() {
-        return `{ v${this.getVersion()} ${JSON.stringify(this.getPath())} }`;
+        return `[v${this.getVersion()}, ${JSON.stringify(this.getPath())}]`;
     }
     get(...getArgs) {
         return new ObservableModelResponse(super.get.apply(

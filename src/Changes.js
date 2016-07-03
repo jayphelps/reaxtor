@@ -1,14 +1,11 @@
-const  { isArray } = Array;
-
-import { asap } from 'rxjs/scheduler/asap';
+import _debug from 'debug';
+import { inspect } from 'util';
 import { tryCatch } from 'rxjs/util/tryCatch';
-import { Scheduler } from 'rxjs/Scheduler';
-import { Observable } from 'rxjs/Observable';
-import { Subscriber } from 'rxjs/Subscriber';
 import { errorObject } from 'rxjs/util/errorObject';
-import { Subscription } from 'rxjs/Subscription';
-
 import { default as pathSyntax } from 'falcor-path-syntax';
+import { Observable, Subscriber, Subscription } from 'rxjs';
+
+const  { isArray } = Array;
 
 export class Changes extends Observable {
     constructor(subscribe) {
@@ -21,10 +18,22 @@ export class Changes extends Observable {
         this.subscription = null;
         this.hasCompleted = false;
     }
-    static from(source) {
-        const observable = new Changes();
-        observable.source = source;
-        return observable;
+    static from(source, component, indent = '') {
+        const changes = new Changes();
+        changes.debug = _debug(`reaxtor:changes`);
+        changes.source = source;
+        changes.indent = indent;
+        changes.component = component;
+        return changes;
+    }
+    lift(operator) {
+        const changes = new Changes();
+        changes.source = this;
+        changes.debug = this.debug;
+        changes.operator = operator;
+        changes.indent = this.indent;
+        changes.component = this.component;
+        return changes;
     }
     next(x) {
         this.nextVal = x;
@@ -91,43 +100,81 @@ export class Changes extends Observable {
                 keys = pathSyntax(keys[0]);
             }
         }
-        return this.lift(new DerefOperator(keys));
+        return this.lift(new DerefOperator(keys, this.debug, this.indent, this.component));
     }
 }
 
 class DerefOperator {
-    constructor(keys) {
+    constructor(keys, debug, indent, component) {
         this.keys = keys;
+        this.debug = debug;
+        this.indent = indent;
+        this.component = component;
     }
     call(subscriber, source) {
-        return source._subscribe(new DerefSubscriber(subscriber, this.keys));
+        return source._subscribe(new DerefSubscriber(subscriber,
+                                                     this.keys, this.debug,
+                                                     this.indent, this.component));
     }
 }
 
 class DerefSubscriber extends Subscriber {
-    constructor(destination, keys) {
+    constructor(destination, keys, debug, indent, component) {
         super(destination);
         this.keys = keys;
+        this.debug = debug;
+        this.indent = indent;
+        this.component = component;
     }
     _next(update) {
 
+        const { debug } = this;
         const keys = this.keys;
         const count = keys.length - 1;
         let [ model, state ] = update;
         let keysIdx = -1;
 
         while (++keysIdx <= count) {
+
             const key = keys[keysIdx];
+
             if (state == null || typeof state !== 'object' || !state.hasOwnProperty(key)) {
-                model = model._clone({
-                    _path: model._path.concat(keys.slice(keysIdx))
-                });
+                const _path = model._path.concat(keys.slice(keysIdx));
+                if (debug.enabled) {
+                    debug.color = 'black';
+                    debug.log = console.warn.bind(console);
+                    const { indent } = this;
+                    debug(` cache miss ${indent} ${this.component.key}`);
+                    (model._path.length > 0) &&
+                    debug(`       from ${indent} ${JSON.stringify(model._path)}`);
+                    debug(`  attempted ${indent} ${JSON.stringify(_path)}`);
+                }
+                model = model._clone({ _path });
                 break;
             }
-            model = tryCatch(model.deref).call(model, state = state[key]);
-            if (model === errorObject) {
+
+            const tmpState = state[key];
+            const tmpModel = tryCatch(model.deref).call(model, tmpState);
+            if (tmpModel === errorObject) {
+                if (debug.enabled) {
+                    debug.color = 'black';
+                    debug.log = console.warn.bind(console);
+                    const { e } = errorObject;
+                    const { indent } = this;
+                    debug(`      error ${indent} ${e && e.message || e}
+                                          component ${indent} ${this.component.key} ${(model._path.length > 0) ? `
+                                               from ${indent} ${JSON.stringify(model._path)}` : ''}
+                                          attempted ${indent} ${JSON.stringify(model._path.concat(keys.slice(keysIdx)))}
+                                               data ${indent} ${inspect(tmpState, { depth: null })}
+                                             parent ${indent} ${inspect(state, { depth: null })}\n`,
+                        e && e.stack || e
+                    );
+                }
                 return this.destination.error(errorObject.e);
             }
+
+            state = tmpState;
+            model = tmpModel;
         }
 
         super._next(model);

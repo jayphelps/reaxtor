@@ -1,13 +1,12 @@
 import { Component } from './Component';
-import { Observable } from 'rxjs/Observable';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 export class Container extends Component {
-    initialize(models) {
+    initialize(models, depth) {
         var subjects = [];
         var children = [];
         return models.switchMap((tuple) => {
-            const active = this.deref(subjects, children, ...tuple);
+            const active = this.deref(subjects, children, depth, ...tuple);
             return (active.length === 0) ?
                 Observable.of(tuple) :
                 Observable.combineLatest(
@@ -16,7 +15,7 @@ export class Container extends Component {
                 );
         });
     }
-    deref(subjects, children, _model, _state, ids = _state) {
+    deref(subjects, children, depth, _model, _state, ids = _state) {
 
         const isRange = !Array.isArray(ids) && (
             ('from' in ids) || ('to' in ids)
@@ -29,13 +28,14 @@ export class Container extends Component {
 
         while (++index <= count) {
             const key = isRange || index > to ?
-                index + offset :
-                ids !== _state && ids[index] || index;
+                index + offset : ids !== _state && ids[index] || index;
             if (!subjects[index]) {
                 subjects[index] = new BehaviorSubject();
-                children[index] = this.createChild(
-                    subjects[index], index, key, _state[key]
-                );
+                children[index] = this.createChild({
+                    index, depth: depth + 1,
+                    models: subjects[index],
+                    ... _state[key]
+                });
             }
         }
 
@@ -50,8 +50,7 @@ export class Container extends Component {
         count = subjects.length = children.length;
         while (++index < count) {
             const key = isRange || index > to ?
-                index + offset :
-                ids !== _state && ids[index] || index;
+                index + offset : ids !== _state && ids[index] || index;
             const state = _state[key];
             if (state && typeof state === 'object') {
                 const model = _model.deref(state);

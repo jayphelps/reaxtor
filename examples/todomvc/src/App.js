@@ -1,6 +1,6 @@
 /** @jsx hJSX */
 import { hJSX, Component } from 'reaxtor';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 const  { fromEvent } = Observable;
 
 import { Tasks } from './Tasks';
@@ -28,18 +28,18 @@ export class App extends Component {
                 }}}),
                 (filter, { json }) => json);
     }
-    initialize(models) {
+    initialize(models, depth) {
 
-        const tasks = new Tasks({
-            index: 0,
-            models: models.deref(`tasks`)
-        });
         const input = new TaskInput({
-            index: 1,
+            index: 0, depth: depth + 1,
             models: models.deref(`input`)
         });
+        const tasks = new Tasks({
+            index: 1, depth: depth + 1,
+            models: models.deref(`tasks`)
+        });
         const footer = new Controls({
-            index: 2,
+            index: 2, depth: depth + 1,
             models: models.deref(`tasks`)
         });
 

@@ -1,6 +1,6 @@
 import _filter from 'lodash.filter';
 import { Model } from 'reaxtor';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import {
     ref as $ref,
     atom as $atom,

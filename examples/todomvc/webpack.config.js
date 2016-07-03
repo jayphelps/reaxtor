@@ -3,10 +3,9 @@ var WriteFileWebpackPlugin = require('write-file-webpack-plugin');
 var devServer = {
   outputPath: path.join(__dirname, './dist'),
   contentBase: path.resolve(__dirname, './'),
-  colors: true,
-  quiet: false,
-  noInfo: false,
-  publicPath: '/dist/'
+  watch: true, colors: true,
+  quiet: false, noInfo: false,
+  hot: false, publicPath: '/dist/'
 };
 
 module.exports = {

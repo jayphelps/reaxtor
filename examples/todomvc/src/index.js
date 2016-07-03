@@ -1,26 +1,6 @@
 /** @jsx hJSX */
+import { Scheduler, BehaviorSubject } from 'rxjs';
 import { reaxtor, hJSX, Model, Router } from 'reaxtor';
-
-import { Scheduler } from 'rxjs/Rx';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import 'rxjs/add/observable/fromEvent';
-import 'rxjs/add/observable/merge';
-import 'rxjs/add/observable/combineLatest';
-
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/scan';
-import 'rxjs/add/operator/take';
-import 'rxjs/add/operator/delay';
-import 'rxjs/add/operator/merge';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/finally';
-import 'rxjs/add/operator/concatMap';
-import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/startWith';
-import 'rxjs/add/operator/takeUntil';
-import 'rxjs/add/operator/mergeMapTo';
-import 'rxjs/add/operator/debounceTime';
 
 import snabbdom from 'snabbdom';
 import sdClass from 'snabbdom/modules/class';

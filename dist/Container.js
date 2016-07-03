@@ -7,13 +7,13 @@ exports.Container = undefined;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _Component2 = require('./Component');
 
-var _Observable = require('rxjs/Observable');
-
-var _BehaviorSubject = require('rxjs/BehaviorSubject');
+var _rxjs = require('rxjs');
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -34,14 +34,14 @@ var Container = exports.Container = function (_Component) {
 
     _createClass(Container, [{
         key: 'initialize',
-        value: function initialize(models) {
+        value: function initialize(models, depth) {
             var _this2 = this;
 
             var subjects = [];
             var children = [];
             return models.switchMap(function (tuple) {
-                var active = _this2.deref.apply(_this2, [subjects, children].concat(_toConsumableArray(tuple)));
-                return active.length === 0 ? _Observable.Observable.of(tuple) : _Observable.Observable.combineLatest(children = active, function () {
+                var active = _this2.deref.apply(_this2, [subjects, children, depth].concat(_toConsumableArray(tuple)));
+                return active.length === 0 ? _rxjs.Observable.of(tuple) : _rxjs.Observable.combineLatest(children = active, function () {
                     for (var _len = arguments.length, kids = Array(_len), _key = 0; _key < _len; _key++) {
                         kids[_key] = arguments[_key];
                     }
@@ -52,8 +52,8 @@ var Container = exports.Container = function (_Component) {
         }
     }, {
         key: 'deref',
-        value: function deref(subjects, children, _model, _state) {
-            var ids = arguments.length <= 4 || arguments[4] === undefined ? _state : arguments[4];
+        value: function deref(subjects, children, depth, _model, _state) {
+            var ids = arguments.length <= 5 || arguments[5] === undefined ? _state : arguments[5];
 
 
             var isRange = !Array.isArray(ids) && ('from' in ids || 'to' in ids);
@@ -66,8 +66,11 @@ var Container = exports.Container = function (_Component) {
             while (++index <= count) {
                 var key = isRange || index > to ? index + offset : ids !== _state && ids[index] || index;
                 if (!subjects[index]) {
-                    subjects[index] = new _BehaviorSubject.BehaviorSubject();
-                    children[index] = this.createChild(subjects[index], index, key, _state[key]);
+                    subjects[index] = new _rxjs.BehaviorSubject();
+                    children[index] = this.createChild(_extends({
+                        index: index, depth: depth + 1,
+                        models: subjects[index]
+                    }, _state[key]));
                 }
             }
 

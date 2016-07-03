@@ -9,9 +9,9 @@ var _get = function get(object, property, receiver) { if (object === null) objec
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _falcor = require('falcor');
+var _rxjs = require('rxjs');
 
-var _Observable2 = require('rxjs/Observable');
+var _falcor = require('falcor');
 
 var _falcorPathSyntax = require('falcor-path-syntax');
 
@@ -61,7 +61,7 @@ var ObservableModelResponse = function (_Observable) {
     }]);
 
     return ObservableModelResponse;
-}(_Observable2.Observable);
+}(_rxjs.Observable);
 
 var Model = exports.Model = function (_FalcorModel) {
     _inherits(Model, _FalcorModel);
@@ -77,7 +77,7 @@ var Model = exports.Model = function (_FalcorModel) {
 
         /* implement inspect method for node's inspect utility */
         value: function inspect() {
-            return '{ v' + this.getVersion() + ' ' + JSON.stringify(this.getPath()) + ' }';
+            return '[v' + this.getVersion() + ', ' + JSON.stringify(this.getPath()) + ']';
         }
     }, {
         key: 'get',
@@ -121,11 +121,11 @@ var Model = exports.Model = function (_FalcorModel) {
 
             var thisPaths = (0, _falcorPathSyntax.fromPathsOrPathValues)([].concat(thisPathsSelector(this)));
 
-            return thisPaths.length === 0 ? _Observable2.Observable.empty() : this.get.apply(this, _toConsumableArray(thisPaths)).mergeMap(function (result) {
+            return thisPaths.length === 0 ? _rxjs.Observable.empty() : this.get.apply(this, _toConsumableArray(thisPaths)).mergeMap(function (result) {
 
                 var restPaths = (0, _falcorPathSyntax.fromPathsOrPathValues)([].concat(restPathsSelector(result)));
 
-                return restPaths.length === 0 ? _Observable2.Observable.of(result) : _this3.get.apply(_this3, _toConsumableArray(thisPaths.concat(restPaths)));
+                return restPaths.length === 0 ? _rxjs.Observable.of(result) : _this3.get.apply(_this3, _toConsumableArray(thisPaths.concat(restPaths)));
             });
         }
     }, {

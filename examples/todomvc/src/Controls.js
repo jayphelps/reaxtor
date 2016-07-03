@@ -1,7 +1,7 @@
 /** @jsx hJSX */
 import _filter from 'lodash.filter';
+import { Observable } from 'rxjs';
 import { hJSX, Component } from 'reaxtor';
-import { Observable } from 'rxjs/Observable';
 
 export class Controls extends Component {
     loadProps(model) {

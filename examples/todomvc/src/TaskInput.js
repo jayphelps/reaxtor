@@ -1,6 +1,6 @@
 /** @jsx hJSX */
+import { Observable } from 'rxjs';
 import { hJSX, Component } from 'reaxtor';
-import { Observable } from 'rxjs/Observable';
 
 export class TaskInput extends Component {
     loadProps(model) {

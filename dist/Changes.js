@@ -13,23 +13,21 @@ var _get = function get(object, property, receiver) { if (object === null) objec
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _asap = require('rxjs/scheduler/asap');
+var _debug2 = require('debug');
+
+var _debug3 = _interopRequireDefault(_debug2);
+
+var _util = require('util');
 
 var _tryCatch = require('rxjs/util/tryCatch');
 
-var _Scheduler = require('rxjs/Scheduler');
-
-var _Observable2 = require('rxjs/Observable');
-
-var _Subscriber2 = require('rxjs/Subscriber');
-
 var _errorObject = require('rxjs/util/errorObject');
-
-var _Subscription = require('rxjs/Subscription');
 
 var _falcorPathSyntax = require('falcor-path-syntax');
 
 var _falcorPathSyntax2 = _interopRequireDefault(_falcorPathSyntax);
+
+var _rxjs = require('rxjs');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -60,6 +58,17 @@ var Changes = exports.Changes = function (_Observable) {
     }
 
     _createClass(Changes, [{
+        key: 'lift',
+        value: function lift(operator) {
+            var changes = new Changes();
+            changes.source = this;
+            changes.debug = this.debug;
+            changes.operator = operator;
+            changes.indent = this.indent;
+            changes.component = this.component;
+            return changes;
+        }
+    }, {
         key: 'next',
         value: function next(x) {
             this.nextVal = x;
@@ -116,7 +125,7 @@ var Changes = exports.Changes = function (_Observable) {
                 subscriber.next(this.nextVal);
             }
 
-            return new _Subscription.Subscription(function () {
+            return new _rxjs.Subscription(function () {
                 var index = subscribers.indexOf(subscriber);
                 if (~index) {
                     subscribers.splice(index, 1);
@@ -142,31 +151,39 @@ var Changes = exports.Changes = function (_Observable) {
                     keys = (0, _falcorPathSyntax2.default)(keys[0]);
                 }
             }
-            return this.lift(new DerefOperator(keys));
+            return this.lift(new DerefOperator(keys, this.debug, this.indent, this.component));
         }
     }], [{
         key: 'from',
-        value: function from(source) {
-            var observable = new Changes();
-            observable.source = source;
-            return observable;
+        value: function from(source, component) {
+            var indent = arguments.length <= 2 || arguments[2] === undefined ? '' : arguments[2];
+
+            var changes = new Changes();
+            changes.debug = (0, _debug3.default)('reaxtor:changes');
+            changes.source = source;
+            changes.indent = indent;
+            changes.component = component;
+            return changes;
         }
     }]);
 
     return Changes;
-}(_Observable2.Observable);
+}(_rxjs.Observable);
 
 var DerefOperator = function () {
-    function DerefOperator(keys) {
+    function DerefOperator(keys, debug, indent, component) {
         _classCallCheck(this, DerefOperator);
 
         this.keys = keys;
+        this.debug = debug;
+        this.indent = indent;
+        this.component = component;
     }
 
     _createClass(DerefOperator, [{
         key: 'call',
         value: function call(subscriber, source) {
-            return source._subscribe(new DerefSubscriber(subscriber, this.keys));
+            return source._subscribe(new DerefSubscriber(subscriber, this.keys, this.debug, this.indent, this.component));
         }
     }]);
 
@@ -176,18 +193,22 @@ var DerefOperator = function () {
 var DerefSubscriber = function (_Subscriber) {
     _inherits(DerefSubscriber, _Subscriber);
 
-    function DerefSubscriber(destination, keys) {
+    function DerefSubscriber(destination, keys, debug, indent, component) {
         _classCallCheck(this, DerefSubscriber);
 
         var _this3 = _possibleConstructorReturn(this, Object.getPrototypeOf(DerefSubscriber).call(this, destination));
 
         _this3.keys = keys;
+        _this3.debug = debug;
+        _this3.indent = indent;
+        _this3.component = component;
         return _this3;
     }
 
     _createClass(DerefSubscriber, [{
         key: '_next',
         value: function _next(update) {
+            var debug = this.debug;
 
             var keys = this.keys;
             var count = keys.length - 1;
@@ -200,17 +221,40 @@ var DerefSubscriber = function (_Subscriber) {
             var keysIdx = -1;
 
             while (++keysIdx <= count) {
+
                 var key = keys[keysIdx];
+
                 if (state == null || (typeof state === 'undefined' ? 'undefined' : _typeof(state)) !== 'object' || !state.hasOwnProperty(key)) {
-                    model = model._clone({
-                        _path: model._path.concat(keys.slice(keysIdx))
-                    });
+                    var _path = model._path.concat(keys.slice(keysIdx));
+                    if (debug.enabled) {
+                        debug.color = 'black';
+                        debug.log = console.warn.bind(console);
+                        var indent = this.indent;
+
+                        debug(' cache miss ' + indent + ' ' + this.component.key);
+                        model._path.length > 0 && debug('       from ' + indent + ' ' + JSON.stringify(model._path));
+                        debug('  attempted ' + indent + ' ' + JSON.stringify(_path));
+                    }
+                    model = model._clone({ _path: _path });
                     break;
                 }
-                model = (0, _tryCatch.tryCatch)(model.deref).call(model, state = state[key]);
-                if (model === _errorObject.errorObject) {
+
+                var tmpState = state[key];
+                var tmpModel = (0, _tryCatch.tryCatch)(model.deref).call(model, tmpState);
+                if (tmpModel === _errorObject.errorObject) {
+                    if (debug.enabled) {
+                        debug.color = 'black';
+                        debug.log = console.warn.bind(console);
+                        var e = _errorObject.errorObject.e;
+                        var _indent = this.indent;
+
+                        debug('      error ' + _indent + ' ' + (e && e.message || e) + '\n                                          component ' + _indent + ' ' + this.component.key + ' ' + (model._path.length > 0 ? '\n                                               from ' + _indent + ' ' + JSON.stringify(model._path) : '') + '\n                                          attempted ' + _indent + ' ' + JSON.stringify(model._path.concat(keys.slice(keysIdx))) + '\n                                               data ' + _indent + ' ' + (0, _util.inspect)(tmpState, { depth: null }) + '\n                                             parent ' + _indent + ' ' + (0, _util.inspect)(state, { depth: null }) + '\n', e && e.stack || e);
+                    }
                     return this.destination.error(_errorObject.errorObject.e);
                 }
+
+                state = tmpState;
+                model = tmpModel;
             }
 
             _get(Object.getPrototypeOf(DerefSubscriber.prototype), '_next', this).call(this, model);
@@ -218,5 +262,5 @@ var DerefSubscriber = function (_Subscriber) {
     }]);
 
     return DerefSubscriber;
-}(_Subscriber2.Subscriber);
+}(_rxjs.Subscriber);
 //# sourceMappingURL=Changes.js.map
