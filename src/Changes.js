@@ -112,14 +112,17 @@ class DerefSubscriber extends Subscriber {
     _next(update) {
 
         const keys = this.keys;
-        const count = keys.length;
-        let keysIdx = -1;
+        const count = keys.length - 1;
         let [ model, state ] = update;
+        let keysIdx = -1;
 
-        while (++keysIdx < count) {
+        while (++keysIdx <= count) {
             const key = keys[keysIdx];
-            if (!state.hasOwnProperty(key)) {
-                return;
+            if (state == null || typeof state !== 'object' || !state.hasOwnProperty(key)) {
+                model = model.clone({
+                    _path: model._path.concat(keys.slice(keysIdx))
+                });
+                break;
             }
             model = tryCatch(model.deref).call(model, state = state[key]);
             if (model === errorObject) {
