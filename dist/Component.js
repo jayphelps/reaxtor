@@ -155,6 +155,8 @@ function convertToObservable(ish, skipNulls) {
         return ish;
     } else if (typeof ish[_symbolObservable.$$observable] === 'function') {
         return ish[_symbolObservable.$$observable]();
+    } else if (typeof ish.subscribe === 'function') {
+        return _Observable2.Observable.from(ish);
     } else {
         return _Observable2.Observable.of(ish);
     }

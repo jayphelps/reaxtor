@@ -113,6 +113,8 @@ function convertToObservable(ish, skipNulls) {
         return ish;
     } else if (typeof ish[$$observable] === 'function') {
         return ish[$$observable]();
+    } else if (typeof ish.subscribe === 'function') {
+        return Observable.from(ish);
     } else {
         return Observable.of(ish);
     }
