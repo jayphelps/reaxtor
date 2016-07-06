@@ -46,6 +46,8 @@ var Component = exports.Component = function (_Observable) {
         var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Component).call(this));
 
         var debug = (0, _debug3.default)('reaxtor:component');
+        var warnings = (0, _debug3.default)('reaxtor:component');
+        warnings.log = console.warn.bind(console);
         var _props$index = props.index;
         var index = _props$index === undefined ? 0 : _props$index;
         var _props$depth = props.depth;
@@ -57,8 +59,6 @@ var Component = exports.Component = function (_Observable) {
         delete props.depth;
         delete props.models;
 
-        _this.props = props;
-
         var indent = '';
         if (debug.enabled) {
             var indentIdx = 0;
@@ -66,6 +66,16 @@ var Component = exports.Component = function (_Observable) {
                 indent += '    ';
             }
             indent += '|---';
+        }
+
+        for (var key in props) {
+            if (props.hasOwnProperty(key)) {
+                if (_this.hasOwnProperty(key)) {
+                    warnings('    props ' + indent + ' component has ' + key + ' definition, not overriding');
+                } else {
+                    _this[key] = props[key];
+                }
+            }
         }
 
         var modelsAndStates = models.distinctUntilChanged(function () {

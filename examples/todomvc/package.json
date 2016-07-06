@@ -19,7 +19,7 @@
     "babel-preset-stage-0": "~6.5.0",
     "css-loader": "~0.23.1",
     "lodash.filter": "~4.3.0",
-    "reaxtor": "1.5.0",
+    "reaxtor": "file:../../",
     "snabbdom": "~0.5.0",
     "style-loader": "~0.13.1",
     "todomvc-app-css": "~2.0.4",

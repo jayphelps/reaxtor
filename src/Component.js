@@ -14,13 +14,13 @@ export class Component extends Observable {
         super();
 
         const debug = _debug(`reaxtor:component`);
+        const warnings = _debug(`reaxtor:component`);
+        warnings.log = console.warn.bind(console);
         let { index = 0, depth = 0, models } = props;
 
         delete props.index;
         delete props.depth;
         delete props.models;
-
-        this.props = props;
 
         let indent = '';
         if (debug.enabled) {
@@ -29,6 +29,16 @@ export class Component extends Observable {
                 indent += '    ';
             }
             indent += '|---';
+        }
+
+        for (const key in props) {
+            if (props.hasOwnProperty(key)) {
+                if (this.hasOwnProperty(key)) {
+                    warnings(`    props ${indent} component has ${key} definition, not overriding`);
+                } else {
+                    this[key] = props[key];
+                }
+            }
         }
 
         const modelsAndStates = models
