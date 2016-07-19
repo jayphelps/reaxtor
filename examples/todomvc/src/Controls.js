@@ -21,7 +21,7 @@ export class Controls extends Component {
             (ev) => model.call(`completed.remove`),
             (ev, { json }) => json);
     }
-    render(model, state) {
+    render(state) {
 
         const { length } = state;
 

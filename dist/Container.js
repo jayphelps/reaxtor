@@ -88,7 +88,7 @@ var Container = exports.Container = function (_Component) {
                 var state = _state[_key2];
                 if (state && (typeof state === 'undefined' ? 'undefined' : _typeof(state)) === 'object') {
                     var model = _model.deref(state);
-                    subjects[index].next(model);
+                    subjects[index].next([model, state]);
                 }
             }
 

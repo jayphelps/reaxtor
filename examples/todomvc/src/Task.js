@@ -34,7 +34,7 @@ export class Task extends Component {
             )
         );
     }
-    render(model, { id, content, completed, editing = false }) {
+    render({ id, content, completed, editing = false }) {
         return (
             <li class={{ editing, completed: (completed && !editing) }}>
                 <div class={{'view': true}}>

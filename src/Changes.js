@@ -1,3 +1,4 @@
+import pad from 'left-pad';
 import _debug from 'debug';
 import { inspect } from 'util';
 import { tryCatch } from 'rxjs/util/tryCatch';
@@ -18,23 +19,23 @@ export class Changes extends Observable {
         this.subscription = null;
         this.hasCompleted = false;
     }
-    static from(source, component, indent = '') {
+    static from(source, component, depth = 0) {
         const changes = new Changes();
         changes.debug = _debug(`reaxtor:changes`);
         changes.source = source;
-        changes.indent = indent;
+        changes.depth = depth;
         changes.component = component;
         return changes;
     }
-    lift(operator) {
-        const changes = new Changes();
-        changes.source = this;
-        changes.debug = this.debug;
-        changes.operator = operator;
-        changes.indent = this.indent;
-        changes.component = this.component;
-        return changes;
-    }
+    // lift(operator) {
+    //     const changes = new Changes();
+    //     changes.source = this;
+    //     changes.debug = this.debug;
+    //     changes.operator = operator;
+    //     changes.indent = this.indent;
+    //     changes.component = this.component;
+    //     return changes;
+    // }
     next(x) {
         this.nextVal = x;
         this.hasValue = true;
@@ -97,38 +98,48 @@ export class Changes extends Observable {
             if (isArray(keys[0])) {
                 keys = keys[0];
             } else if(typeof keys[0] === 'string') {
-                keys = pathSyntax(keys[0]);
+                keys = keys[0].length === 0 ? keys[0] : pathSyntax(keys[0]);
             }
         }
-        return this.lift(new DerefOperator(keys, this.debug, this.indent, this.component));
+        return (keys.length === 0 ? this : this
+            .lift(new DerefOperator(keys, this.debug, this.depth, this.component))
+        );
     }
 }
 
 class DerefOperator {
-    constructor(keys, debug, indent, component) {
+    constructor(keys, debug, depth, component) {
         this.keys = keys;
         this.debug = debug;
-        this.indent = indent;
+        this.depth = depth;
         this.component = component;
     }
     call(subscriber, source) {
         return source._subscribe(new DerefSubscriber(subscriber,
                                                      this.keys, this.debug,
-                                                     this.indent, this.component));
+                                                     this.depth, this.component));
     }
 }
 
 class DerefSubscriber extends Subscriber {
-    constructor(destination, keys, debug, indent, component) {
+    constructor(destination, keys, debug, depth, component) {
         super(destination);
         this.keys = keys;
         this.debug = debug;
-        this.indent = indent;
+        this.depth = depth;
         this.component = component;
+    }
+    warn(message, ...values) {
+        const { depth, debug } = this;
+        if (debug.enabled) {
+            debug.color = 'black';
+            debug.log = console.warn.bind(console);
+            debug(`${pad(message, 10 + (depth * 4))} |---- ${values.join(' ')}`);
+        }
+        return values[values.length - 1];
     }
     _next(update) {
 
-        const { debug } = this;
         const keys = this.keys;
         const count = keys.length - 1;
         let [ model, state ] = update;
@@ -140,15 +151,11 @@ class DerefSubscriber extends Subscriber {
 
             if (state == null || typeof state !== 'object' || !state.hasOwnProperty(key)) {
                 const _path = model._path.concat(keys.slice(keysIdx));
-                if (debug.enabled) {
-                    debug.color = 'black';
-                    debug.log = console.warn.bind(console);
-                    const { indent } = this;
-                    debug(` cache miss ${indent} ${this.component.key}`);
-                    (model._path.length > 0) &&
-                    debug(`       from ${indent} ${JSON.stringify(model._path)}`);
-                    debug(`  attempted ${indent} ${JSON.stringify(_path)}`);
+                this.warn(`cache miss`, this.component.key);
+                if (model._path.length > 0) {
+                    this.warn(`from`, JSON.stringify(model._path));
                 }
+                this.warn(`attempted`, JSON.stringify(_path));
                 model = model._clone({ _path });
                 break;
             }
@@ -156,20 +163,29 @@ class DerefSubscriber extends Subscriber {
             const tmpState = state[key];
             const tmpModel = tryCatch(model.deref).call(model, tmpState);
             if (tmpModel === errorObject) {
-                if (debug.enabled) {
-                    debug.color = 'black';
-                    debug.log = console.warn.bind(console);
-                    const { e } = errorObject;
-                    const { indent } = this;
-                    debug(`      error ${indent} ${e && e.message || e}
-                                          component ${indent} ${this.component.key} ${(model._path.length > 0) ? `
-                                               from ${indent} ${JSON.stringify(model._path)}` : ''}
-                                          attempted ${indent} ${JSON.stringify(model._path.concat(keys.slice(keysIdx)))}
-                                               data ${indent} ${inspect(tmpState, { depth: null })}
-                                             parent ${indent} ${inspect(state, { depth: null })}\n`,
-                        e && e.stack || e
-                    );
+                this.warn('error', e && e.message || e);
+                this.warn('component', this.component.key);
+                if (model._path.length > 0) {
+                    this.warn('from', JSON.stringify(model._path));
                 }
+                this.warn('attempted', JSON.stringify(model._path.concat(keys.slice(keysIdx))));
+                this.warn('data', inspect(tmpState, { depth: null }));
+                this.warn('parent', inspect(state, { depth: null }));
+                this.warn('stack', e && e.stack || e);
+                // if (debug.enabled) {
+                //     debug.color = 'black';
+                //     debug.log = console.warn.bind(console);
+                //     const { e } = errorObject;
+                //     const { indent } = this;
+                //     debug(`      error ${indent} ${e && e.message || e}
+                //                           component ${indent} ${this.component.key} ${(model._path.length > 0) ? `
+                //                                from ${indent} ${JSON.stringify(model._path)}` : ''}
+                //                           attempted ${indent} ${JSON.stringify(model._path.concat(keys.slice(keysIdx)))}
+                //                                data ${indent} ${inspect(tmpState, { depth: null })}
+                //                              parent ${indent} ${inspect(state, { depth: null })}\n`,
+                //         e && e.stack || e
+                //     );
+                // }
                 return this.destination.error(errorObject.e);
             }
 
@@ -177,6 +193,6 @@ class DerefSubscriber extends Subscriber {
             model = tmpModel;
         }
 
-        super._next(model);
+        super._next([model, state]);
     }
 }

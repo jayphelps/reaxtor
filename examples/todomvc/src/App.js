@@ -28,26 +28,24 @@ export class App extends Component {
                 }}}),
                 (filter, { json }) => json);
     }
-    initialize(models, depth) {
+    observe(models, depth) {
 
         const input = new TaskInput({
-            index: 0, depth: depth + 1,
-            models: models.deref(`input`)
+            models, path: 'input',
+            index: 0, depth: depth + 1
         });
         const tasks = new Tasks({
-            index: 1, depth: depth + 1,
-            models: models.deref(`tasks`)
+            models, path: 'tasks',
+            index: 1, depth: depth + 1
         });
         const footer = new Controls({
-            index: 2, depth: depth + 1,
-            models: models.deref(`tasks`)
+            models, path: 'tasks',
+            index: 2, depth: depth + 1
         });
 
-        return models.switchMap((tuple) => Observable.combineLatest(
-            input, tasks, footer, (...children) => [...tuple, ...children]
-        ));
+        return [input, tasks, footer];
     }
-    render(model, state, ...children) {
+    render(state, ...children) {
         return (
             <section class={{ 'todoapp': true }}>{
                 children.filter(x => !!x)

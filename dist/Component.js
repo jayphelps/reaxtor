@@ -7,7 +7,13 @@ exports.Component = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _leftPad = require('left-pad');
+
+var _leftPad2 = _interopRequireDefault(_leftPad);
 
 var _debug2 = require('debug');
 
@@ -46,96 +52,99 @@ var Component = exports.Component = function (_Observable) {
         var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Component).call(this));
 
         var debug = (0, _debug3.default)('reaxtor:component');
-        var warnings = (0, _debug3.default)('reaxtor:component');
-        warnings.log = console.warn.bind(console);
         var _props$index = props.index;
         var index = _props$index === undefined ? 0 : _props$index;
         var _props$depth = props.depth;
         var depth = _props$depth === undefined ? 0 : _props$depth;
         var models = props.models;
+        var _props$path = props.path;
+        var path = _props$path === undefined ? '' : _props$path;
 
 
+        var log = function log(message) {
+            for (var _len = arguments.length, values = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+                values[_key - 1] = arguments[_key];
+            }
+
+            if (debug.enabled) {
+                message = (0, _leftPad2.default)(message, 10 + depth * 4) + ' |--- ' + values.reduce(function (s, x) {
+                    return s + (typeof x === 'undefined' ? 'undefined' : _typeof(x)) === 'object' ? '%o' : '%s';
+                });
+                debug.apply(undefined, [message].concat(values));
+            }
+            return values[values.length - 1];
+        };
+
+        delete props.path;
         delete props.index;
         delete props.depth;
         delete props.models;
 
-        var indent = '';
-        if (debug.enabled) {
-            var indentIdx = 0;
-            while (++indentIdx <= depth) {
-                indent += '    ';
-            }
-            indent += '|---';
-        }
-
-        for (var key in props) {
-            if (props.hasOwnProperty(key)) {
-                if (_this.hasOwnProperty(key)) {
-                    warnings('    props ' + indent + ' component has ' + key + ' definition, not overriding');
-                } else {
-                    _this[key] = props[key];
-                }
-            }
-        }
-
-        var modelsAndStates = models.distinctUntilChanged(function () {
-            return !_this.shouldComponentUpdate.apply(_this, arguments);
-        }, function () {
-            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-                args[_key] = arguments[_key];
-            }
-
-            var nextKey = _this.mapUpdate.apply(_this, args.concat([depth, index]));
-            if (debug.enabled) {
-                debug('   update ' + indent + ' ' + nextKey);
-            }
-            return nextKey;
-        }).switchMap(function (model) {
-            if (debug.enabled) {
-                debug('loadProps ' + indent + ' ' + _this.key);
-            }
-            return convertToObservable(_this.loadProps(model));
-        }, function (model) {
-            var _ref = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-            var _ref$json = _ref.json;
-            var state = _ref$json === undefined ? {} : _ref$json;
-
-            var result = _this.mapProps(model, state);
-            if (typeof result === 'undefined') {
-                return [model, state];
-            } else if (isArray(result)) {
-                if (result[0] !== model) {
-                    result = [model].concat(_toConsumableArray(result));
-                }
-                if (typeof result[1] === 'undefined') {
-                    result[1] = state;
-                }
-                return result;
-            } else {
-                return [model, state];
-            }
-        }).switchMap(function (modelAndState) {
-            if (debug.enabled) {
-                debug('loadState ' + indent + ' ' + _this.key + ' ' + serializeStateWithIndent(indent, modelAndState[1]));
-            }
-            return convertToObservable(_this.loadState.apply(_this, _toConsumableArray(modelAndState)), true).startWith(modelAndState[1]);
-        }, function (modelAndState, newState) {
-            var result = _this.mapState(modelAndState[1], newState);
-            if (typeof result === 'undefined') {
-                result = _extends({}, modelAndState[1], newState);
-            }
-            modelAndState[1] = result;
-            return modelAndState;
+        var distinctModels = models.deref(path).distinctUntilChanged(function (curr, next) {
+            return !_this.shouldComponentUpdate(curr, next);
+        }, function (modelAndState) {
+            return log('update', _this.mapUpdate(modelAndState[0], depth, index));
         });
 
-        var modelAndStateChanges = _Changes.Changes.from(modelsAndStates, _this, indent);
+        var componentState = distinctModels.scan(function (componentState, modelAndState) {
+            componentState[0] = modelAndState[0];
+            componentState[1] = _extends({}, modelAndState[1] || {}, componentState[1]);
+            return componentState;
+        }, [null, props]);
 
-        var vDOMs = convertToObservable(_this.initialize(modelAndStateChanges, depth) || modelAndStateChanges).switchMap(function (args) {
-            if (debug.enabled) {
-                debug('   render ' + indent + ' ' + _this.key + ' ' + serializeStateWithIndent(indent, args[1]));
-            }
-            return convertToObservable(_this.render.apply(_this, _toConsumableArray(args)));
+        var modelsAndRemoteStates = componentState.switchMap(function (componentState) {
+            log('loadProps', _this.key);
+            return convertToObservable(_this.loadProps.apply(_this, _toConsumableArray(componentState)));
+        }, function (componentState) {
+            var newRemoteState = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+            if (newRemoteState.json) {
+                newRemoteState = newRemoteState.json;
+            };
+            componentState[1] = _this.mapProps(componentState[1], newRemoteState);
+            return componentState;
+        });
+
+        var modelsAndLocalStates = modelsAndRemoteStates.switchMap(function (componentState) {
+            log('loadState', _this.key, componentState[1]);
+            return convertToObservable(_this.loadState.apply(_this, _toConsumableArray(componentState)), true).startWith(componentState[1]);
+        }, function (componentState) {
+            var newLocalState = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+            if (newLocalState.json) {
+                newLocalState = newLocalState.json;
+            };
+            componentState[1] = _this.mapState(componentState[1], newLocalState);
+            return componentState;
+        });
+
+        var modelsAndStates = _Changes.Changes.from(modelsAndLocalStates, _this, depth);
+
+        var children = _this.observe(modelsAndStates, depth);
+        var childUpdates = void 0;
+
+        if (typeof children === 'function') {
+            childUpdates = modelsAndStates.switchMap(function (create, subjects, children) {
+                return function (componentState) {
+                    var active = _this.deref.apply(_this, [create, subjects, children, depth].concat(_toConsumableArray(componentState)));
+                    return active.length === 0 ? _rxjs.Observable.of(children = active) : _rxjs.Observable.combineLatest(children = active);
+                };
+            }(children, [], []), function (componentState, children) {
+                return [componentState[1]].concat(_toConsumableArray(children));
+            });
+        } else if (children && children.length > 0) {
+            childUpdates = modelsAndStates.switchMapTo(_rxjs.Observable.combineLatest(children), function (componentState, children) {
+                return [componentState[1]].concat(_toConsumableArray(children));
+            });
+        } else {
+            childUpdates = modelsAndStates.map(function (componentState) {
+                return [componentState[1]];
+            });
+        }
+
+        var vDOMs = childUpdates.switchMap(function (xs) {
+            log('render', _this.key, xs[0]);
+            return convertToObservable(_this.render.apply(_this, _toConsumableArray(xs)));
         });
 
         _this.source = vDOMs;
@@ -154,19 +163,23 @@ var Component = exports.Component = function (_Observable) {
         }
     }, {
         key: 'loadProps',
-        value: function loadProps(model) {}
-    }, {
-        key: 'mapProps',
-        value: function mapProps(model, props) {}
+        value: function loadProps(model, state) {}
     }, {
         key: 'loadState',
         value: function loadState(model, state) {}
     }, {
-        key: 'mapState',
-        value: function mapState(state, newState) {}
+        key: 'mapProps',
+        value: function mapProps(curr, next) {
+            return Object.assign(curr, next);
+        }
     }, {
-        key: 'initialize',
-        value: function initialize(changes, depth) {}
+        key: 'mapState',
+        value: function mapState(curr, next) {
+            return Object.assign(curr, next);
+        }
+    }, {
+        key: 'observe',
+        value: function observe(changes, depth) {}
     }, {
         key: 'render',
         value: function render() {
@@ -187,8 +200,16 @@ var Component = exports.Component = function (_Observable) {
     }, {
         key: 'dispatch',
         value: function dispatch(name) {
+            var _this2 = this;
+
+            for (var _len2 = arguments.length, values = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+                values[_key2 - 1] = arguments[_key2];
+            }
+
             var handlers = this.handlers || (this.handlers = {});
-            var responder = handlers[name] || (handlers[name] = this.trigger.bind(this, name));
+            var responder = values.length > 0 ? function (event) {
+                return _this2.trigger(name, [event].concat(values));
+            } : handlers[name] || (handlers[name] = this.trigger.bind(this, name));
             responder.eventName = name;
             return responder;
         }
@@ -203,27 +224,47 @@ var Component = exports.Component = function (_Observable) {
                 }
             }
         }
+    }, {
+        key: 'deref',
+        value: function deref(create, subjects, children, depth, model, state) {
+            var ids = arguments.length <= 6 || arguments[6] === undefined ? state : arguments[6];
+
+
+            var isRange = !Array.isArray(ids) && ('from' in ids || 'to' in ids);
+            var offset = isRange ? ids.from || 0 : 0;
+            var to = isRange ? ids.to || ids.length + 1 : ids.length || offset;
+
+            var index = -1;
+            var count = to - offset;
+
+            while (++index <= count) {
+                var key = isRange || index > to ? index + offset : ids !== state && ids[index] || index;
+                if (!subjects[index]) {
+                    subjects[index] = new _rxjs.BehaviorSubject();
+                    var changes = _Changes.Changes.from(subjects[index], { key: key }, depth + 1);
+                    children[index] = changes.component = create(changes, state[key], key, index);
+                }
+            }
+
+            index = count - 1;
+            children.length = count;
+            count = subjects.length;
+            while (++index < count) {
+                subjects[index].complete();
+            }
+
+            index = -1;
+            count = subjects.length = children.length;
+            while (++index < count) {
+                subjects[index].next([model, state]);
+            }
+
+            return children;
+        }
     }]);
 
     return Component;
 }(_rxjs.Observable);
-
-function serializeStateWithIndent(indent, state) {
-
-    var result = (0, _util.inspect)(state, { depth: null });
-
-    if (/(\n|\r)/i.test(result)) {
-
-        var spaces = '                     ';
-        var indent2 = '       ';
-        var indent3 = indent2 + indent.replace(/(\||\-)/ig, ' ');
-
-        result = result.slice(1, -1);
-        result = '\n' + spaces + indent2 + '{' + ('\n ' + result).replace(/(\n|\r)/ig, '\n' + spaces + indent3) + ('\n' + spaces + indent2 + '}\n');
-    }
-
-    return result;
-}
 
 function convertToObservable(ish, skipNulls) {
     if (ish == null) {

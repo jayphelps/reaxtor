@@ -5,6 +5,7 @@ import falcor from 'falcor';
 import Router from 'falcor-router';
 import { Model } from './Model';
 import { Event } from './Event';
+import { Changes } from './Changes';
 import { BehaviorSubject } from 'rxjs';
 import { Component } from './Component';
 import { Container } from './Container';
@@ -14,13 +15,13 @@ export { hJSX, Model, Event, Router, Component, Container, falcor, reaxtor };
 
 function reaxtor(RootClass, model, props = {}) {
 
+    let debug;
     let working = false;
     let reenter = false;
-    const debugEnd = _debug(`reaxtor:lifecycle`);
-    const debugStart = _debug(`reaxtor:lifecycle`);
     const { _root } = model;
-    const array = new Array(2);
-    const models = new BehaviorSubject(model);
+    const array = [model, props];
+    const models = new BehaviorSubject(array);
+    const changes = Changes.from(models, { key: '' });
     const previousOnChangesCompleted = _root.onChangesCompleted;
 
     _root.onChangesCompleted = function() {
@@ -31,24 +32,28 @@ function reaxtor(RootClass, model, props = {}) {
 
             const topLevelModelVersion = (model = this).getVersion();
 
-            debugStart.color = debugEnd.color = _debug.colors[
+            debug = _debug(`reaxtor:lifecycle`);
+            debug.color = _debug.colors[
                 (topLevelModelVersion + _debug.colors.length) % _debug.colors.length
             ];
 
-            debugStart(`    start | v${topLevelModelVersion}`);
+            debug(`- start ---| v${topLevelModelVersion}`);
 
             if (previousOnChangesCompleted) {
                 previousOnChangesCompleted.call(this);
             }
 
-            models.next(model);
+            array[0] = model;
+            array[1] = props;
+
+            models.next(array);
         } while(reenter === true);
     };
 
     _root.onChangesCompleted.call(_root.topLevelModel);
 
-    return new RootClass({ ...props, models }).map((rootVDom) => {
-        debugEnd(`      end | v${model.getVersion()}`);
+    return new RootClass({ ...props, models: changes }).map((rootVDom) => {
+        debug(`- end -----| v${model.getVersion()}`);
         working = false;
         array[0] = model;
         array[1] = rootVDom;

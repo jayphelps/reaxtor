@@ -23,6 +23,8 @@ var _Model = require('./Model');
 
 var _Event = require('./Event');
 
+var _Changes = require('./Changes');
+
 var _rxjs = require('rxjs');
 
 var _Component = require('./Component');
@@ -47,15 +49,15 @@ function reaxtor(RootClass, model) {
     var props = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
 
+    var debug = void 0;
     var working = false;
     var reenter = false;
-    var debugEnd = (0, _debug3.default)('reaxtor:lifecycle');
-    var debugStart = (0, _debug3.default)('reaxtor:lifecycle');
     var _model = model;
     var _root = _model._root;
 
-    var array = new Array(2);
-    var models = new _rxjs.BehaviorSubject(model);
+    var array = [model, props];
+    var models = new _rxjs.BehaviorSubject(array);
+    var changes = _Changes.Changes.from(models, { key: '' });
     var previousOnChangesCompleted = _root.onChangesCompleted;
 
     _root.onChangesCompleted = function () {
@@ -68,22 +70,26 @@ function reaxtor(RootClass, model) {
 
             var topLevelModelVersion = (model = this).getVersion();
 
-            debugStart.color = debugEnd.color = _debug3.default.colors[(topLevelModelVersion + _debug3.default.colors.length) % _debug3.default.colors.length];
+            debug = (0, _debug3.default)('reaxtor:lifecycle');
+            debug.color = _debug3.default.colors[(topLevelModelVersion + _debug3.default.colors.length) % _debug3.default.colors.length];
 
-            debugStart('    start | v' + topLevelModelVersion);
+            debug('- start ---| v' + topLevelModelVersion);
 
             if (previousOnChangesCompleted) {
                 previousOnChangesCompleted.call(this);
             }
 
-            models.next(model);
+            array[0] = model;
+            array[1] = props;
+
+            models.next(array);
         } while (reenter === true);
     };
 
     _root.onChangesCompleted.call(_root.topLevelModel);
 
-    return new RootClass(_extends({}, props, { models: models })).map(function (rootVDom) {
-        debugEnd('      end | v' + model.getVersion());
+    return new RootClass(_extends({}, props, { models: changes })).map(function (rootVDom) {
+        debug('- end -----| v' + model.getVersion());
         working = false;
         array[0] = model;
         array[1] = rootVDom;

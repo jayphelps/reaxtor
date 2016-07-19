@@ -2,11 +2,11 @@
 import _filter from 'lodash.filter';
 import { Task } from './Task';
 import { Observable } from 'rxjs';
-import { hJSX, Container } from 'reaxtor';
+import { hJSX, Component } from 'reaxtor';
 import { pathValue as $pv } from 'falcor-json-graph';
 
-export class Tasks extends Container {
-    deref(subjects, children, depth, model, state, ids) {
+export class Tasks extends Component {
+    deref(create, subjects, children, depth, model, state, ids) {
         const { filter } = state;
 
         if (filter === 'completed') {
@@ -17,10 +17,13 @@ export class Tasks extends Container {
 
         state.filter = filter;
 
-        return super.deref(subjects, children, depth, model, state, ids);
+        return super.deref(create, subjects, children, depth, model, state, ids);
     }
-    createChild(props) {
-        return new Task(props);
+    observe(models, depth) {
+        return (models, props, key, index) => new Task({
+            models, path: key,
+            index, depth: depth + 1,
+        });
     }
     loadProps(model) {
         return model.getItems(
@@ -45,7 +48,7 @@ export class Tasks extends Container {
                 ),
                 (bool, { json }) => json);
     }
-    render(model, state, ...taskVDoms) {
+    render(state, ...taskVDoms) {
 
         const children = [];
         const { length } = state;

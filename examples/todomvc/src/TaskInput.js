@@ -17,15 +17,13 @@ export class TaskInput extends Component {
             this.listen('input')
                 .debounceTime(250)
                 .takeUntil(entered)
-                .switchMap(
-                    (ev) => model.set({ json: { value: ev.target.value }}),
-                    (ev, {json}) => json),
+                .map(({ target }) => target),
             entered.switchMap(
                 (ev) => model.call(`add`, [ev.target.value]),
                 (ev) => ({ value: ev.target.value = '' }))
         );
     }
-    render(model, { value }) {
+    render({ value }) {
         return (
             <header class={{'header': true}}>
                 <h1>todos</h1>

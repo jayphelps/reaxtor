@@ -1,3 +1,4 @@
+import pad from 'left-pad';
 import _debug from 'debug';
 import { inspect } from 'util';
 import { Event } from './Event';
@@ -14,97 +15,92 @@ export class Component extends Observable {
         super();
 
         const debug = _debug(`reaxtor:component`);
-        const warnings = _debug(`reaxtor:component`);
-        warnings.log = console.warn.bind(console);
-        let { index = 0, depth = 0, models } = props;
+        const { index = 0, depth = 0, models, path = '' } = props;
 
+        const log = (message, ...values) => {
+            if (debug.enabled) {
+                message = `${pad(message, 10 + (depth * 4))} |--- ${values.reduce((s, x) => (
+                    s + typeof x === 'object' ? '%o' : '%s'
+                ))}`
+                debug(message, ...values);
+            }
+            return values[values.length - 1];
+        };
+
+        delete props.path;
         delete props.index;
         delete props.depth;
         delete props.models;
 
-        let indent = '';
-        if (debug.enabled) {
-            let indentIdx = 0;
-            while (++indentIdx <= depth) {
-                indent += '    ';
-            }
-            indent += '|---';
-        }
+        const distinctModels = models.deref(path).distinctUntilChanged(
+            (curr, next) => !this.shouldComponentUpdate(curr, next),
+            (modelAndState) => log('update', this.mapUpdate(modelAndState[0], depth, index))
+        );
 
-        for (const key in props) {
-            if (props.hasOwnProperty(key)) {
-                if (this.hasOwnProperty(key)) {
-                    warnings(`    props ${indent} component has ${key} definition, not overriding`);
-                } else {
-                    this[key] = props[key];
-                }
-            }
-        }
+        const componentState = distinctModels.scan(
+            (componentState, modelAndState) => {
+                componentState[0] = modelAndState[0];
+                componentState[1] = { ...modelAndState[1] || {}, ...componentState[1] };
+                return componentState;
+            }, [null, props]
+        );
 
-        const modelsAndStates = models
-            .distinctUntilChanged(
-                (...args) => !this.shouldComponentUpdate(...args),
-                (...args) => {
-                    const nextKey = this.mapUpdate(...args, depth, index);
-                    if (debug.enabled) {
-                        debug(`   update ${indent} ${nextKey}`);
-                    }
-                    return nextKey;
-                }
-            )
-            .switchMap(
-                (model) => {
-                    if (debug.enabled) {
-                        debug(`loadProps ${indent} ${this.key}`);
-                    }
-                    return convertToObservable(this.loadProps(model));
-                },
-                (model, { json: state = {} } = {}) => {
-                    let result = this.mapProps(model, state);
-                    if (typeof result === 'undefined') {
-                        return [model, state];
-                    } else if (isArray(result)) {
-                        if (result[0] !== model) {
-                            result = [model, ...result];
-                        }
-                        if (typeof result[1] === 'undefined') {
-                            result[1] = state;
-                        }
-                        return result;
-                    } else {
-                        return [model, state];
-                    }
-                }
-            )
-            .switchMap(
-                (modelAndState) => {
-                    if (debug.enabled) {
-                        debug(`loadState ${indent} ${this.key} ${serializeStateWithIndent(indent, modelAndState[1])}`);
-                    }
-                    return convertToObservable(this
-                        .loadState(...modelAndState), true)
-                        .startWith(modelAndState[1]);
-                },
-                (modelAndState, newState) => {
-                    let result = this.mapState(modelAndState[1], newState);
-                    if (typeof result === 'undefined') {
-                        result = { ...modelAndState[1], ...newState };
-                    }
-                    modelAndState[1] = result;
-                    return modelAndState;
-                }
+        const modelsAndRemoteStates = componentState.switchMap(
+            (componentState) => {
+                log('loadProps', this.key);
+                return convertToObservable(this.loadProps(...componentState));
+            },
+            (componentState, newRemoteState = {}) => {
+                if (newRemoteState.json) { newRemoteState = newRemoteState.json; };
+                componentState[1] = this.mapProps(componentState[1], newRemoteState);
+                return componentState;
+            }
+        );
+
+        const modelsAndLocalStates = modelsAndRemoteStates.switchMap(
+            (componentState) => {
+                log('loadState', this.key, componentState[1]);
+                return convertToObservable(this
+                    .loadState(...componentState), true)
+                    .startWith(componentState[1])
+            },
+            (componentState, newLocalState = {}) => {
+                if (newLocalState.json) { newLocalState = newLocalState.json };
+                componentState[1] = this.mapState(componentState[1], newLocalState);
+                return componentState;
+            }
+        );
+
+        const modelsAndStates = Changes.from(modelsAndLocalStates, this, depth);
+
+        const children = this.observe(modelsAndStates, depth);
+        let childUpdates;
+
+        if (typeof children === 'function') {
+            childUpdates = modelsAndStates.switchMap(
+                ((create, subjects, children) => {
+                    return (componentState) => {
+                        const active = this.deref(create, subjects, children, depth, ...componentState);
+                        return (active.length === 0) ?
+                            Observable.of(children = active) :
+                            Observable.combineLatest(children = active);
+                    };
+                })(children, [], []),
+                (componentState, children) => [componentState[1], ...children]
             );
+        } else if (children && children.length > 0) {
+            childUpdates = modelsAndStates.switchMapTo(
+                Observable.combineLatest(children),
+                (componentState, children) => [componentState[1], ...children]
+            )
+        } else {
+            childUpdates = modelsAndStates.map((componentState) => [componentState[1]]);
+        }
 
-        const modelAndStateChanges = Changes.from(modelsAndStates, this, indent);
-
-        const vDOMs = (convertToObservable(this
-            .initialize(modelAndStateChanges, depth) || modelAndStateChanges))
-            .switchMap((args) => {
-                if (debug.enabled) {
-                    debug(`   render ${indent} ${this.key} ${serializeStateWithIndent(indent, args[1])}`);
-                }
-                return convertToObservable(this.render(...args));
-            });
+        const vDOMs = childUpdates.switchMap((xs) => {
+            log('render', this.key, xs[0]);
+            return convertToObservable(this.render(...xs));
+        });
 
         this.source = vDOMs;
     }
@@ -115,11 +111,11 @@ export class Component extends Observable {
         return (this.key =
             `{d: ${depth}, i: ${index}} ${model.inspect()} ${this.constructor.name}`);
     }
-    loadProps(model) {}
-    mapProps(model, props) {}
+    loadProps(model, state) {}
     loadState(model, state) {}
-    mapState(state, newState) {}
-    initialize(changes, depth) {}
+    mapProps(curr, next) { return Object.assign(curr, next); }
+    mapState(curr, next) { return Object.assign(curr, next); }
+    observe(changes, depth) {}
     render() {
         return {
             sel: 'i', key: this.key,
@@ -133,9 +129,11 @@ export class Component extends Observable {
         subject.eventName = name;
         return subject;
     }
-    dispatch(name) {
+    dispatch(name, ...values) {
         const handlers = this.handlers || (this.handlers = {});
-        const responder = handlers[name] || (handlers[name] = this.trigger.bind(this, name));
+        const responder = values.length > 0 ?
+            (event) => this.trigger(name, [event, ...values]) :
+            (handlers[name] || (handlers[name] = this.trigger.bind(this, name)));
         responder.eventName = name;
         return responder;
     }
@@ -148,27 +146,43 @@ export class Component extends Observable {
             }
         }
     }
-}
+    deref(create, subjects, children, depth, model, state, ids = state) {
 
-function serializeStateWithIndent(indent, state) {
+        const isRange = !Array.isArray(ids) && (
+            ('from' in ids) || ('to' in ids)
+        );
+        const offset = isRange ? ids.from || 0 : 0;
+        const to = isRange ? ids.to || (ids.length + 1) : ids.length || offset;
 
-    let result = inspect(state, { depth: null });
+        let index = -1;
+        let count = to - offset;
 
-    if ((/(\n|\r)/i).test(result)) {
+        while (++index <= count) {
+            const key = isRange || index > to ?
+                index + offset : ids !== state && ids[index] || index;
+            if (!subjects[index]) {
+                subjects[index] = new BehaviorSubject();
+                const changes = Changes.from(subjects[index], { key }, depth + 1);
+                children[index] = changes.component =
+                    create(changes, state[key], key, index);
+            }
+        }
 
-        const spaces = '                     ';
-        const indent2 = '       ';
-        const indent3 = indent2 + indent.replace(/(\||\-)/ig, ' ');
+        index = count - 1;
+        children.length = count;
+        count = subjects.length;
+        while (++index < count) {
+            subjects[index].complete();
+        }
 
-        result = result.slice(1, -1);
-        result = `\n${spaces}${indent2}{` +
-        (`\n ${ result }`).replace(
-            /(\n|\r)/ig,
-            `\n${spaces}${indent3}`
-        ) + `\n${spaces}${indent2}}\n`;
+        index = -1;
+        count = subjects.length = children.length;
+        while (++index < count) {
+            subjects[index].next([model, state]);
+        }
+
+        return children;
     }
-
-    return result;
 }
 
 function convertToObservable(ish, skipNulls) {
