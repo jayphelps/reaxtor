@@ -1,4 +1,4 @@
-var path = require("path");
+var path = require('path');
 var WriteFileWebpackPlugin = require('write-file-webpack-plugin');
 var devServer = {
   outputPath: path.join(__dirname, './dist'),
@@ -28,13 +28,23 @@ module.exports = {
       {
         test: /\.js?$/,
         exclude: /(node_modules|dist)/,
-        loader: 'babel-loader',
+        loader: require.resolve('babel-loader'),
         query: {
-          presets: ['es2015', 'stage-0', 'react']
+          presets: [require.resolve('babel-preset-es2015'), require.resolve('babel-preset-stage-0')],
+          plugins: [
+            require.resolve('babel-plugin-syntax-jsx'),
+            [require.resolve('babel-reaxtor-jsx'), {
+                'pragma': 'html',
+                'modules': ['on', 'hook', 'hero', 'attrs', 'class', 'style', 'props', 'dataset']
+            }],
+            [require.resolve('babel-plugin-jsx-pragmatic'), {
+              'module': 'reaxtor-jsx', 'import': 'html'
+            }]
+          ]
         }
       }, {
         test: /\.css$/,
-        loader: "style!css"
+        loader: 'style!css'
       },
     ],
   },

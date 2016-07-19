@@ -207,16 +207,17 @@ var DerefSubscriber = function (_Subscriber) {
 
     _createClass(DerefSubscriber, [{
         key: '_next',
-        value: function _next(update) {
+        value: function _next() {
+            var modelAndState = arguments.length <= 0 || arguments[0] === undefined ? [] : arguments[0];
             var debug = this.debug;
 
             var keys = this.keys;
             var count = keys.length - 1;
 
-            var _update = _slicedToArray(update, 2);
+            var _modelAndState = _slicedToArray(modelAndState, 2);
 
-            var model = _update[0];
-            var state = _update[1];
+            var model = _modelAndState[0];
+            var state = _modelAndState[1];
 
             var keysIdx = -1;
 
@@ -231,9 +232,9 @@ var DerefSubscriber = function (_Subscriber) {
                         debug.log = console.warn.bind(console);
                         var indent = this.indent;
 
-                        debug(' cache miss ' + indent + ' ' + this.component.key);
-                        model._path.length > 0 && debug('       from ' + indent + ' ' + JSON.stringify(model._path));
-                        debug('  attempted ' + indent + ' ' + JSON.stringify(_path));
+                        debug('      cache miss ' + indent + ' ' + this.component.key);
+                        model._path.length > 0 && debug('            from ' + indent + ' ' + JSON.stringify(model._path));
+                        debug('       attempted ' + indent + ' ' + JSON.stringify(_path));
                     }
                     model = model._clone({ _path: _path });
                     break;
@@ -248,7 +249,7 @@ var DerefSubscriber = function (_Subscriber) {
                         var e = _errorObject.errorObject.e;
                         var _indent = this.indent;
 
-                        debug('      error ' + _indent + ' ' + (e && e.message || e) + '\n                                          component ' + _indent + ' ' + this.component.key + ' ' + (model._path.length > 0 ? '\n                                               from ' + _indent + ' ' + JSON.stringify(model._path) : '') + '\n                                          attempted ' + _indent + ' ' + JSON.stringify(model._path.concat(keys.slice(keysIdx))) + '\n                                               data ' + _indent + ' ' + (0, _util.inspect)(tmpState, { depth: null }) + '\n                                             parent ' + _indent + ' ' + (0, _util.inspect)(state, { depth: null }) + '\n', e && e.stack || e);
+                        debug('           error ' + _indent + ' ' + (e && e.message || e) + '\n                                          component ' + _indent + ' ' + this.component.key + ' ' + (model._path.length > 0 ? '\n                                               from ' + _indent + ' ' + JSON.stringify(model._path) : '') + '\n                                          attempted ' + _indent + ' ' + JSON.stringify(model._path.concat(keys.slice(keysIdx))) + '\n                                               data ' + _indent + ' ' + (0, _util.inspect)(tmpState, { depth: null }) + '\n                                             parent ' + _indent + ' ' + (0, _util.inspect)(state, { depth: null }) + '\n', e && e.stack || e);
                     }
                     return this.destination.error(_errorObject.errorObject.e);
                 }
@@ -257,7 +258,10 @@ var DerefSubscriber = function (_Subscriber) {
                 model = tmpModel;
             }
 
-            _get(Object.getPrototypeOf(DerefSubscriber.prototype), '_next', this).call(this, model);
+            modelAndState[0] = model;
+            modelAndState[1] = state;
+
+            _get(Object.getPrototypeOf(DerefSubscriber.prototype), '_next', this).call(this, modelAndState);
         }
     }]);
 

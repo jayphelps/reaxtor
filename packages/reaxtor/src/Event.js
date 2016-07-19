@@ -56,14 +56,14 @@ export class Event extends Subject {
             super._subscribe(subscriber) ;
     }
 
-    stop() {
-        return this.do((x) => x.stopPropagation());
+    stop(immediate = false) {
+        return this.do((x) => !immediate ?
+            x.stopPropagation() :
+            x.stopImmediatePropagation()
+        );
     }
 
-    clobber() {
-        return this.do((x) => {
-            x.preventDefault();
-            x.stopPropagation();
-        });
+    preventDefault() {
+        return this.do((x) => x.preventDefault());
     }
 }

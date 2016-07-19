@@ -89,16 +89,17 @@ var Event = exports.Event = function (_Subject) {
     }, {
         key: 'stop',
         value: function stop() {
+            var immediate = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+
             return this.do(function (x) {
-                return x.stopPropagation();
+                return !immediate ? x.stopPropagation() : x.stopImmediatePropagation();
             });
         }
     }, {
-        key: 'clobber',
-        value: function clobber() {
+        key: 'preventDefault',
+        value: function preventDefault() {
             return this.do(function (x) {
-                x.preventDefault();
-                x.stopPropagation();
+                return x.preventDefault();
             });
         }
     }]);

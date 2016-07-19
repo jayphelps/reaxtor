@@ -126,12 +126,12 @@ class DerefSubscriber extends Subscriber {
         this.indent = indent;
         this.component = component;
     }
-    _next(update) {
+    _next(modelAndState = []) {
 
         const { debug } = this;
         const keys = this.keys;
         const count = keys.length - 1;
-        let [ model, state ] = update;
+        let [ model, state ] = modelAndState;
         let keysIdx = -1;
 
         while (++keysIdx <= count) {
@@ -144,10 +144,10 @@ class DerefSubscriber extends Subscriber {
                     debug.color = 'black';
                     debug.log = console.warn.bind(console);
                     const { indent } = this;
-                    debug(` cache miss ${indent} ${this.component.key}`);
+                    debug(`      cache miss ${indent} ${this.component.key}`);
                     (model._path.length > 0) &&
-                    debug(`       from ${indent} ${JSON.stringify(model._path)}`);
-                    debug(`  attempted ${indent} ${JSON.stringify(_path)}`);
+                    debug(`            from ${indent} ${JSON.stringify(model._path)}`);
+                    debug(`       attempted ${indent} ${JSON.stringify(_path)}`);
                 }
                 model = model._clone({ _path });
                 break;
@@ -161,7 +161,7 @@ class DerefSubscriber extends Subscriber {
                     debug.log = console.warn.bind(console);
                     const { e } = errorObject;
                     const { indent } = this;
-                    debug(`      error ${indent} ${e && e.message || e}
+                    debug(`           error ${indent} ${e && e.message || e}
                                           component ${indent} ${this.component.key} ${(model._path.length > 0) ? `
                                                from ${indent} ${JSON.stringify(model._path)}` : ''}
                                           attempted ${indent} ${JSON.stringify(model._path.concat(keys.slice(keysIdx)))}
@@ -177,6 +177,9 @@ class DerefSubscriber extends Subscriber {
             model = tmpModel;
         }
 
-        super._next(model);
+        modelAndState[0] = model;
+        modelAndState[1] = state;
+
+        super._next(modelAndState);
     }
 }

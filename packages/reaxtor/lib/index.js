@@ -3,9 +3,43 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.reaxtor = exports.falcor = exports.Container = exports.Component = exports.Router = exports.Event = exports.Model = exports.hJSX = undefined;
+exports.reaxtor = exports.Router = exports.falcor = undefined;
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /** @jsx hJSX */
+var _Event = require('./Event');
+
+Object.keys(_Event).forEach(function (key) {
+    if (key === "default") return;
+    Object.defineProperty(exports, key, {
+        enumerable: true,
+        get: function get() {
+            return _Event[key];
+        }
+    });
+});
+
+var _Model = require('./Model');
+
+Object.keys(_Model).forEach(function (key) {
+    if (key === "default") return;
+    Object.defineProperty(exports, key, {
+        enumerable: true,
+        get: function get() {
+            return _Model[key];
+        }
+    });
+});
+
+var _Component = require('./Component');
+
+Object.keys(_Component).forEach(function (key) {
+    if (key === "default") return;
+    Object.defineProperty(exports, key, {
+        enumerable: true,
+        get: function get() {
+            return _Component[key];
+        }
+    });
+});
 
 var _debug2 = require('debug');
 
@@ -19,31 +53,18 @@ var _falcorRouter = require('falcor-router');
 
 var _falcorRouter2 = _interopRequireDefault(_falcorRouter);
 
-var _Model = require('./Model');
-
-var _Event = require('./Event');
-
 var _rxjs = require('rxjs');
 
-var _Component = require('./Component');
-
-var _Container = require('./Container');
-
-var _snabbdomJsx = require('snabbdom-jsx');
+require('rxjs/add/operator/map');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.hJSX = _snabbdomJsx.html;
-exports.Model = _Model.Model;
-exports.Event = _Event.Event;
-exports.Router = _falcorRouter2.default;
-exports.Component = _Component.Component;
-exports.Container = _Container.Container;
 exports.falcor = _falcor2.default;
+exports.Router = _falcorRouter2.default;
 exports.reaxtor = reaxtor;
 
 
-function reaxtor(RootClass, model) {
+function reaxtor(component, model) {
     var props = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
 
@@ -54,8 +75,8 @@ function reaxtor(RootClass, model) {
     var _model = model;
     var _root = _model._root;
 
-    var array = new Array(2);
-    var models = new _rxjs.BehaviorSubject(model);
+    var array = [model, component.props];
+    var models = new _rxjs.BehaviorSubject(array);
     var previousOnChangesCompleted = _root.onChangesCompleted;
 
     _root.onChangesCompleted = function () {
@@ -70,23 +91,26 @@ function reaxtor(RootClass, model) {
 
             debugStart.color = debugEnd.color = _debug3.default.colors[(topLevelModelVersion + _debug3.default.colors.length) % _debug3.default.colors.length];
 
-            debugStart('    start | v' + topLevelModelVersion);
+            debugStart('           start | v' + topLevelModelVersion);
 
             if (previousOnChangesCompleted) {
                 previousOnChangesCompleted.call(this);
             }
 
-            models.next(model);
+            array[0] = model;
+            array[1] = component.props;
+
+            models.next(array);
         } while (reenter === true);
     };
 
     _root.onChangesCompleted.call(_root.topLevelModel);
 
-    return new RootClass(_extends({}, props, { models: models })).map(function (rootVDom) {
-        debugEnd('      end | v' + model.getVersion());
+    return component.observe(models, 0, 0).map(function (vdom) {
+        debugEnd('             end | v' + model.getVersion());
         working = false;
         array[0] = model;
-        array[1] = rootVDom;
+        array[1] = vdom;
         return array;
     });
 }
