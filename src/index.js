@@ -8,10 +8,9 @@ import { Event } from './Event';
 import { Changes } from './Changes';
 import { BehaviorSubject } from 'rxjs';
 import { Component } from './Component';
-import { Container } from './Container';
 import { html as hJSX } from 'snabbdom-jsx';
 
-export { hJSX, Model, Event, Router, Component, Container, falcor, reaxtor };
+export { hJSX, Model, Event, Router, Component, falcor, reaxtor };
 
 function reaxtor(RootClass, model, props = {}) {
 
