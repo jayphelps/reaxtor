@@ -63,16 +63,6 @@ var Changes = exports.Changes = function (_Observable) {
 
     _createClass(Changes, [{
         key: 'next',
-
-        // lift(operator) {
-        //     const changes = new Changes();
-        //     changes.source = this;
-        //     changes.debug = this.debug;
-        //     changes.operator = operator;
-        //     changes.indent = this.indent;
-        //     changes.component = this.component;
-        //     return changes;
-        // }
         value: function next(x) {
             this.nextVal = x;
             this.hasValue = true;
@@ -257,6 +247,8 @@ var DerefSubscriber = function (_Subscriber) {
                 var tmpState = state[key];
                 var tmpModel = (0, _tryCatch.tryCatch)(model.deref).call(model, tmpState);
                 if (tmpModel === _errorObject.errorObject) {
+                    var e = _errorObject.errorObject.e;
+
                     this.warn('error', e && e.message || e);
                     this.warn('component', this.component.key);
                     if (model._path.length > 0) {
@@ -266,20 +258,6 @@ var DerefSubscriber = function (_Subscriber) {
                     this.warn('data', (0, _util.inspect)(tmpState, { depth: null }));
                     this.warn('parent', (0, _util.inspect)(state, { depth: null }));
                     this.warn('stack', e && e.stack || e);
-                    // if (debug.enabled) {
-                    //     debug.color = 'black';
-                    //     debug.log = console.warn.bind(console);
-                    //     const { e } = errorObject;
-                    //     const { indent } = this;
-                    //     debug(`      error ${indent} ${e && e.message || e}
-                    //                           component ${indent} ${this.component.key} ${(model._path.length > 0) ? `
-                    //                                from ${indent} ${JSON.stringify(model._path)}` : ''}
-                    //                           attempted ${indent} ${JSON.stringify(model._path.concat(keys.slice(keysIdx)))}
-                    //                                data ${indent} ${inspect(tmpState, { depth: null })}
-                    //                              parent ${indent} ${inspect(state, { depth: null })}\n`,
-                    //         e && e.stack || e
-                    //     );
-                    // }
                     return this.destination.error(_errorObject.errorObject.e);
                 }
 

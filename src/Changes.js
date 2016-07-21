@@ -27,15 +27,6 @@ export class Changes extends Observable {
         changes.component = component;
         return changes;
     }
-    // lift(operator) {
-    //     const changes = new Changes();
-    //     changes.source = this;
-    //     changes.debug = this.debug;
-    //     changes.operator = operator;
-    //     changes.indent = this.indent;
-    //     changes.component = this.component;
-    //     return changes;
-    // }
     next(x) {
         this.nextVal = x;
         this.hasValue = true;
@@ -163,6 +154,7 @@ class DerefSubscriber extends Subscriber {
             const tmpState = state[key];
             const tmpModel = tryCatch(model.deref).call(model, tmpState);
             if (tmpModel === errorObject) {
+                const { e } = errorObject;
                 this.warn('error', e && e.message || e);
                 this.warn('component', this.component.key);
                 if (model._path.length > 0) {
@@ -172,20 +164,6 @@ class DerefSubscriber extends Subscriber {
                 this.warn('data', inspect(tmpState, { depth: null }));
                 this.warn('parent', inspect(state, { depth: null }));
                 this.warn('stack', e && e.stack || e);
-                // if (debug.enabled) {
-                //     debug.color = 'black';
-                //     debug.log = console.warn.bind(console);
-                //     const { e } = errorObject;
-                //     const { indent } = this;
-                //     debug(`      error ${indent} ${e && e.message || e}
-                //                           component ${indent} ${this.component.key} ${(model._path.length > 0) ? `
-                //                                from ${indent} ${JSON.stringify(model._path)}` : ''}
-                //                           attempted ${indent} ${JSON.stringify(model._path.concat(keys.slice(keysIdx)))}
-                //                                data ${indent} ${inspect(tmpState, { depth: null })}
-                //                              parent ${indent} ${inspect(state, { depth: null })}\n`,
-                //         e && e.stack || e
-                //     );
-                // }
                 return this.destination.error(errorObject.e);
             }
 

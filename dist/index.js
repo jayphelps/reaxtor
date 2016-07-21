@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.reaxtor = exports.falcor = exports.Container = exports.Component = exports.Router = exports.Event = exports.Model = exports.hJSX = undefined;
+exports.reaxtor = exports.falcor = exports.Component = exports.Router = exports.Event = exports.Model = exports.hJSX = undefined;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; /** @jsx hJSX */
 
@@ -29,8 +29,6 @@ var _rxjs = require('rxjs');
 
 var _Component = require('./Component');
 
-var _Container = require('./Container');
-
 var _snabbdomJsx = require('snabbdom-jsx');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -40,7 +38,6 @@ exports.Model = _Model.Model;
 exports.Event = _Event.Event;
 exports.Router = _falcorRouter2.default;
 exports.Component = _Component.Component;
-exports.Container = _Container.Container;
 exports.falcor = _falcor2.default;
 exports.reaxtor = reaxtor;
 
