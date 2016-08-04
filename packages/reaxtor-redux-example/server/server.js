@@ -30,7 +30,7 @@ app.use(webpackDevMiddleware(compiler, {
 }));
 app.use(webpackHotMiddleware(compiler));
 
-var shouldRenderServerSide = false;
+var shouldRenderServerSide = true;
 
 app.get("/", function(req, res) {
     if (!shouldRenderServerSide) {
