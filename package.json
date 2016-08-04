@@ -1,0 +1,15 @@
+{
+  "name": "reaxtor",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "scripts": {
+    "postinstall": "lerna bootstrap"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "lerna": "2.0.0-beta.24"
+  }
+}

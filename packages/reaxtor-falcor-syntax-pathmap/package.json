@@ -1,0 +1,36 @@
+{
+  "name": "reaxtor-falcor-syntax-pathmap",
+  "version": "0.0.1",
+  "description": "ES6 Template String and Builder function for Creating Falcor Path Maps (Experimental)",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js",
+    "build": "pegjs parser.peg lib/parser.js",
+    "start": "npm run build && npm test",
+    "prepublish": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/trxcllnt/reaxtor.git"
+  },
+  "keywords": [
+    "falcor",
+    "path",
+    "map",
+    "es6",
+    "template",
+    "string"
+  ],
+  "authors": [
+    "Jafar Husain <jhusain@gmail.com> (https://github.com/jhusain/)",
+    "Paul Taylor <paul.e.taylor@me.com> (https://github.com/trxcllnt/)"
+  ],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/trxcllnt/reaxtorissues"
+  },
+  "homepage": "https://github.com/trxcllnt/reaxtor/blob/master/packages/reaxtor-syntax-pathmap/README.md",
+  "devDependencies": {
+    "pegjs": "~0.9.0"
+  }
+}
