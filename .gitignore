@@ -1,6 +1,8 @@
 # Logs
 logs
 *.log
+npm-debug.*
+npm-debug.log.*
 
 # Runtime data
 pids

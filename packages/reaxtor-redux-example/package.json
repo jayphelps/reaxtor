@@ -2,7 +2,7 @@
   "name": "reaxtor-redux-example",
   "version": "0.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "client/index.js",
   "scripts": {
     "start": "node server/index.js"
   },
@@ -23,8 +23,8 @@
     "react": "~15.3.0",
     "react-dom": "~15.3.0",
     "react-redux": "~4.4.5",
-    "reaxtor-falcor": "0.0.1",
-    "reaxtor-redux": "0.0.1",
+    "reaxtor-falcor": "^0.0.1",
+    "reaxtor-redux": "^0.0.1",
     "redux": "~3.5.2",
     "redux-logger": "~2.6.1",
     "redux-observable": "~0.9.0",
